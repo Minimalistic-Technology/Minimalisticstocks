@@ -1,6 +1,7 @@
 'use client';
 
 import Header from '../components/header/page';
+import Footer from 'app/components/Footer';
 import Image from 'next/image';
 
 export default function DashboardPage() {
@@ -34,6 +35,7 @@ export default function DashboardPage() {
           </button>
         </div>
       </section>
+      <Footer/>
     </main>
   );
 }

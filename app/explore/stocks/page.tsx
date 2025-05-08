@@ -1,6 +1,7 @@
 "use client";
 import React from 'react';
 import Header from '../../components/header/page';
+import Footer from 'app/components/Footer';
 
 const GrowwDashboard = () => {
   return (
@@ -85,6 +86,7 @@ const GrowwDashboard = () => {
           </div>
         </section>
       </main>
+      <Footer/>
     </div>
   );
 };

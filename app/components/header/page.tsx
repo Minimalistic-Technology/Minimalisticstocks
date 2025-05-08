@@ -13,7 +13,7 @@ const Header = () => {
   const tabs = [
     { label: 'Stocks', href: '/dashboard' },
     { label: 'F&O', href: '/dashboard/fno' },
-    { label: 'Mutual Funds', href: '/dashboard/mutual-funds' },
+    { label: 'Mutual Funds', href: '/mutual'},
   ];
 
   return (
