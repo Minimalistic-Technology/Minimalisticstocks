@@ -68,7 +68,21 @@ const SignupPage = () => {
   return (
     <div className="flex h-screen w-full">
       <div className="w-full flex justify-center items-center bg-green-100">
-        <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-lg">
+        <div className="w-full max-w-3xl flex bg-white rounded-lg shadow-lg">
+         <div className="w-full relative rounded-lg shadow-lg overflow-hidden">
+  <img
+    src="https://wallpapers.com/images/hd/ios-13-dark-green-abstract-ybwal6ih18g2thky.jpg"
+    alt="Decorative"
+    className="w-full h-full object-cover"
+  />
+  <div className="absolute top-4 left-4">
+    <h2 className="text-white text-2xl font-bold">Conditional, Free, Simple Investing.</h2>
+  </div>
+</div>
+
+
+
+          <div className="w-full bg-white p-8 rounded-lg shadow-lg">
           {step === 3 ? (
             <h2 className="text-2xl text-black font-bold text-center mb-6">
               Signup
@@ -195,6 +209,7 @@ const SignupPage = () => {
               </p>
             </>
           )}
+          </div>
         </div>
       </div>
     </div>
