@@ -10,77 +10,77 @@ import { useState } from "react";
 const collections = [
   {
     name: "Nifty 50",
-    icon: "/images/highreturn.png",
-    lasttraded: "23,981.55",
+    icon: "https://static.vecteezy.com/system/resources/previews/026/267/859/non_2x/stock-market-bar-graph-candlestick-chart-finance-trade-data-illustration-free-vector.jpg",
+    lasttraded: "24,008.00",
     daychange: "-294.40(1.21%)",
   },
   {
-    name: "SIP",
-    icon: "/images/highreturn.png",
-    lasttraded: "23,981.55",
+    name: "Ben Sensex",
+    icon: "https://static.vecteezy.com/system/resources/previews/026/267/859/non_2x/stock-market-bar-graph-candlestick-chart-finance-trade-data-illustration-free-vector.jpg",
+    lasttraded: "79,454.47",
     daychange: "-294.40(1.21%)",
   },
   {
-    name: "Tax Saving",
-    icon: "/images/tax.png",
-    lasttraded: "23,981.55",
+    name: "Tata Motors",
+    icon: "https://static.vecteezy.com/system/resources/previews/026/267/859/non_2x/stock-market-bar-graph-candlestick-chart-finance-trade-data-illustration-free-vector.jpg",
+    lasttraded: "708.50",
     daychange: "-294.40(1.21%)",
   },
   {
-    name: "Large Cap",
-    icon: "/images/highreturn.png",
-    lasttraded: "23,981.55",
+    name: "L&T",
+    icon: "https://static.vecteezy.com/system/resources/previews/026/267/859/non_2x/stock-market-bar-graph-candlestick-chart-finance-trade-data-illustration-free-vector.jpg",
+    lasttraded: "3,443.90",
     daychange: "-294.40(1.21%)",
   },
   {
-    name: "Mid Cap",
-    icon: "/images/highreturn.png",
-    lasttraded: "23,981.55",
+    name: "NIFTY Bank",
+    icon: "https://static.vecteezy.com/system/resources/previews/026/267/859/non_2x/stock-market-bar-graph-candlestick-chart-finance-trade-data-illustration-free-vector.jpg",
+    lasttraded: "53,732.00",
     daychange: "-294.40(1.21%)",
   },
   {
-    name: "Small Cap",
-    icon: "/images/highreturn.png",
-    lasttraded: "23,981.55",
+    name: "SBI",
+    icon: "https://static.vecteezy.com/system/resources/previews/026/267/859/non_2x/stock-market-bar-graph-candlestick-chart-finance-trade-data-illustration-free-vector.jpg",
+    lasttraded: "779.25",
     daychange: "-294.40(1.21%)",
   },
 ];
 
 const stockData = [
   {
-    name: "Reliance",
-    icon: "/images/highreturn.png",
-    price: "2,760.10",
+    name: "Yes Bank",
+    icon: "https://assets-netstorage.groww.in/stock-assets/logos2/YESBANK(1).png",
+    price: "20.02",
     change: "+25.20(1.05%)",
-    volume: "57,45,05,272",
+    volume: "72,80,05,272",
   },
   {
-    name: "TCS",
-    icon: "/images/highreturn.png",
-    price: "3,420.50",
+    name: "Union Bank",
+    icon: "https://assets-netstorage.groww.in/stock-assets/logos2/UnionBankI_88937846814_5493.png",
+    price: "122.90",
     change: "-18.50(0.54%)",
-    volume: "12,45,23,892",
+    volume: "6,29,27,788",
   },
   {
-    name: "Infosys",
-    icon: "/images/highreturn.png",
+    name: "Bharat Forge",
+    icon: "https://assets-netstorage.groww.in/stock-assets/logos2/BHARATFORG.png",
     price: "1,460.00",
     change: "+10.00(0.69%)",
     volume: "9,23,45,111",
   },
   {
-    name: "HDFC Bank",
-    icon: "/images/highreturn.png",
-    price: "1,580.65",
+    name: "Titan",
+    icon: "https://assets-netstorage.groww.in/stock-assets/logos2/TitanCompany_20146423894_1016.png",
+    price: "1,165.60",
     change: "+5.30(0.34%)",
-    volume: "18,30,22,101",
+    volume: "55,31,033",
   },
   {
-    name: "ITC",
-    icon: "/images/highreturn.png",
-    price: "415.90",
+    name: "UPL",
+    icon: "https://assets-netstorage.groww.in/stock-assets/logos2/UPL_77209428989_2461.png",
+    price: "3150.30",
     change: "-2.75(0.66%)",
-    volume: "22,45,80,300",
+    volume: "28,63,992",
   },
 ];
 
@@ -108,22 +108,22 @@ export default function FNOPAGE() {
               {[
                 {
                   name: "Nifty",
-                  lasttraded: "23,981.55",
-                  daychange: "-294.40(1.21%)",
-                },
-                {
-                  name: "Nippon",
-                  lasttraded: "23,981.55",
+                  lasttraded: "24,008.00",
                   daychange: "-294.40(1.21%)",
                 },
                 {
                   name: "Sensex",
-                  lasttraded: "23,981.55",
+                  lasttraded: "79,454.47",
+                  daychange: "-294.40(1.21%)",
+                },
+                {
+                  name: "BANKNIFTY",
+                  lasttraded: "53,732.00",
                   daychange: "+150.25(0.65%)",
                 },
                 {
-                  name: "SBI",
-                  lasttraded: "23,981.55",
+                  name: "MIDCPNIFTY",
+                  lasttraded: "12,040.30",
                   daychange: "+89.20(0.35%)",
                 },
               ].map((fund, i) => (
@@ -267,24 +267,24 @@ export default function FNOPAGE() {
               {[
                 {
                   name: "NIFTY 29 May Fut",
-                  price: "₹24,092.00",
-                  change: "-179.90 (-0.74%)",
-                  image: "/images/nifty.png",
+                  price: "₹24,065.50",
+                  change: "-206.40 (-0.85%)",
+                  image: "https://assets-netstorage.groww.in/stock-assets/logos/GIDXNIFTY.png",
                 },{
-                  name: "NIFTY 29 May Fut",
-                  price: "₹24,092.00",
-                  change: "-179.90 (-0.74%)",
-                  image: "/images/nifty.png",
+                  name: "BANKNIFTY 29 May Fut",
+                  price: "₹53,732.00",
+                  change: "-556.60 (-1.03%)",
+                  image: "https://assets-netstorage.groww.in/stock-assets/logos/GIDXNIFTYBANK.png",
                 },{
-                  name: "NIFTY 29 May Fut",
-                  price: "₹24,092.00",
-                  change: "-179.90 (-0.74%)",
-                  image: "/images/nifty.png",
+                  name: "MIDCPNIFTY 29 May Fut",
+                  price: "₹12,040.30",
+                  change: "+59.90 (+0.50%)",
+                  image: "https://assets-netstorage.groww.in/stock-assets/logos/GIDXNIFTYMIDSELECT.png",
                 },{
-                  name: "NIFTY 29 May Fut",
-                  price: "₹24,092.00",
-                  change: "-179.90 (-0.74%)",
-                  image: "/images/nifty.png",
+                  name: "NIFTY 26 June Fut",
+                  price: "₹24,174.30",
+                  change: "-188.30 (-0.74%)",
+                  image: "https://assets-netstorage.groww.in/stock-assets/logos/GIDXNIFTY.png",
                 },
                 
               ].map((item, idx) => (
@@ -324,24 +324,24 @@ export default function FNOPAGE() {
               {[
                 {
                   name: "Tata Motors 29 May Fut",
-                  price: "₹709.90",
+                  price: "₹709.35",
                   change: "+26.90 (+3.94%)",
-                  image: "/images/tatamotors.png",
+                  image: "https://assets-netstorage.groww.in/stock-assets/logos2/TataMotors_19446492084_560.png",
                 },{
-                  name: "Tata Motors 29 May Fut",
-                  price: "₹709.90",
+                  name: "LT 29 May Fut",
+                  price: "₹3,455.70",
                   change: "+26.90 (+3.94%)",
-                  image: "/images/tatamotors.png",
+                  image: "https://assets-netstorage.groww.in/stock-assets/logos2/LT.png",
                 },{
-                  name: "Tata Motors 29 May Fut",
-                  price: "₹709.90",
-                  change: "+26.90 (+3.94%)",
-                  image: "/images/tatamotors.png",
+                  name: "SBIN 29 May Fut",
+                  price: "₹765.65",
+                  change: "+10.30 (+1.36%)",
+                  image: "https://assets-netstorage.groww.in/stock-assets/logos2/SBIN.png",
                 },{
-                  name: "Tata Motors 29 May Fut",
-                  price: "₹709.90",
-                  change: "+26.90 (+3.94%)",
-                  image: "/images/tatamotors.png",
+                  name: "RELIANCE 29 May Fut",
+                  price: "₹1,382.70",
+                  change: "-26.20 (-1.86%)",
+                  image: "https://assets-netstorage.groww.in/stock-assets/logos2/RelianceInds_29114129325_476.png",
                 },
                
               ].map((item, idx) => (
@@ -378,7 +378,7 @@ export default function FNOPAGE() {
           <div className="flex items-center justify-center mb-6">
             <div className="w-28 h-28 bg-green-50 rounded-full flex items-center justify-center border-2 border-green-400">
               <Image
-                src="/images/highreturn.png"
+                src="https://assets-netstorage.groww.in/web-assets/billion_groww_desktop/prod/_next/static/media/fno-unlock.280e01a7.svg"
                 alt="Unlock F&O"
                 width={50}
                 height={50}
