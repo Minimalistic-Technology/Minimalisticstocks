@@ -11,6 +11,38 @@ import { useState } from "react";
 import { FaPlus } from "react-icons/fa";
 import StockTable from "app/components/stockTable/page";
 
+const stocks = [
+  {
+    name: "Tata Motors",
+    price: "₹699.00",
+    change: "-8.70 (-1.23%)",
+    changeColor: "text-red-500",
+  },
+  {
+    name: "Samvardhana Motherson",
+    price: "₹143.80",
+    change: "+1.35 (+0.95%)",
+    changeColor: "text-green-600",
+  },
+  {
+    name: "Eternal (Zomato)",
+    price: "₹235.25",
+    change: "+3.60 (+1.55%)",
+    changeColor: "text-green-600",
+  },
+  {
+    name: "PNB",
+    price: "₹98.10",
+    change: "+0.42 (+0.43%)",
+    changeColor: "text-green-600",
+  },
+  {
+    name: "Canara Bank",
+    price: "₹106.07",
+    change: "+1.29 (+1.23%)",
+    changeColor: "text-green-600",
+  },
+];
 
 const collection = [
   {
@@ -36,7 +68,7 @@ const collection = [
 ];
 
 export default function Stocks() {
-  const [selectedTimeframe, setSelectedTimeframe] = useState("1 Day");
+  const [isOpen, setIsOpen] = useState(true);
 
   return (
     <main className="min-h-screen bg-white text-gray-900 transition-colors">
@@ -358,16 +390,25 @@ export default function Stocks() {
             </div>
 
             <div className="w-full max-w-4xl mx-auto">
-             <StockTable></StockTable>
-              
+              <StockTable></StockTable>
             </div>
           </section>
         </div>
 
         {/* Right Sidebar */}
-        <div className="max-w-sm w-full bg-white rounded-xl p-6 text-center shadow-sm max-h-100">
+        <div className="max-w-sm w-full bg-white rounded-xl p-6 text-center  flex flex-col">
           <div>
-            <h2 className="text-xl font-semibold mb-4">Your Investments</h2>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-semibold">Your Investments</h2>
+              <a
+                href="#"
+                className="text-green-600 text-sm font-medium hover:underline"
+              >
+                Dashboard
+              </a>
+            </div>
+
+            {/* Investments Box */}
             <div className="p-4 bg-white rounded shadow">
               <div className="flex justify-between items-center">
                 <div>
@@ -383,19 +424,53 @@ export default function Stocks() {
 
             {/* Watchlist */}
             <div className="mt-6">
-              <h2 className="text-xl font-semibold mb-4">All Watchlists</h2>
-              <div className="p-4 bg-white rounded shadow">
-                <div className="flex justify-between items-center">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-semibold">All Watchlists</h2>
+                <a
+                  href="#"
+                  className="text-green-600 text-sm font-medium hover:underline"
+                >
+                  View all
+                </a>
+              </div>
+
+              <div className="p-4 bg-white rounded shadow transition-all duration-300 ease-in-out">
+                <div
+                  className="flex justify-between items-center cursor-pointer"
+                  onClick={() => setIsOpen(!isOpen)}
+                >
                   <div>
-                    <div className="font-medium">Sandip's Watchlist</div>
-                    <div className="text-sm text-gray-500">5 items</div>
+                    <div className="font-semibold">My Watchlist</div>
+                    <div className="text-sm text-gray-500">
+                      {stocks.length} items
+                    </div>
                   </div>
-                  <button className="text-green-600 font-semibold">
-                    View all
-                  </button>
+                  <div className="text-xl font-bold">{isOpen ? "▲" : "▼"}</div>
                 </div>
-                <button className="mt-4 flex items-center text-green-600 font-semibold">
-                  <span className="text-xl mr-2">＋</span>Create new watchlist
+
+                {isOpen && (
+                  <div className="mt-4 space-y-3">
+                    {stocks.map((stock, idx) => (
+                      <div
+                        key={idx}
+                        className="flex justify-between items-center border-b pb-2"
+                      >
+                        <div className="text-gray-800 font-medium">
+                          {stock.name}
+                        </div>
+                        <div className="text-right">
+                          <div className="font-semibold">{stock.price}</div>
+                          <div className={`text-sm ${stock.changeColor}`}>
+                            {stock.change}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                <button className="mt-5 flex items-center text-green-600 font-semibold">
+                  <span className="text-xl mr-2">＋</span> Create new watchlist
                 </button>
               </div>
             </div>
