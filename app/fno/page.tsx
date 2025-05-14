@@ -6,7 +6,7 @@ import Footer from "app/components/Footer";
 import Image from "next/image";
 import { FaLink } from "react-icons/fa";
 import { FiChevronDown } from "react-icons/fi";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const collections = [
   {
@@ -85,8 +85,37 @@ const stockData = [
   },
 ];
 
+type FutureItem = {
+  _id: string;
+  name: string;
+  price: string;
+  change: string;
+  image: string;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+};
+
+
 export default function FNOPAGE() {
   const [selectedTimeframe, setSelectedTimeframe] = useState("1 Day");
+ const [futuresData, setFuturesData] = useState<FutureItem[]>([]);
+
+
+  useEffect(() => {
+    const fetchTopIndexFutures = async () => {
+      try {
+        const res = await fetch(
+          "http://localhost:5000/api/stocks/getTopIndexFutures"
+        );
+        const data: FutureItem[] = await res.json();
+        setFuturesData(data);
+      } catch (error) {
+        console.error("Error fetching Top Index Futures:", error);
+      }
+    };
+    fetchTopIndexFutures();
+  }, []);
 
   return (
     <main className="min-h-screen bg-white text-gray-900 transition-colors">
@@ -95,7 +124,7 @@ export default function FNOPAGE() {
       <div className="max-w-6xl mx-auto px-4 py-10 flex flex-row gap-8">
         <div className="w-3/5 space-y-12">
           {/* Indices */}
-         <IndicesSection />
+          <IndicesSection />
 
           {/* Top Traded */}
           <section>
@@ -214,51 +243,34 @@ export default function FNOPAGE() {
               <h2 className="text-2xl font-bold">Top Traded Index Futures</h2>
             </div>
             <div className="flex space-x-4 overflow-x-auto scrollbar-hide">
-              {[
-                {
-                  name: "NIFTY 29 May Fut",
-                  price: "₹24,065.50",
-                  change: "-206.40 (-0.85%)",
-                  image: "https://assets-netstorage.groww.in/stock-assets/logos/GIDXNIFTY.png",
-                },{
-                  name: "BANKNIFTY 29 May Fut",
-                  price: "₹53,732.00",
-                  change: "-556.60 (-1.03%)",
-                  image: "https://assets-netstorage.groww.in/stock-assets/logos/GIDXNIFTYBANK.png",
-                },{
-                  name: "MIDCPNIFTY 29 May Fut",
-                  price: "₹12,040.30",
-                  change: "+59.90 (+0.50%)",
-                  image: "https://assets-netstorage.groww.in/stock-assets/logos/GIDXNIFTYMIDSELECT.png",
-                },{
-                  name: "NIFTY 26 June Fut",
-                  price: "₹24,174.30",
-                  change: "-188.30 (-0.74%)",
-                  image: "https://assets-netstorage.groww.in/stock-assets/logos/GIDXNIFTY.png",
-                },
-                
-              ].map((item, idx) => (
+              {futuresData.map((item, index) => (
                 <div
-                  key={idx}
-                  className="w-[150px] h-[150px] border rounded-lg p-2 bg-white shadow-sm text-[11px] relative"
+                  key={index}
+                  className="min-w-[200px] p-4 border rounded-xl bg-white text-center shadow-md"
                 >
-                  <Image
-                    src={item.image}
-                    alt={item.name}
-                    width={24}
-                    height={24}
-                    className="absolute top-2 left-2"
-                  />
-                  <div className="mt-8 font-medium">{item.name}</div>
-                  <div className="text-xs mt-1 text-black">{item.price}</div>
-                  <div
-                    className={`text-xs mt-1 ${
-                      item.change.startsWith("-")
-                        ? "text-red-500"
-                        : "text-green-600"
-                    }`}
-                  >
-                    {item.change}
+                  <p className="text-sm font-semibold mb-2">{item.name}</p>
+                  <div className="w-full h-20 flex items-center justify-center mb-2">
+                    <Image
+                      src={item.image}
+                      alt={item.name}
+                      width={60}
+                      height={60}
+                    />
+                  </div>
+                  <p className="text-sm text-black mb-2">{item.price}</p>
+                  <div className="flex justify-center items-center text-sm">
+                    <p
+                      className={`${
+                        item.change.startsWith("-")
+                          ? "text-red-500"
+                          : "text-green-500"
+                      }`}
+                    >
+                      {item.change}
+                    </p>
+                    <div className="ml-2 p-1 rounded-full bg-white shadow text-gray-400">
+                      <FaLink size={12} />
+                    </div>
                   </div>
                 </div>
               ))}
@@ -276,24 +288,30 @@ export default function FNOPAGE() {
                   name: "Tata Motors 29 May Fut",
                   price: "₹709.35",
                   change: "+26.90 (+3.94%)",
-                  image: "https://assets-netstorage.groww.in/stock-assets/logos2/TataMotors_19446492084_560.png",
-                },{
+                  image:
+                    "https://assets-netstorage.groww.in/stock-assets/logos2/TataMotors_19446492084_560.png",
+                },
+                {
                   name: "LT 29 May Fut",
                   price: "₹3,455.70",
                   change: "+26.90 (+3.94%)",
-                  image: "https://assets-netstorage.groww.in/stock-assets/logos2/LT.png",
-                },{
+                  image:
+                    "https://assets-netstorage.groww.in/stock-assets/logos2/LT.png",
+                },
+                {
                   name: "SBIN 29 May Fut",
                   price: "₹765.65",
                   change: "+10.30 (+1.36%)",
-                  image: "https://assets-netstorage.groww.in/stock-assets/logos2/SBIN.png",
-                },{
+                  image:
+                    "https://assets-netstorage.groww.in/stock-assets/logos2/SBIN.png",
+                },
+                {
                   name: "RELIANCE 29 May Fut",
                   price: "₹1,382.70",
                   change: "-26.20 (-1.86%)",
-                  image: "https://assets-netstorage.groww.in/stock-assets/logos2/RelianceInds_29114129325_476.png",
+                  image:
+                    "https://assets-netstorage.groww.in/stock-assets/logos2/RelianceInds_29114129325_476.png",
                 },
-               
               ].map((item, idx) => (
                 <div
                   key={idx}

@@ -68,7 +68,7 @@ const collection = [
 ];
 
 export default function Stocks() {
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
     <main className="min-h-screen bg-white text-gray-900 transition-colors">
