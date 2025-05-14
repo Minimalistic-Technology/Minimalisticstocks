@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
 import { Toaster } from 'react-hot-toast';
+import AuthWrapper from './auth-wrapper';
+
 // Import Poppins font
 const poppins = Poppins({
   variable: "--font-poppins",
@@ -23,8 +25,10 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head />
       <body className={`${poppins.variable} font-sans antialiased transition-colors bg-white dark:bg-gray-900`}>
+         <AuthWrapper>
+          {children}
+        </AuthWrapper> 
       <Toaster />
-        {children}
         <script
           dangerouslySetInnerHTML={{
             __html: `

@@ -1,5 +1,6 @@
 "use client";
 
+import IndicesSection from "../components/index/page";
 import Header from "../components/header/page";
 import Footer from "app/components/Footer";
 import Image from "next/image";
@@ -94,58 +95,7 @@ export default function FNOPAGE() {
       <div className="max-w-6xl mx-auto px-4 py-10 flex flex-row gap-8">
         <div className="w-3/5 space-y-12">
           {/* Indices */}
-          <section>
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-2xl font-bold">Indices</h2>
-              <a
-                href="#"
-                className="text-green-600 text-sm font-medium hover:underline"
-              >
-                All Indices
-              </a>
-            </div>
-            <div className="overflow-x-auto flex space-x-4 scrollbar-hide">
-              {[
-                {
-                  name: "Nifty",
-                  lasttraded: "24,008.00",
-                  daychange: "-294.40(1.21%)",
-                },
-                {
-                  name: "Sensex",
-                  lasttraded: "79,454.47",
-                  daychange: "-294.40(1.21%)",
-                },
-                {
-                  name: "BANKNIFTY",
-                  lasttraded: "53,732.00",
-                  daychange: "+150.25(0.65%)",
-                },
-                {
-                  name: "MIDCPNIFTY",
-                  lasttraded: "12,040.30",
-                  daychange: "+89.20(0.35%)",
-                },
-              ].map((fund, i) => (
-                <div
-                  key={i}
-                  className="min-w-[200px] rounded-lg border border-gray-200 shadow-sm hover:shadow-md p-4 bg-white transition"
-                >
-                  <p className="font-medium">{fund.name}</p>
-                  <p className="text-black text-sm">{fund.lasttraded}</p>
-                  <p
-                    className={`text-sm ${
-                      fund.daychange.startsWith("-")
-                        ? "text-red-500"
-                        : "text-green-500"
-                    }`}
-                  >
-                    {fund.daychange}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </section>
+         <IndicesSection />
 
           {/* Top Traded */}
           <section>

@@ -1,57 +1,371 @@
 "use client";
-import React from 'react';
-import Header from '../../components/header/page';
-import Footer from 'app/components/Footer';
+import StockFilterSectionLosers from "app/components/topLosers/page";
+import StockFilterSection from "app/components/topGainers/page";
+import IndicesSection from "app/components/index/page";
+import Header from "app/components/header/page";
+import Footer from "app/components/Footer";
+import Image from "next/image";
+import { FaLink } from "react-icons/fa";
+import { FiChevronDown } from "react-icons/fi";
+import { useState } from "react";
+import { FaPlus } from "react-icons/fa";
+import StockTable from "app/components/stockTable/page";
 
-const GrowwDashboard = () => {
+
+const collection = [
+  {
+    name: "Terminal",
+    icon: "https://storage.googleapis.com/groww-assets/web-assets/img/stock/products_terminal_light.svg",
+  },
+  {
+    name: "Events",
+    icon: "https://storage.googleapis.com/groww-assets/web-assets/img/stock/calendar_mint_light.svg",
+  },
+  {
+    name: "Intraday",
+    icon: "https://storage.googleapis.com/groww-assets/web-assets/img/stock/intraday_mint_light.svg",
+  },
+  {
+    name: "IPO",
+    icon: "https://storage.googleapis.com/groww-assets/web-assets/img/stock/ipo_mint_light.svg",
+  },
+  {
+    name: "Screener",
+    icon: "https://storage.googleapis.com/groww-assets/web-assets/img/stock/screener_mint_light.svg",
+  },
+];
+
+export default function Stocks() {
+  const [selectedTimeframe, setSelectedTimeframe] = useState("1 Day");
+
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-800 font-sans">
-      {/* Navbar */}
-      <Header/>
+    <main className="min-h-screen bg-white text-gray-900 transition-colors">
+      <Header />
 
-      {/* Main Content */}
-      <main className="p-6 space-y-10">
-        {/* Indices */}
-        <section>
-          <h2 className="text-xl font-semibold mb-4">Indices</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {[
-              { name: 'NIFTY', value: '24,414.40', change: '+34.80 (0.14%)' },
-              { name: 'SENSEX', value: '80,746.78', change: '+105.71 (0.13%)' },
-              { name: 'BANKNIFTY', value: '54,610.90', change: '+339.50 (0.63%)' },
-              { name: 'MIDCAP', value: '12,265.10', change: '+89.20 (0.73%)' }
-            ].map(index => (
-              <div key={index.name} className="p-4 bg-white rounded shadow">
-                <div className="text-sm text-gray-500">{index.name}</div>
-                <div className="text-lg font-bold">{index.value}</div>
-                <div className="text-green-600 text-sm">{index.change}</div>
-              </div>
-            ))}
-          </div>
-        </section>
+      <div className="max-w-6xl mx-auto px-4 py-10 flex flex-row gap-8">
+        <div className="w-3/5 space-y-12">
+          {/* Indices */}
+          <IndicesSection />
 
-        {/* Investments */}
-        <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <h2 className="text-xl font-semibold mb-4">Most traded on Groww</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+          {/* Most Traded on Groww*/}
+          <section>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-2xl font-bold">Most Traded on Groww</h2>
+              <a
+                href="#"
+                className="text-green-600 text-sm font-medium hover:underline"
+              >
+                See More
+              </a>
+            </div>
+            <div className="flex space-x-4 overflow-x-auto scrollbar-hide">
               {[
-                { name: 'BSE', price: '₹6,652.50', change: '+407.50 (6.53%)' },
-                { name: 'Welspun Living', price: '₹134.98', change: '+14.49 (12.03%)' },
-                { name: 'CCL Products India', price: '₹772.60', change: '+78.15 (11.25%)' },
-                { name: 'Mazagon Dock Ship', price: '₹2,816.20', change: '-156.40 (5.26%)', red: true }
-              ].map(stock => (
-                <div key={stock.name} className="p-4 bg-white rounded shadow text-center">
-                  <div className="text-sm font-medium">{stock.name}</div>
-                  <div className="text-lg font-bold">{stock.price}</div>
-                  <div className={stock.red ? 'text-red-500' : 'text-green-600'}>
-                    {stock.change}
+                {
+                  name: "BSE",
+                  price: "₹7,315.50",
+                  change: "+360 (5.18%)",
+                  image:
+                    "https://assets-netstorage.groww.in/stock-assets/logos2/BSELtd_11315994_21236.png",
+                },
+                {
+                  name: "Bharat Dynamics",
+                  price: "₹1,746.70",
+                  change: "176.80 (11.26%)",
+                  image:
+                    "https://assets-netstorage.groww.in/stock-assets/logos2/BDL.png",
+                },
+                {
+                  name: "Tanla Platforms",
+                  price: "₹557.35",
+                  change: "62.90 (12.72%)",
+                  image:
+                    "https://assets-netstorage.groww.in/stock-assets/logos2/TanlaSolutions_48102096060_24392.png",
+                },
+                {
+                  name: "Mazagon Dock Ship",
+                  price: "₹3,002.60",
+                  change: "98.20 (3.38%)",
+                  image:
+                    "https://assets-netstorage.groww.in/stock-assets/logos2/MAZDOCK.png",
+                },
+              ].map((item, idx) => (
+                <div
+                  key={idx}
+                  className="w-[150px] h-[150px] border rounded-lg p-2 bg-white shadow-sm text-[11px] relative"
+                >
+                  <Image
+                    src={item.image}
+                    alt={item.name}
+                    width={24}
+                    height={24}
+                    className="absolute top-2 left-2"
+                  />
+                  <div className="mt-8 font-medium">{item.name}</div>
+                  <div className="text-xs mt-1 text-black">{item.price}</div>
+                  <div
+                    className={`text-xs mt-1 ${
+                      item.change.startsWith("-")
+                        ? "text-red-500"
+                        : "text-green-600"
+                    }`}
+                  >
+                    {item.change}
                   </div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* Product and Tools */}
+          <div>
+            <h2 className="text-2xl font-bold mb-6">Product & Tools</h2>
+            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4">
+              {collection.map((item) => (
+                <div
+                  key={item.name}
+                  className="flex flex-col items-center text-center"
+                >
+                  <div className="w-16 h-16 mb-2">
+                    <Image
+                      src={item.icon}
+                      alt={item.name}
+                      width={64}
+                      height={64}
+                    />
+                  </div>
+                  <span className="text-sm pt-6 font-medium">{item.name}</span>
                 </div>
               ))}
             </div>
           </div>
 
+          {/* Top Gainers */}
+          <section>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-2xl font-bold">Top Gainers</h2>
+              <a
+                href="#"
+                className="text-green-600 text-sm font-medium hover:underline"
+              >
+                See More
+              </a>
+            </div>
+
+            {/* Filter Bar */}
+            <StockFilterSection></StockFilterSection>
+          </section>
+
+          {/* Most Traded on MTF*/}
+          <section>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-2xl font-bold">Most Traded on MTF</h2>
+              <a
+                href="#"
+                className="text-green-600 text-sm font-medium hover:underline"
+              >
+                See More
+              </a>
+            </div>
+            <div className="flex space-x-4 overflow-x-auto scrollbar-hide">
+              {[
+                {
+                  name: "Dr Lal PAthLabs",
+                  price: "₹2,779.80",
+                  change: "-27.30 (0.97%)",
+                  image:
+                    "https://assets-netstorage.groww.in/stock-assets/logos2/DrLalPathlabs_70043015965_41261.png",
+                },
+                {
+                  name: "Bharat Dynamics",
+                  price: "₹1,746.70",
+                  change: "176.80 (11.26%)",
+                  image:
+                    "https://assets-netstorage.groww.in/stock-assets/logos2/BDL.png",
+                },
+                {
+                  name: "Swiggy",
+                  price: "₹310.55",
+                  change: "-9.75 (3.04%)",
+                  image:
+                    "https://assets-netstorage.groww.in/stock-assets/logos2/SWIGGY.png",
+                },
+                {
+                  name: "Infosys",
+                  price: "₹1,568.60",
+                  change: "-58.30 (3.58%)",
+                  image:
+                    "https://assets-netstorage.groww.in/stock-assets/logos2/INFY.png",
+                },
+              ].map((item, idx) => (
+                <div
+                  key={idx}
+                  className="w-[150px] h-[150px] border rounded-lg p-2 bg-white shadow-sm text-[11px] relative"
+                >
+                  <Image
+                    src={item.image}
+                    alt={item.name}
+                    width={24}
+                    height={24}
+                    className="absolute top-2 left-2"
+                  />
+                  <div className="mt-8 font-medium">{item.name}</div>
+                  <div className="text-xs mt-1 text-black">{item.price}</div>
+                  <div
+                    className={`text-xs mt-1 ${
+                      item.change.startsWith("-")
+                        ? "text-red-500"
+                        : "text-green-600"
+                    }`}
+                  >
+                    {item.change}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <section>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-2xl font-bold">Stocks in News</h2>
+              <a
+                href="#"
+                className="text-green-600 text-sm font-medium hover:underline"
+              >
+                See More
+              </a>
+            </div>
+            <div className="flex space-x-4 overflow-x-auto scrollbar-hide">
+              {[
+                {
+                  name: "Jyothy Labs",
+                  price: "₹336.20",
+                  change: "-14.60 (4.16%)",
+                  image:
+                    "https://assets-netstorage.groww.in/stock-assets/logos2/JyothyLab_50398716670_14775.png",
+                },
+                {
+                  name: "Tata Motors",
+                  price: "₹707.70",
+                  change: "-13.10 (1.82%)",
+                  image:
+                    "https://assets-netstorage.groww.in/stock-assets/logos2/TataMotors_19446492084_560.png",
+                },
+                {
+                  name: "NIIT",
+                  price: "₹137.02",
+                  change: "0.55 (0.40%)",
+                  image:
+                    "https://assets-netstorage.groww.in/stock-assets/logos2/NIIT_15700905793_2771.png",
+                },
+                {
+                  name: "Yes Bank",
+                  price: "₹20.87",
+                  change: "0.46 (2.25%)",
+                  image:
+                    "https://assets-netstorage.groww.in/stock-assets/logos2/YESBANK(1).png",
+                },
+              ].map((item, idx) => (
+                <div
+                  key={idx}
+                  className="w-[150px] h-[150px] border rounded-lg p-2 bg-white shadow-sm text-[11px] relative"
+                >
+                  <Image
+                    src={item.image}
+                    alt={item.name}
+                    width={24}
+                    height={24}
+                    className="absolute top-2 left-2"
+                  />
+                  <div className="mt-8 font-medium">{item.name}</div>
+                  <div className="text-xs mt-1 text-black">{item.price}</div>
+                  <div
+                    className={`text-xs mt-1 ${
+                      item.change.startsWith("-")
+                        ? "text-red-500"
+                        : "text-green-600"
+                    }`}
+                  >
+                    {item.change}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* Top Losers */}
+          <section>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-2xl font-bold">Top Losers</h2>
+              <a
+                href="#"
+                className="text-green-600 text-sm font-medium hover:underline"
+              >
+                See More
+              </a>
+            </div>
+
+            {/* Filter Bar */}
+            <StockFilterSectionLosers></StockFilterSectionLosers>
+          </section>
+
+          {/* Top Sectors */}
+
+          <section>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-2xl font-bold">Top Sectors</h2>
+              <a
+                href="#"
+                className="text-green-600 text-sm font-medium hover:underline"
+              >
+                See More
+              </a>
+            </div>
+
+            <div className="flex flex-wrap gap-3">
+              {[
+                { name: "Energy", count: 99 },
+                { name: "Healthcare", count: 235 },
+                { name: "FMCG", count: 222 },
+                { name: "Automobile", count: 145 },
+                { name: "Tele-Communication", count: 47 },
+                { name: "Media & Entertainment", count: 105 },
+              ].map((sector, index) => (
+                <button
+                  key={index}
+                  className="flex items-center border border-gray-300 rounded-md px-4 py-2 bg-white shadow-sm space-x-2 text-sm"
+                >
+                  <span className="text-gray-800 font-medium">
+                    {sector.name}
+                  </span>
+                  <span className="text-gray-400 font-light">|</span>
+                  <span className="text-green-500 font-semibold">
+                    {sector.count}
+                  </span>
+                </button>
+              ))}
+            </div>
+          </section>
+
+          <section>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-2xl font-bold">Top by Market Cap</h2>
+              <a
+                href="#"
+                className="text-green-600 text-sm font-medium hover:underline"
+              >
+                See More
+              </a>
+            </div>
+
+            <div className="w-full max-w-4xl mx-auto">
+             <StockTable></StockTable>
+              
+            </div>
+          </section>
+        </div>
+
+        {/* Right Sidebar */}
+        <div className="max-w-sm w-full bg-white rounded-xl p-6 text-center shadow-sm max-h-100">
           <div>
             <h2 className="text-xl font-semibold mb-4">Your Investments</h2>
             <div className="p-4 bg-white rounded shadow">
@@ -76,7 +390,9 @@ const GrowwDashboard = () => {
                     <div className="font-medium">Sandip's Watchlist</div>
                     <div className="text-sm text-gray-500">5 items</div>
                   </div>
-                  <button className="text-green-600 font-semibold">View all</button>
+                  <button className="text-green-600 font-semibold">
+                    View all
+                  </button>
                 </div>
                 <button className="mt-4 flex items-center text-green-600 font-semibold">
                   <span className="text-xl mr-2">＋</span>Create new watchlist
@@ -84,11 +400,10 @@ const GrowwDashboard = () => {
               </div>
             </div>
           </div>
-        </section>
-      </main>
-      <Footer/>
-    </div>
-  );
-};
+        </div>
+      </div>
 
-export default GrowwDashboard;
+      <Footer />
+    </main>
+  );
+}
