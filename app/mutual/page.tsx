@@ -1,8 +1,17 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Header from "../components/header/page";
 import Footer from "app/components/Footer";
 import Image from "next/image";
+
+type Fund = {
+  _id: string;
+  name: string;
+  img: string;
+  return: string;
+};
+
 
 const collections = [
   {
@@ -32,6 +41,23 @@ const collections = [
 ];
 
 export default function MutualPage() {
+
+   const [funds, setFunds] = useState<Fund[]>([]);
+
+  useEffect(() => {
+    const fetchFunds = async () => {
+      try {
+        const res = await fetch("http://localhost:5000/api/popular-funds/get");
+        const data = await res.json();
+        setFunds(data);
+      } catch (error) {
+        console.error("Error fetching popular funds:", error);
+      }
+    };
+
+    fetchFunds();
+  }, []);
+
   return (
     <main className="min-h-screen bg-white text-gray-900 transition-colors">
       <Header />
@@ -40,58 +66,38 @@ export default function MutualPage() {
       <div className="max-w-6xl mx-auto px-4 py-10 space-y-14">
         {/* Popular Funds */}
         <section>
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-2xl font-bold">Popular Funds</h2>
-            <a
-              href="#"
-              className="text-green-600 text-sm font-medium hover:underline"
-            >
-              All Mutual Funds
-            </a>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-            {[
-              {
-                name: "HDFC",
-                img: "https://assets-netstorage.groww.in/mf-assets/logos/hdfc_groww.png",
-                return: "25.0%",
-              },
-              {
-                name: "Nippon India Large Cap Fund",
-                img: "https://assets-netstorage.groww.in/mf-assets/logos/reliance_groww.png",
-                return: "22.1%",
-              },
-              {
-                name: "Groww Value Fund",
-                img: "https://assets-netstorage.groww.in/mf-assets/logos/indiabulls_groww.png",
-                return: "18.5%",
-              },
-              {
-                name: "SBI Gold Fund",
-                img: "https://assets-netstorage.groww.in/mf-assets/logos/sbi_groww.png",
-                return: "22.3%",
-              },
-            ].map((fund, i) => (
-              <div
-                key={i}
-                className="rounded-lg border border-gray-200 shadow-sm hover:shadow-md p-4 bg-white transition"
-              >
-                <Image
-                  src={fund.img}
-                  alt={fund.name}
-                  width={32}
-                  height={32}
-                  className="mb-2"
-                />
-                <h3 className="font-medium text-gray-800">{fund.name}</h3>
-                <p className="mt-2 text-lg font-semibold">
-                  {fund.return}{" "}
-                  <span className="text-gray-500 text-sm">(3Y)</span>
-                </p>
-              </div>
-            ))}
-          </div>
-        </section>
+  <div className="flex items-center justify-between mb-4">
+    <h2 className="text-2xl font-bold">Popular Funds</h2>
+    <a
+      href="#"
+      className="text-green-600 text-sm font-medium hover:underline"
+    >
+      All Mutual Funds
+    </a>
+  </div>
+  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+    {funds.slice(0, 4).map((fund) => (
+      <div
+        key={fund._id}
+        className="rounded-lg border border-gray-200 shadow-sm hover:shadow-md p-4 bg-white transition"
+      >
+        <Image
+          src={fund.img}
+          alt={fund.name}
+          width={32}
+          height={32}
+          className="mb-2"
+        />
+        <h3 className="font-medium text-gray-800">{fund.name}</h3>
+        <p className="mt-2 text-lg font-semibold">
+          {fund.return}{" "}
+          <span className="text-gray-500 text-sm">(3Y)</span>
+        </p>
+      </div>
+    ))}
+  </div>
+</section>
+
 
         {/* Collections */}
         <div>
