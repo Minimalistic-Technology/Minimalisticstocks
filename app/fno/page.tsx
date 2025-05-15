@@ -8,113 +8,94 @@ import { FaLink } from "react-icons/fa";
 import { FiChevronDown } from "react-icons/fi";
 import { useState, useEffect } from "react";
 
-const collections = [
-  {
-    name: "Nifty 50",
-    icon: "https://static.vecteezy.com/system/resources/previews/026/267/859/non_2x/stock-market-bar-graph-candlestick-chart-finance-trade-data-illustration-free-vector.jpg",
-    lasttraded: "24,008.00",
-    daychange: "-294.40(1.21%)",
-  },
-  {
-    name: "Ben Sensex",
-    icon: "https://static.vecteezy.com/system/resources/previews/026/267/859/non_2x/stock-market-bar-graph-candlestick-chart-finance-trade-data-illustration-free-vector.jpg",
-    lasttraded: "79,454.47",
-    daychange: "-294.40(1.21%)",
-  },
-  {
-    name: "Tata Motors",
-    icon: "https://static.vecteezy.com/system/resources/previews/026/267/859/non_2x/stock-market-bar-graph-candlestick-chart-finance-trade-data-illustration-free-vector.jpg",
-    lasttraded: "708.50",
-    daychange: "-294.40(1.21%)",
-  },
-  {
-    name: "L&T",
-    icon: "https://static.vecteezy.com/system/resources/previews/026/267/859/non_2x/stock-market-bar-graph-candlestick-chart-finance-trade-data-illustration-free-vector.jpg",
-    lasttraded: "3,443.90",
-    daychange: "-294.40(1.21%)",
-  },
-  {
-    name: "NIFTY Bank",
-    icon: "https://static.vecteezy.com/system/resources/previews/026/267/859/non_2x/stock-market-bar-graph-candlestick-chart-finance-trade-data-illustration-free-vector.jpg",
-    lasttraded: "53,732.00",
-    daychange: "-294.40(1.21%)",
-  },
-  {
-    name: "SBI",
-    icon: "https://static.vecteezy.com/system/resources/previews/026/267/859/non_2x/stock-market-bar-graph-candlestick-chart-finance-trade-data-illustration-free-vector.jpg",
-    lasttraded: "779.25",
-    daychange: "-294.40(1.21%)",
-  },
-];
-
-const stockData = [
-  {
-    name: "Yes Bank",
-    icon: "https://assets-netstorage.groww.in/stock-assets/logos2/YESBANK(1).png",
-    price: "20.02",
-    change: "+25.20(1.05%)",
-    volume: "72,80,05,272",
-  },
-  {
-    name: "Union Bank",
-    icon: "https://assets-netstorage.groww.in/stock-assets/logos2/UnionBankI_88937846814_5493.png",
-    price: "122.90",
-    change: "-18.50(0.54%)",
-    volume: "6,29,27,788",
-  },
-  {
-    name: "Bharat Forge",
-    icon: "https://assets-netstorage.groww.in/stock-assets/logos2/BHARATFORG.png",
-    price: "1,460.00",
-    change: "+10.00(0.69%)",
-    volume: "9,23,45,111",
-  },
-  {
-    name: "Titan",
-    icon: "https://assets-netstorage.groww.in/stock-assets/logos2/TitanCompany_20146423894_1016.png",
-    price: "1,165.60",
-    change: "+5.30(0.34%)",
-    volume: "55,31,033",
-  },
-  {
-    name: "UPL",
-    icon: "https://assets-netstorage.groww.in/stock-assets/logos2/UPL_77209428989_2461.png",
-    price: "3150.30",
-    change: "-2.75(0.66%)",
-    volume: "28,63,992",
-  },
-];
-
-type FutureItem = {
-  _id: string;
-  name: string;
-  price: string;
-  change: string;
-  image: string;
-  createdAt: string;
-  updatedAt: string;
-  __v: number;
-};
-
-
 export default function FNOPAGE() {
   const [selectedTimeframe, setSelectedTimeframe] = useState("1 Day");
- const [futuresData, setFuturesData] = useState<FutureItem[]>([]);
+  const [topIndexFutures, setTopIndexFutures] = useState<
+    { name: string; price: string; change: string; image: string }[]
+  >([]);
+  const [topStockFutures, setTopStockFutures] = useState<
+    { name: string; price: string; change: string; image: string }[]
+  >([]);
+  const [stockData, setStockData] = useState<
+    {
+      name: string;
+      icon: string;
+      price: string;
+      change: string;
+      volume: string;
+    }[]
+  >([]);
+  const [collections, setCollections] = useState<
+    {
+      name: string;
+      icon: string;
+      lasttraded: string;
+      daychange: string;
+    }[]
+  >([]);
 
+  // Fetch Top Traded data
+  useEffect(() => {
+    const fetchCollections = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/api/stocks/gett");
+        const data = await response.json();
+        setCollections(data);
+      } catch (error) {
+        console.error("Error fetching Top Traded:", error);
+      }
+    };
 
+    fetchCollections();
+  }, []);
+
+  // Fetch Top Traded Index Futures data
   useEffect(() => {
     const fetchTopIndexFutures = async () => {
       try {
-        const res = await fetch(
+        const response = await fetch(
           "http://localhost:5000/api/stocks/getTopIndexFutures"
         );
-        const data: FutureItem[] = await res.json();
-        setFuturesData(data);
+        const data = await response.json();
+        setTopIndexFutures(data);
       } catch (error) {
         console.error("Error fetching Top Index Futures:", error);
       }
     };
+
     fetchTopIndexFutures();
+  }, []);
+
+  // Fetch Top Traded Stock Futures data
+  useEffect(() => {
+    const fetchTopStockFutures = async () => {
+      try {
+        const response = await fetch(
+          "http://localhost:5000/api/stocks/getTopStockFutures"
+        );
+        const data = await response.json();
+        setTopStockFutures(data);
+      } catch (error) {
+        console.error("Error fetching Top Stock Futures:", error);
+      }
+    };
+
+    fetchTopStockFutures();
+  }, []);
+
+  // Fetch F&O Stocks data
+  useEffect(() => {
+    const fetchStockData = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/api/stocks/get");
+        const data = await response.json();
+        setStockData(data);
+      } catch (error) {
+        console.error("Error fetching F&O Stocks:", error);
+      }
+    };
+
+    fetchStockData();
   }, []);
 
   return (
@@ -138,37 +119,41 @@ export default function FNOPAGE() {
               </a>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-              {collections.map((item, i) => (
-                <div
-                  key={i}
-                  className="p-4 border rounded-xl bg-white text-center shadow-md"
-                >
-                  <p className="text-sm font-semibold mb-2">{item.name}</p>
-                  <div className="w-full h-20 flex items-center justify-center mb-2">
-                    <Image
-                      src={item.icon}
-                      alt={item.name}
-                      width={60}
-                      height={60}
-                    />
-                  </div>
-                  <p className="text-sm text-black mb-2">{item.lasttraded}</p>
-                  <div className="flex justify-center items-center text-sm">
-                    <p
-                      className={`${
-                        item.daychange.startsWith("-")
-                          ? "text-red-500"
-                          : "text-green-500"
-                      }`}
-                    >
-                      {item.daychange}
-                    </p>
-                    <div className="ml-2 p-1 rounded-full bg-white shadow text-gray-400">
-                      <FaLink size={12} />
+              {collections.length > 0 ? (
+                collections.map((item, i) => (
+                  <div
+                    key={i}
+                    className="p-4 border rounded-xl bg-white text-center shadow-md"
+                  >
+                    <p className="text-sm font-semibold mb-2">{item.name}</p>
+                    <div className="w-full h-20 flex items-center justify-center mb-2">
+                      <Image
+                        src={item.icon}
+                        alt={item.name}
+                        width={60}
+                        height={60}
+                      />
+                    </div>
+                    <p className="text-sm text-black mb-2">{item.lasttraded}</p>
+                    <div className="flex justify-center items-center text-sm">
+                      <p
+                        className={`${
+                          item.daychange.startsWith("-")
+                            ? "text-red-500"
+                            : "text-green-500"
+                        }`}
+                      >
+                        {item.daychange}
+                      </p>
+                      <div className="ml-2 p-1 rounded-full bg-white shadow text-gray-400">
+                        <FaLink size={12} />
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))
+              ) : (
+                <p>Loading Top Traded...</p>
+              )}
             </div>
           </section>
 
@@ -207,33 +192,37 @@ export default function FNOPAGE() {
                 <span>1D Change</span>
                 <span>Volume</span>
               </div>
-              {stockData.map((stock, index) => (
-                <div
-                  key={index}
-                  className="grid grid-cols-4 items-center text-sm py-2 border-b"
-                >
-                  <div className="flex items-center space-x-2">
-                    <Image
-                      src={stock.icon}
-                      alt={stock.name}
-                      width={24}
-                      height={24}
-                    />
-                    <span>{stock.name}</span>
-                  </div>
-                  <span>₹{stock.price}</span>
-                  <span
-                    className={
-                      stock.change.startsWith("-")
-                        ? "text-red-500"
-                        : "text-green-600"
-                    }
+              {stockData.length > 0 ? (
+                stockData.map((stock, index) => (
+                  <div
+                    key={index}
+                    className="grid grid-cols-4 items-center text-sm py-2 border-b"
                   >
-                    {stock.change}
-                  </span>
-                  <span>{stock.volume}</span>
-                </div>
-              ))}
+                    <div className="flex items-center space-x-2">
+                      <Image
+                        src={stock.icon}
+                        alt={stock.name}
+                        width={24}
+                        height={24}
+                      />
+                      <span>{stock.name}</span>
+                    </div>
+                    <span>₹{stock.price}</span>
+                    <span
+                      className={
+                        stock.change.startsWith("-")
+                          ? "text-red-500"
+                          : "text-green-600"
+                      }
+                    >
+                      {stock.change}
+                    </span>
+                    <span>{stock.volume}</span>
+                  </div>
+                ))
+              ) : (
+                <p>Loading F&O Stocks...</p>
+              )}
             </div>
           </section>
 
@@ -243,37 +232,35 @@ export default function FNOPAGE() {
               <h2 className="text-2xl font-bold">Top Traded Index Futures</h2>
             </div>
             <div className="flex space-x-4 overflow-x-auto scrollbar-hide">
-              {futuresData.map((item, index) => (
-                <div
-                  key={index}
-                  className="min-w-[200px] p-4 border rounded-xl bg-white text-center shadow-md"
-                >
-                  <p className="text-sm font-semibold mb-2">{item.name}</p>
-                  <div className="w-full h-20 flex items-center justify-center mb-2">
+              {topIndexFutures.length > 0 ? (
+                topIndexFutures.map((item, idx) => (
+                  <div
+                    key={idx}
+                    className="w-[150px] h-[150px] border rounded-lg p-2 bg-white shadow-sm text-[11px] relative"
+                  >
                     <Image
                       src={item.image}
                       alt={item.name}
-                      width={60}
-                      height={60}
+                      width={24}
+                      height={24}
+                      className="absolute top-2 left-2"
                     />
-                  </div>
-                  <p className="text-sm text-black mb-2">{item.price}</p>
-                  <div className="flex justify-center items-center text-sm">
-                    <p
-                      className={`${
+                    <div className="mt-8 font-medium">{item.name}</div>
+                    <div className="text-xs mt-1 text-black">{item.price}</div>
+                    <div
+                      className={`text-xs mt-1 ${
                         item.change.startsWith("-")
                           ? "text-red-500"
-                          : "text-green-500"
+                          : "text-green-600"
                       }`}
                     >
                       {item.change}
-                    </p>
-                    <div className="ml-2 p-1 rounded-full bg-white shadow text-gray-400">
-                      <FaLink size={12} />
                     </div>
                   </div>
-                </div>
-              ))}
+                ))
+              ) : (
+                <p>Loading Top Index Futures...</p>
+              )}
             </div>
           </section>
 
@@ -283,60 +270,35 @@ export default function FNOPAGE() {
               <h2 className="text-2xl font-bold">Top Traded Stock Futures</h2>
             </div>
             <div className="flex space-x-4 overflow-x-auto scrollbar-hide">
-              {[
-                {
-                  name: "Tata Motors 29 May Fut",
-                  price: "₹709.35",
-                  change: "+26.90 (+3.94%)",
-                  image:
-                    "https://assets-netstorage.groww.in/stock-assets/logos2/TataMotors_19446492084_560.png",
-                },
-                {
-                  name: "LT 29 May Fut",
-                  price: "₹3,455.70",
-                  change: "+26.90 (+3.94%)",
-                  image:
-                    "https://assets-netstorage.groww.in/stock-assets/logos2/LT.png",
-                },
-                {
-                  name: "SBIN 29 May Fut",
-                  price: "₹765.65",
-                  change: "+10.30 (+1.36%)",
-                  image:
-                    "https://assets-netstorage.groww.in/stock-assets/logos2/SBIN.png",
-                },
-                {
-                  name: "RELIANCE 29 May Fut",
-                  price: "₹1,382.70",
-                  change: "-26.20 (-1.86%)",
-                  image:
-                    "https://assets-netstorage.groww.in/stock-assets/logos2/RelianceInds_29114129325_476.png",
-                },
-              ].map((item, idx) => (
-                <div
-                  key={idx}
-                  className="w-[150px] h-[150px] border rounded-lg p-2 bg-white shadow-sm text-[11px] relative"
-                >
-                  <Image
-                    src={item.image}
-                    alt={item.name}
-                    width={24}
-                    height={24}
-                    className="absolute top-2 left-2"
-                  />
-                  <div className="mt-8 font-medium">{item.name}</div>
-                  <div className="text-xs mt-1 text-black">{item.price}</div>
+              {topStockFutures.length > 0 ? (
+                topStockFutures.map((item, idx) => (
                   <div
-                    className={`text-xs mt-1 ${
-                      item.change.startsWith("-")
-                        ? "text-red-500"
-                        : "text-green-600"
-                    }`}
+                    key={idx}
+                    className="w-[150px] h-[150px] border rounded-lg p-2 bg-white shadow-sm text-[11px] relative"
                   >
-                    {item.change}
+                    <Image
+                      src={item.image}
+                      alt={item.name}
+                      width={24}
+                      height={24}
+                      className="absolute top-2 left-2"
+                    />
+                    <div className="mt-8 font-medium">{item.name}</div>
+                    <div className="text-xs mt-1 text-black">{item.price}</div>
+                    <div
+                      className={`text-xs mt-1 ${
+                        item.change.startsWith("-")
+                          ? "text-red-500"
+                          : "text-green-600"
+                      }`}
+                    >
+                      {item.change}
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))
+              ) : (
+                <p>Loading Top Stock Futures...</p>
+              )}
             </div>
           </section>
         </div>

@@ -5,9 +5,10 @@ import IndicesSection from "app/components/index/page";
 import Header from "app/components/header/page";
 import Footer from "app/components/Footer";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import StockTable from "app/components/stockTable/page";
 import Link from "next/link";
+
 const stocks = [
   {
     name: "Tata Motors",
@@ -41,31 +42,121 @@ const stocks = [
   },
 ];
 
-const collection = [
-  {
-    name: "Terminal",
-    icon: "https://storage.googleapis.com/groww-assets/web-assets/img/stock/products_terminal_light.svg",
-  },
-  {
-    name: "Events",
-    icon: "https://storage.googleapis.com/groww-assets/web-assets/img/stock/calendar_mint_light.svg",
-  },
-  {
-    name: "Intraday",
-    icon: "https://storage.googleapis.com/groww-assets/web-assets/img/stock/intraday_mint_light.svg",
-  },
-  {
-    name: "IPO",
-    icon: "https://storage.googleapis.com/groww-assets/web-assets/img/stock/ipo_mint_light.svg",
-  },
-  {
-    name: "Screener",
-    icon: "https://storage.googleapis.com/groww-assets/web-assets/img/stock/screener_mint_light.svg",
-  },
-];
-
 export default function Stocks() {
   const [isOpen, setIsOpen] = useState(false);
+  type ProductTool = { name: string; icon: string };
+  const [productTools, setProductTools] = useState<ProductTool[]>([]);
+  type StocksInNewsItem = { name: string; price: string; change: string; image: string };
+  const [stocksInNews, setStocksInNews] = useState<StocksInNewsItem[]>([]);
+  type MostTradedMTFItem = { name: string; price: string; change: string; image: string };
+  const [mostTradedMTF, setMostTradedMTF] = useState<MostTradedMTFItem[]>([]);
+  const [isLoading, setIsLoading] = useState({ 
+    productTools: true, 
+    stocksInNews: true, 
+    mostTradedMTF: true 
+  });
+  const [error, setError] = useState<{
+    productTools: string | null;
+    stocksInNews: string | null;
+    mostTradedMTF: string | null;
+  }>({
+    productTools: null,
+    stocksInNews: null,
+    mostTradedMTF: null,
+  });
+
+  // Fetch Product & Tools data
+  useEffect(() => {
+    const fetchProductTools = async () => {
+      try {
+        setIsLoading((prev) => ({ ...prev, productTools: true }));
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000); // 5s timeout
+        const response = await fetch("http://localhost:5000/api/stocks/producttools/get", {
+          signal: controller.signal,
+        });
+        clearTimeout(timeoutId);
+        if (!response.ok) {
+          throw new Error("Failed to fetch Product & Tools");
+        }
+        const data = await response.json();
+        setProductTools(data);
+        setError((prev) => ({ ...prev, productTools: null }));
+      } catch (error) {
+        console.error("Error fetching Product & Tools:", error);
+        setError((prev) => ({
+          ...prev,
+          productTools: error instanceof Error ? error.message : String(error),
+        }));
+      } finally {
+        setIsLoading((prev) => ({ ...prev, productTools: false }));
+      }
+    };
+
+    fetchProductTools();
+  }, []);
+
+  // Fetch Stocks in News data
+  useEffect(() => {
+    const fetchStocksInNews = async () => {
+      try {
+        setIsLoading((prev) => ({ ...prev, stocksInNews: true }));
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000); // 5s timeout
+        const response = await fetch("http://localhost:5000/api/stocks/producttools/getnews", {
+          signal: controller.signal,
+        });
+        clearTimeout(timeoutId);
+        if (!response.ok) {
+          throw new Error("Failed to fetch Stocks in News");
+        }
+        const data = await response.json();
+        setStocksInNews(data);
+        setError((prev) => ({ ...prev, stocksInNews: null }));
+      } catch (error) {
+        console.error("Error fetching Stocks in News:", error);
+        setError((prev) => ({
+          ...prev,
+          stocksInNews: error instanceof Error ? error.message : String(error),
+        }));
+      } finally {
+        setIsLoading((prev) => ({ ...prev, stocksInNews: false }));
+      }
+    };
+
+    fetchStocksInNews();
+  }, []);
+
+  // Fetch Most Traded on MTF data
+  useEffect(() => {
+    const fetchMostTradedMTF = async () => {
+      try {
+        setIsLoading((prev) => ({ ...prev, mostTradedMTF: true }));
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000); // 5s timeout
+        const response = await fetch("http://localhost:5000/api/stocks/producttools/getmtf", {
+          signal: controller.signal,
+        });
+        clearTimeout(timeoutId);
+        if (!response.ok) {
+          throw new Error("Failed to fetch Most Traded on MTF");
+        }
+        const data = await response.json();
+        setMostTradedMTF(data);
+        setError((prev) => ({ ...prev, mostTradedMTF: null }));
+      } catch (error) {
+        console.error("Error fetching Most Traded on MTF:", error);
+        setError((prev) => ({
+          ...prev,
+          mostTradedMTF: error instanceof Error ? error.message : String(error),
+        }));
+      } finally {
+        setIsLoading((prev) => ({ ...prev, mostTradedMTF: false }));
+      }
+    };
+
+    fetchMostTradedMTF();
+  }, []);
 
   return (
     <main className="min-h-screen bg-white text-gray-900 transition-colors">
@@ -118,7 +209,7 @@ export default function Stocks() {
                     "https://assets-netstorage.groww.in/stock-assets/logos2/MAZDOCK.png",
                 },
               ].map((item, idx) => (
-                <Link href={`/buystock`} key={idx}>
+                <Link href={`/buystock/${encodeURIComponent(item.name)}`} key={idx}>
                 <div
                   key={idx}
                   className="w-[150px] h-[150px] border rounded-lg p-2 bg-white shadow-sm text-[11px] relative"
@@ -149,30 +240,34 @@ export default function Stocks() {
 
           {/* Product and Tools */}
           <div>
-  <h2 className="text-2xl font-bold mb-6">Product & Tools</h2>
-  <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-6">
-    {collection.map((item) => (
-      <div
-        key={item.name}
-        className="flex flex-col items-center text-center"
-      >
-        {/* Smaller image with padding */}
-        <div className="w-12 h-12 mb-12 relative">
-          <Image
-            src={item.icon}
-            alt={item.name}
-            width={48}
-            height={48}
-            className="object-contain"
-          />
-        </div>
-        {/* Spacing and wrapping for text */}
-        <span className="text-sm font-medium text-gray-700 break-words text-center">{item.name}</span>
-      </div>
-    ))}
-  </div>
-</div>
-
+            <h2 className="text-2xl font-bold mb-6">Product & Tools</h2>
+            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4">
+              {isLoading.productTools ? (
+                <p>Loading Product & Tools...</p>
+              ) : error.productTools ? (
+                <p className="text-red-500">Error: {error.productTools}</p>
+              ) : productTools.length > 0 ? (
+                productTools.map((item) => (
+                  <div
+                    key={item.name}
+                    className="flex flex-col items-center text-center"
+                  >
+                    <div className="w-16 h-16 mb-2">
+                      <Image
+                        src={item.icon}
+                        alt={item.name}
+                        width={64}
+                        height={64}
+                      />
+                    </div>
+                    <span className="text-sm pt-6 font-medium">{item.name}</span>
+                  </div>
+                ))
+              ) : (
+                <p>No Product & Tools available.</p>
+              )}
+            </div>
+          </div>
 
           {/* Top Gainers */}
           <section>
@@ -202,63 +297,43 @@ export default function Stocks() {
               </a>
             </div>
             <div className="flex space-x-4 overflow-x-auto scrollbar-hide">
-              {[
-                {
-                  name: "Dr Lal PAthLabs",
-                  price: "₹2,779.80",
-                  change: "-27.30 (0.97%)",
-                  image:
-                    "https://assets-netstorage.groww.in/stock-assets/logos2/DrLalPathlabs_70043015965_41261.png",
-                },
-                {
-                  name: "Bharat Dynamics",
-                  price: "₹1,746.70",
-                  change: "176.80 (11.26%)",
-                  image:
-                    "https://assets-netstorage.groww.in/stock-assets/logos2/BDL.png",
-                },
-                {
-                  name: "Swiggy",
-                  price: "₹310.55",
-                  change: "-9.75 (3.04%)",
-                  image:
-                    "https://assets-netstorage.groww.in/stock-assets/logos2/SWIGGY.png",
-                },
-                {
-                  name: "Infosys",
-                  price: "₹1,568.60",
-                  change: "-58.30 (3.58%)",
-                  image:
-                    "https://assets-netstorage.groww.in/stock-assets/logos2/INFY.png",
-                },
-              ].map((item, idx) => (
-                <div
-                  key={idx}
-                  className="w-[150px] h-[150px] border rounded-lg p-2 bg-white shadow-sm text-[11px] relative"
-                >
-                  <Image
-                    src={item.image}
-                    alt={item.name}
-                    width={24}
-                    height={24}
-                    className="absolute top-2 left-2"
-                  />
-                  <div className="mt-8 font-medium">{item.name}</div>
-                  <div className="text-xs mt-1 text-black">{item.price}</div>
+              {isLoading.mostTradedMTF ? (
+                <p>Loading Most Traded on MTF...</p>
+              ) : error.mostTradedMTF ? (
+                <p className="text-red-500">Error: {error.mostTradedMTF}</p>
+              ) : mostTradedMTF.length > 0 ? (
+                mostTradedMTF.map((item, idx) => (
                   <div
-                    className={`text-xs mt-1 ${
-                      item.change.startsWith("-")
-                        ? "text-red-500"
-                        : "text-green-600"
-                    }`}
+                    key={idx}
+                    className="w-[150px] h-[150px] border rounded-lg p-2 bg-white shadow-sm text-[11px] relative"
                   >
-                    {item.change}
+                    <Image
+                      src={item.image}
+                      alt={item.name}
+                      width={24}
+                      height={24}
+                      className="absolute top-2 left-2"
+                    />
+                    <div className="mt-8 font-medium">{item.name}</div>
+                    <div className="text-xs mt-1 text-black">{item.price}</div>
+                    <div
+                      className={`text-xs mt-1 ${
+                        item.change.startsWith("-")
+                          ? "text-red-500"
+                          : "text-green-600"
+                      }`}
+                    >
+                      {item.change}
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))
+              ) : (
+                <p>No Most Traded on MTF available.</p>
+              )}
             </div>
           </section>
 
+          {/* Stocks in News */}
           <section>
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-2xl font-bold">Stocks in News</h2>
@@ -270,60 +345,39 @@ export default function Stocks() {
               </a>
             </div>
             <div className="flex space-x-4 overflow-x-auto scrollbar-hide">
-              {[
-                {
-                  name: "Jyothy Labs",
-                  price: "₹336.20",
-                  change: "-14.60 (4.16%)",
-                  image:
-                    "https://assets-netstorage.groww.in/stock-assets/logos2/JyothyLab_50398716670_14775.png",
-                },
-                {
-                  name: "Tata Motors",
-                  price: "₹707.70",
-                  change: "-13.10 (1.82%)",
-                  image:
-                    "https://assets-netstorage.groww.in/stock-assets/logos2/TataMotors_19446492084_560.png",
-                },
-                {
-                  name: "NIIT",
-                  price: "₹137.02",
-                  change: "0.55 (0.40%)",
-                  image:
-                    "https://assets-netstorage.groww.in/stock-assets/logos2/NIIT_15700905793_2771.png",
-                },
-                {
-                  name: "Yes Bank",
-                  price: "₹20.87",
-                  change: "0.46 (2.25%)",
-                  image:
-                    "https://assets-netstorage.groww.in/stock-assets/logos2/YESBANK(1).png",
-                },
-              ].map((item, idx) => (
-                <div
-                  key={idx}
-                  className="w-[150px] h-[150px] border rounded-lg p-2 bg-white shadow-sm text-[11px] relative"
-                >
-                  <Image
-                    src={item.image}
-                    alt={item.name}
-                    width={24}
-                    height={24}
-                    className="absolute top-2 left-2"
-                  />
-                  <div className="mt-8 font-medium">{item.name}</div>
-                  <div className="text-xs mt-1 text-black">{item.price}</div>
+              {isLoading.stocksInNews ? (
+                <p>Loading Stocks in News...</p>
+              ) : error.stocksInNews ? (
+                <p className="text-red-500">Error: {error.stocksInNews}</p>
+              ) : stocksInNews.length > 0 ? (
+                stocksInNews.map((item, idx) => (
                   <div
-                    className={`text-xs mt-1 ${
-                      item.change.startsWith("-")
-                        ? "text-red-500"
-                        : "text-green-600"
-                    }`}
+                    key={idx}
+                    className="w-[150px] h-[150px] border rounded-lg p-2 bg-white shadow-sm text-[11px] relative"
                   >
-                    {item.change}
+                    <Image
+                      src={item.image}
+                      alt={item.name}
+                      width={24}
+                      height={24}
+                      className="absolute top-2 left-2"
+                    />
+                    <div className="mt-8 font-medium">{item.name}</div>
+                    <div className="text-xs mt-1 text-black">{item.price}</div>
+                    <div
+                      className={`text-xs mt-1 ${
+                        item.change.startsWith("-")
+                          ? "text-red-500"
+                          : "text-green-600"
+                      }`}
+                    >
+                      {item.change}
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))
+              ) : (
+                <p>No Stocks in News available.</p>
+              )}
             </div>
           </section>
 
@@ -344,7 +398,6 @@ export default function Stocks() {
           </section>
 
           {/* Top Sectors */}
-
           <section>
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-2xl font-bold">Top Sectors</h2>
