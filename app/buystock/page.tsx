@@ -7,7 +7,7 @@ import Overview from "../components/Overview/page";
 import NewsSection from "app/components/news/page";
 import Header from "../components/header/page";
 import Footer from "app/components/Footer";
-import Image from "next/image"; // Don't forget this import
+import Image from "next/image"; 
 
 // Tab options
 type TabOption = "Overview" | "News" | "Events";
@@ -28,7 +28,7 @@ export default function BuyStock() {
 
       <div className="max-w-6xl mx-auto px-4 py-10 flex flex-row gap-8">
         {/* Left column (Tabs + content) */}
-        <div className="w-3/5 space-y-12">
+        <div className="w-4/5 space-y-12">
           <div className="p-6 rounded-lg shadow-sm bg-white">
             <Tabs activeTab={activeTab} setActiveTab={setActiveTab} />
 
@@ -39,7 +39,7 @@ export default function BuyStock() {
         </div>
 
         {/* Right sidebar */}
-        <div className="w-2/5 bg-white rounded-xl border border-gray-200 p-6 text-center shadow-sm h-fit">
+        <div className="w-1/5 bg-white rounded-xl border border-gray-200 p-6 text-center shadow-sm h-fit">
           <div className="flex items-center justify-center mb-6">
             <div className="w-28 h-28 bg-green-50 rounded-full flex items-center justify-center border-2 border-green-400">
               <Image
