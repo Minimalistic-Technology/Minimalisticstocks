@@ -1,19 +1,19 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Bell, Wallet, ShoppingCart, ChevronDown } from 'lucide-react';
-import Image from 'next/image';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { useState } from "react";
+import { Bell, Wallet, ShoppingCart, ChevronDown } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const Header = () => {
   const [profileOpen, setProfileOpen] = useState(false);
   const pathname = usePathname();
 
   const tabs = [
-    { label: 'Stocks', href: '/dashboard' },
-    { label: 'F&O', href: '/fno' },
-    { label: 'Mutual Funds', href: '/mutual'},
+    { label: "Stocks", href: "/dashboard" },
+    { label: "F&O", href: "/fno" },
+    { label: "Mutual Funds", href: "/mutual" },
   ];
 
   return (
@@ -26,12 +26,16 @@ const Header = () => {
             <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-500 to-teal-400"></div>
             <span className="font-bold text-xl text-gray-700">Groww</span>
           </div>
-          <nav className="hidden md:flex items-center space-x-6 text-gray-500">
+          <nav className="flex items-center space-x-6 text-gray-500">
             <Link href="/explore/stocks">
-              <span className="hover:text-gray-900 cursor-pointer">Explore</span>
+              <span className="hover:text-gray-900 cursor-pointer">
+                Explore
+              </span>
             </Link>
             <Link href="/dashboard">
-              <span className="text-green-500 font-medium cursor-pointer">Dashboard</span>
+              <span className="text-green-500 font-medium cursor-pointer">
+                Dashboard
+              </span>
             </Link>
           </nav>
         </div>
@@ -69,16 +73,26 @@ const Header = () => {
               <div className="absolute right-0 mt-2 w-72 bg-white border border-gray-200 rounded-lg shadow-md z-50">
                 <div className="p-4 border-b">
                   <h3 className="font-semibold text-gray-800">Mahesh Kumar</h3>
-                  <p className="text-sm text-gray-500">maheshkumar10042005@gmail.com</p>
+                  <p className="text-sm text-gray-500">
+                    maheshkumar10042005@gmail.com
+                  </p>
                 </div>
                 <ul className="text-sm text-gray-700 divide-y">
-                  <li className="p-3 hover:bg-gray-100 cursor-pointer">📋 All Orders</li>
-                  <li className="p-3 hover:bg-gray-100 cursor-pointer">🎧 24 x 7 Customer Support</li>
-                  <li className="p-3 hover:bg-gray-100 cursor-pointer">📄 Reports</li>
+                  <li className="p-3 hover:bg-gray-100 cursor-pointer">
+                    📋 All Orders
+                  </li>
+                  <li className="p-3 hover:bg-gray-100 cursor-pointer">
+                    🎧 24 x 7 Customer Support
+                  </li>
+                  <li className="p-3 hover:bg-gray-100 cursor-pointer">
+                    📄 Reports
+                  </li>
                 </ul>
                 <div className="p-3 flex justify-between items-center text-sm text-gray-700 border-t">
                   <span>🌞</span>
-                  <button className="text-red-500 hover:underline">Log out</button>
+                  <button className="text-red-500 hover:underline">
+                    Log out
+                  </button>
                 </div>
               </div>
             )}
@@ -96,8 +110,8 @@ const Header = () => {
               href={tab.href}
               className={`pb-2 ${
                 pathname === tab.href
-                  ? 'text-green-600 border-b-2 border-green-500'
-                  : 'text-gray-500 hover:text-gray-800'
+                  ? "text-green-600 border-b-2 border-green-500"
+                  : "text-gray-500 hover:text-gray-800"
               }`}
             >
               {tab.label}

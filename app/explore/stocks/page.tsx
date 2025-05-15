@@ -118,7 +118,7 @@ export default function Stocks() {
                     "https://assets-netstorage.groww.in/stock-assets/logos2/MAZDOCK.png",
                 },
               ].map((item, idx) => (
-                <Link href={`/buystock/${encodeURIComponent(item.name)}`} key={idx}>
+                <Link href={`/buystock`} key={idx}>
                 <div
                   key={idx}
                   className="w-[150px] h-[150px] border rounded-lg p-2 bg-white shadow-sm text-[11px] relative"
@@ -149,26 +149,30 @@ export default function Stocks() {
 
           {/* Product and Tools */}
           <div>
-            <h2 className="text-2xl font-bold mb-6">Product & Tools</h2>
-            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4">
-              {collection.map((item) => (
-                <div
-                  key={item.name}
-                  className="flex flex-col items-center text-center"
-                >
-                  <div className="w-16 h-16 mb-2">
-                    <Image
-                      src={item.icon}
-                      alt={item.name}
-                      width={64}
-                      height={64}
-                    />
-                  </div>
-                  <span className="text-sm pt-6 font-medium">{item.name}</span>
-                </div>
-              ))}
-            </div>
-          </div>
+  <h2 className="text-2xl font-bold mb-6">Product & Tools</h2>
+  <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-6">
+    {collection.map((item) => (
+      <div
+        key={item.name}
+        className="flex flex-col items-center text-center"
+      >
+        {/* Smaller image with padding */}
+        <div className="w-12 h-12 mb-12 relative">
+          <Image
+            src={item.icon}
+            alt={item.name}
+            width={48}
+            height={48}
+            className="object-contain"
+          />
+        </div>
+        {/* Spacing and wrapping for text */}
+        <span className="text-sm font-medium text-gray-700 break-words text-center">{item.name}</span>
+      </div>
+    ))}
+  </div>
+</div>
+
 
           {/* Top Gainers */}
           <section>
