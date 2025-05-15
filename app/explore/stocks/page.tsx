@@ -5,12 +5,9 @@ import IndicesSection from "app/components/index/page";
 import Header from "app/components/header/page";
 import Footer from "app/components/Footer";
 import Image from "next/image";
-import { FaLink } from "react-icons/fa";
-import { FiChevronDown } from "react-icons/fi";
 import { useState } from "react";
-import { FaPlus } from "react-icons/fa";
 import StockTable from "app/components/stockTable/page";
-
+import Link from "next/link";
 const stocks = [
   {
     name: "Tata Motors",
@@ -121,6 +118,7 @@ export default function Stocks() {
                     "https://assets-netstorage.groww.in/stock-assets/logos2/MAZDOCK.png",
                 },
               ].map((item, idx) => (
+                <Link href={`/buystock/${encodeURIComponent(item.name)}`} key={idx}>
                 <div
                   key={idx}
                   className="w-[150px] h-[150px] border rounded-lg p-2 bg-white shadow-sm text-[11px] relative"
@@ -144,6 +142,7 @@ export default function Stocks() {
                     {item.change}
                   </div>
                 </div>
+                </Link>
               ))}
             </div>
           </section>
