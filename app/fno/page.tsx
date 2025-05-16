@@ -269,37 +269,37 @@ export default function FNOPAGE() {
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-2xl font-bold">Top Traded Stock Futures</h2>
             </div>
-            <div className="flex space-x-4 overflow-x-auto scrollbar-hide">
-              {topStockFutures.length > 0 ? (
-                topStockFutures.map((item, idx) => (
-                  <div
-                    key={idx}
-                    className="w-[150px] h-[150px] border rounded-lg p-2 bg-white shadow-sm text-[11px] relative"
-                  >
-                    <Image
-                      src={item.image}
-                      alt={item.name}
-                      width={24}
-                      height={24}
-                      className="absolute top-2 left-2"
-                    />
-                    <div className="mt-8 font-medium">{item.name}</div>
-                    <div className="text-xs mt-1 text-black">{item.price}</div>
-                    <div
-                      className={`text-xs mt-1 ${
-                        item.change.startsWith("-")
-                          ? "text-red-500"
-                          : "text-green-600"
-                      }`}
-                    >
-                      {item.change}
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <p>Loading Top Stock Futures...</p>
-              )}
-            </div>
+<div className="flex space-x-4 overflow-x-auto scrollbar-hide">
+  {topStockFutures.length > 0 ? (
+    topStockFutures.map((item, idx) => (
+      <div
+        key={idx}
+        className="w-[150px] h-[150px] border rounded-lg p-2 bg-white shadow-sm text-[11px] relative"
+      >
+        <Image
+          src={item.image}
+          alt={item.name}
+          width={24}
+          height={24}
+          className="absolute top-2 left-2"
+        />
+        <div className="mt-8 font-medium">{item.name}</div>
+        <div className="text-xs mt-1 text-black">{item.price}</div>
+        <div
+          className={`text-xs mt-1 ${
+            item.change.startsWith("-")
+              ? "text-red-500"
+              : "text-green-600"
+          }`}
+        >
+          {item.change}
+        </div>
+      </div>
+    ))
+  ) : (
+    <p>Loading Top Stock Futures...</p>
+  )}
+</div>
           </section>
         </div>
 

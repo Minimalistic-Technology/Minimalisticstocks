@@ -1,5 +1,7 @@
 "use client";
 
+import FinancialChart from "../financial/page"; // or correct relative path
+import CompanyInfoCard from "../about/page";
 const getPositionPercent = (low: number, high: number, current: number) => {
   return ((current - low) / (high - low)) * 100;
 };
@@ -24,13 +26,7 @@ const askData: Order[] = [
   { price: 1774.5, qty: 269 },
 ];
 
-
-
 export default function Overview() {
-
- 
-
-
   const todayLow = 1720.4;
   const todayHigh = 1815.0;
   const todayCurrent = 1760;
@@ -44,10 +40,6 @@ export default function Overview() {
 
   const maxBidQty = Math.max(...bidData.map((b) => b.qty));
   const maxAskQty = Math.max(...askData.map((a) => a.qty));
-
-  
-
-  
 
   return (
     <div className="flex flex-col gap-8">
@@ -128,8 +120,8 @@ export default function Overview() {
           ))}
         </div>
       </div>
-      <div className="p-6 bg-white rounded-xl">
-        <h2 className="text-xl font-semibold mb-4">Market Depth</h2>
+      <div className="p-8 bg-white rounded-xl shadow-sm">
+        <h2 className="text-2xl font-semibold mb-6">Market Depth</h2>
 
         {/* Buy/Sell Bar */}
         <div className="text-sm font-medium text-gray-700 flex justify-between mb-1">
@@ -159,15 +151,15 @@ export default function Overview() {
             {bidData.map((bid, idx) => (
               <div
                 key={idx}
-                className="mb-1 flex justify-between items-center relative"
+                className="mb-3 flex justify-between items-center relative hover:bg-green-50 cursor-pointer px-2 py-1 rounded-lg"
               >
                 <span>{bid.price.toFixed(2)}</span>
-                <span className="relative z-10 w-20 text-end">
+                <span className="relative z-10 w-24 text-end">
                   <span className="relative z-20 text-green-600 font-medium">
                     {bid.qty}
                   </span>
                   <div
-                    className="absolute right-0 top-1/2 -translate-y-1/2 h-4 bg-green-100 rounded"
+                    className="absolute right-0 top-1/2 -translate-y-1/2 h-5 bg-green-100 rounded"
                     style={{
                       width: `${(bid.qty / maxBidQty) * 100}%`,
                       zIndex: 0,
@@ -206,8 +198,8 @@ export default function Overview() {
           </div>
         </div>
       </div>
-      <div className="p-6 bg-white rounded-xl">
-        <h2 className="text-xl font-semibold mb-4">Fundamentals</h2>
+      <div className="p-8 bg-white rounded-xl shadow-sm">
+        <h2 className="text-2xl font-semibold mb-6">Fundamentals</h2>
 
         <div className="grid grid-cols-2 gap-x-6 text-sm">
           {/* Left Column */}
@@ -258,7 +250,6 @@ export default function Overview() {
             </div>
           </div>
         </div>
-
         <div className="mt-4 text-xs items-center gap-1 flex">
           <span>Understand Fundamentals</span>
           <div className="cursor-pointer hover:underline">
@@ -266,7 +257,17 @@ export default function Overview() {
           </div>
         </div>
       </div>
-      
+      <div>
+        <FinancialChart></FinancialChart>
+      </div>
+      <div>
+        <CompanyInfoCard
+          parentOrg="Reliance Industries"
+          managingDirector="Mukesh Ambani"
+          nseSymbol="RELIANCE"
+          description={`Reliance Industries Limited is an Indian multinational conglomerate headquartered in Mumbai. It has diverse business interests spanning energy, petrochemicals, textiles, natural resources, retail, and telecommunications. The company is known for revolutionizing the Indian telecom sector through Jio. Over the years, Reliance has grown to become one of the most valuable companies in India by market capitalization.`}
+        />
+      </div>
     </div>
   );
 }
