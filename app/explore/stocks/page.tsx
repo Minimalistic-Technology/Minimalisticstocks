@@ -50,6 +50,10 @@ export default function Stocks() {
   const [stocksInNewsData, setStocksInNewsData] = useState<StockInNews[]>([]); // State for Stocks in News
   type StockInMTF = { name: string; price: string; change: string; image: string };
   const [stocksInMTFData, setStocksInMTFData] = useState<StockInMTF[]>([]); // State for Most Traded on MTF
+  type TopGainer = { name: string; price: string; change: string; image: string };
+  const [topGainersData, setTopGainersData] = useState<TopGainer[]>([]); // State for Top Gainers
+  type MostTraded = { name: string; price: string; change: string; image: string };
+  const [mostTradedData, setMostTradedData] = useState<MostTraded[]>([]); // State for Most Traded on Groww
 
   // Fetch Product & Tools data
   useEffect(() => {
@@ -96,6 +100,50 @@ export default function Stocks() {
     fetchStocksInMTF();
   }, []);
 
+  // Fetch Top Gainers data
+  useEffect(() => {
+    const fetchTopGainers = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/api/stocks/producttools/gettopgainers");
+        const data = await response.json();
+        // Map the data to match the TopGainer type, excluding _id and __v
+        const formattedData = data.map((item: any) => ({
+          name: item.name,
+          price: item.price,
+          change: item.change,
+          image: item.image,
+        }));
+        setTopGainersData(formattedData);
+      } catch (error) {
+        console.error("Error fetching Top Gainers data:", error);
+      }
+    };
+
+    fetchTopGainers();
+  }, []);
+
+  // Fetch Most Traded on Groww data
+  useEffect(() => {
+    const fetchMostTraded = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/api/stocks/producttools/getmosttradedongrow");
+        const data = await response.json();
+        // Map the data to match the MostTraded type, excluding _id and __v if present
+        const formattedData = data.map((item: any) => ({
+          name: item.name,
+          price: item.price,
+          change: item.change,
+          image: item.image,
+        }));
+        setMostTradedData(formattedData);
+      } catch (error) {
+        console.error("Error fetching Most Traded on Groww data:", error);
+      }
+    };
+
+    fetchMostTraded();
+  }, []);
+
   return (
     <main className="min-h-screen bg-white text-gray-900 transition-colors">
       <Header />
@@ -117,61 +165,36 @@ export default function Stocks() {
               </a>
             </div>
             <div className="flex space-x-4 overflow-x-auto scrollbar-hide">
-              {[
-                {
-                  name: "BSE",
-                  price: "₹7,315.50",
-                  change: "+360 (5.18%)",
-                  image:
-                    "https://assets-netstorage.groww.in/stock-assets/logos2/BSELtd_11315994_21236.png",
-                },
-                {
-                  name: "Bharat Dynamics",
-                  price: "₹1,746.70",
-                  change: "176.80 (11.26%)",
-                  image:
-                    "https://assets-netstorage.groww.in/stock-assets/logos2/BDL.png",
-                },
-                {
-                  name: "Tanla Platforms",
-                  price: "₹557.35",
-                  change: "62.90 (12.72%)",
-                  image:
-                    "https://assets-netstorage.groww.in/stock-assets/logos2/TanlaSolutions_48102096060_24392.png",
-                },
-                {
-                  name: "Mazagon Dock Ship",
-                  price: "₹3,002.60",
-                  change: "98.20 (3.38%)",
-                  image:
-                    "https://assets-netstorage.groww.in/stock-assets/logos2/MAZDOCK.png",
-                },
-              ].map((item, idx) => (
-                <Link href="/buystock" key={idx}>
-                  <div
-                    className="w-[150px] h-[150px] border rounded-lg p-2 bg-white shadow-sm text-[11px] relative"
-                  >
-                    <Image
-                      src={item.image}
-                      alt={item.name}
-                      width={24}
-                      height={24}
-                      className="absolute top-2 left-2"
-                    />
-                    <div className="mt-8 font-medium">{item.name}</div>
-                    <div className="text-xs mt-1 text-black">{item.price}</div>
+              {mostTradedData.length > 0 ? (
+                mostTradedData.map((item, idx) => (
+                  <Link href="/buystock" key={idx}>
                     <div
-                      className={`text-xs mt-1 ${
-                        item.change.startsWith("-")
-                          ? "text-red-500"
-                          : "text-green-600"
-                      }`}
+                      className="w-[150px] h-[150px] border rounded-lg p-2 bg-white shadow-sm text-[11px] relative"
                     >
-                      {item.change}
+                      <Image
+                        src={item.image}
+                        alt={item.name}
+                        width={24}
+                        height={24}
+                        className="absolute top-2 left-2"
+                      />
+                      <div className="mt-8 font-medium">{item.name}</div>
+                      <div className="text-xs mt-1 text-black">{item.price}</div>
+                      <div
+                        className={`text-xs mt-1 ${
+                          item.change.startsWith("-")
+                            ? "text-red-500"
+                            : "text-green-600"
+                        }`}
+                      >
+                        {item.change}
+                      </div>
                     </div>
-                  </div>
-                </Link>
-              ))}
+                  </Link>
+                ))
+              ) : (
+                <p>Loading Most Traded on Groww...</p>
+              )}
             </div>
           </section>
 
@@ -216,7 +239,8 @@ export default function Stocks() {
                 See More
               </a>
             </div>
-            <StockFilterSection />
+            {/* @ts-expect-error: Suppress prop type error for data */}
+            <StockFilterSection data={topGainersData} />
           </section>
 
           {/* Most Traded on MTF */}
