@@ -45,51 +45,21 @@ const stocks = [
 export default function Stocks() {
   const [isOpen, setIsOpen] = useState(false);
   type ProductTool = { name: string; icon: string };
-  const [productTools, setProductTools] = useState<ProductTool[]>([]);
-  type StocksInNewsItem = { name: string; price: string; change: string; image: string };
-  const [stocksInNews, setStocksInNews] = useState<StocksInNewsItem[]>([]);
-  type MostTradedMTFItem = { name: string; price: string; change: string; image: string };
-  const [mostTradedMTF, setMostTradedMTF] = useState<MostTradedMTFItem[]>([]);
-  const [isLoading, setIsLoading] = useState({ 
-    productTools: true, 
-    stocksInNews: true, 
-    mostTradedMTF: true 
-  });
-  const [error, setError] = useState<{
-    productTools: string | null;
-    stocksInNews: string | null;
-    mostTradedMTF: string | null;
-  }>({
-    productTools: null,
-    stocksInNews: null,
-    mostTradedMTF: null,
-  });
+  const [productToolsData, setProductToolsData] = useState<ProductTool[]>([]); // State for Product & Tools
+  type StockInNews = { name: string; price: string; change: string; image: string };
+  const [stocksInNewsData, setStocksInNewsData] = useState<StockInNews[]>([]); // State for Stocks in News
+  type StockInMTF = { name: string; price: string; change: string; image: string };
+  const [stocksInMTFData, setStocksInMTFData] = useState<StockInMTF[]>([]); // State for Most Traded on MTF
 
   // Fetch Product & Tools data
   useEffect(() => {
     const fetchProductTools = async () => {
       try {
-        setIsLoading((prev) => ({ ...prev, productTools: true }));
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 5000); // 5s timeout
-        const response = await fetch("http://localhost:5000/api/stocks/producttools/get", {
-          signal: controller.signal,
-        });
-        clearTimeout(timeoutId);
-        if (!response.ok) {
-          throw new Error("Failed to fetch Product & Tools");
-        }
+        const response = await fetch("http://localhost:5000/api/stocks/producttools/get");
         const data = await response.json();
-        setProductTools(data);
-        setError((prev) => ({ ...prev, productTools: null }));
+        setProductToolsData(data);
       } catch (error) {
-        console.error("Error fetching Product & Tools:", error);
-        setError((prev) => ({
-          ...prev,
-          productTools: error instanceof Error ? error.message : String(error),
-        }));
-      } finally {
-        setIsLoading((prev) => ({ ...prev, productTools: false }));
+        console.error("Error fetching Product & Tools data:", error);
       }
     };
 
@@ -100,27 +70,11 @@ export default function Stocks() {
   useEffect(() => {
     const fetchStocksInNews = async () => {
       try {
-        setIsLoading((prev) => ({ ...prev, stocksInNews: true }));
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 5000); // 5s timeout
-        const response = await fetch("http://localhost:5000/api/stocks/producttools/getnews", {
-          signal: controller.signal,
-        });
-        clearTimeout(timeoutId);
-        if (!response.ok) {
-          throw new Error("Failed to fetch Stocks in News");
-        }
+        const response = await fetch("http://localhost:5000/api/stocks/producttools/getnews");
         const data = await response.json();
-        setStocksInNews(data);
-        setError((prev) => ({ ...prev, stocksInNews: null }));
+        setStocksInNewsData(data);
       } catch (error) {
-        console.error("Error fetching Stocks in News:", error);
-        setError((prev) => ({
-          ...prev,
-          stocksInNews: error instanceof Error ? error.message : String(error),
-        }));
-      } finally {
-        setIsLoading((prev) => ({ ...prev, stocksInNews: false }));
+        console.error("Error fetching Stocks in News data:", error);
       }
     };
 
@@ -129,33 +83,17 @@ export default function Stocks() {
 
   // Fetch Most Traded on MTF data
   useEffect(() => {
-    const fetchMostTradedMTF = async () => {
+    const fetchStocksInMTF = async () => {
       try {
-        setIsLoading((prev) => ({ ...prev, mostTradedMTF: true }));
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 5000); // 5s timeout
-        const response = await fetch("http://localhost:5000/api/stocks/producttools/getmtf", {
-          signal: controller.signal,
-        });
-        clearTimeout(timeoutId);
-        if (!response.ok) {
-          throw new Error("Failed to fetch Most Traded on MTF");
-        }
+        const response = await fetch("http://localhost:5000/api/stocks/producttools/getmtf");
         const data = await response.json();
-        setMostTradedMTF(data);
-        setError((prev) => ({ ...prev, mostTradedMTF: null }));
+        setStocksInMTFData(data);
       } catch (error) {
-        console.error("Error fetching Most Traded on MTF:", error);
-        setError((prev) => ({
-          ...prev,
-          mostTradedMTF: error instanceof Error ? error.message : String(error),
-        }));
-      } finally {
-        setIsLoading((prev) => ({ ...prev, mostTradedMTF: false }));
+        console.error("Error fetching Most Traded on MTF data:", error);
       }
     };
 
-    fetchMostTradedMTF();
+    fetchStocksInMTF();
   }, []);
 
   return (
@@ -167,7 +105,7 @@ export default function Stocks() {
           {/* Indices */}
           <IndicesSection />
 
-          {/* Most Traded on Groww*/}
+          {/* Most Traded on Groww */}
           <section>
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-2xl font-bold">Most Traded on Groww</h2>
@@ -209,30 +147,29 @@ export default function Stocks() {
                     "https://assets-netstorage.groww.in/stock-assets/logos2/MAZDOCK.png",
                 },
               ].map((item, idx) => (
-                <Link href={`/buystock/${encodeURIComponent(item.name)}`} key={idx}>
-                <div
-                  key={idx}
-                  className="w-[150px] h-[150px] border rounded-lg p-2 bg-white shadow-sm text-[11px] relative"
-                >
-                  <Image
-                    src={item.image}
-                    alt={item.name}
-                    width={24}
-                    height={24}
-                    className="absolute top-2 left-2"
-                  />
-                  <div className="mt-8 font-medium">{item.name}</div>
-                  <div className="text-xs mt-1 text-black">{item.price}</div>
+                <Link href="/buystock" key={idx}>
                   <div
-                    className={`text-xs mt-1 ${
-                      item.change.startsWith("-")
-                        ? "text-red-500"
-                        : "text-green-600"
-                    }`}
+                    className="w-[150px] h-[150px] border rounded-lg p-2 bg-white shadow-sm text-[11px] relative"
                   >
-                    {item.change}
+                    <Image
+                      src={item.image}
+                      alt={item.name}
+                      width={24}
+                      height={24}
+                      className="absolute top-2 left-2"
+                    />
+                    <div className="mt-8 font-medium">{item.name}</div>
+                    <div className="text-xs mt-1 text-black">{item.price}</div>
+                    <div
+                      className={`text-xs mt-1 ${
+                        item.change.startsWith("-")
+                          ? "text-red-500"
+                          : "text-green-600"
+                      }`}
+                    >
+                      {item.change}
+                    </div>
                   </div>
-                </div>
                 </Link>
               ))}
             </div>
@@ -241,30 +178,29 @@ export default function Stocks() {
           {/* Product and Tools */}
           <div>
             <h2 className="text-2xl font-bold mb-6">Product & Tools</h2>
-            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4">
-              {isLoading.productTools ? (
-                <p>Loading Product & Tools...</p>
-              ) : error.productTools ? (
-                <p className="text-red-500">Error: {error.productTools}</p>
-              ) : productTools.length > 0 ? (
-                productTools.map((item) => (
+            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-6">
+              {productToolsData.length > 0 ? (
+                productToolsData.map((item) => (
                   <div
                     key={item.name}
                     className="flex flex-col items-center text-center"
                   >
-                    <div className="w-16 h-16 mb-2">
+                    <div className="w-12 h-12 mb-12 relative">
                       <Image
                         src={item.icon}
                         alt={item.name}
-                        width={64}
-                        height={64}
+                        width={48}
+                        height={48}
+                        className="object-contain"
                       />
                     </div>
-                    <span className="text-sm pt-6 font-medium">{item.name}</span>
+                    <span className="text-sm font-medium text-gray-700 break-words text-center">
+                      {item.name}
+                    </span>
                   </div>
                 ))
               ) : (
-                <p>No Product & Tools available.</p>
+                <p>Loading Product & Tools...</p>
               )}
             </div>
           </div>
@@ -280,12 +216,10 @@ export default function Stocks() {
                 See More
               </a>
             </div>
-
-            {/* Filter Bar */}
-            <StockFilterSection></StockFilterSection>
+            <StockFilterSection />
           </section>
 
-          {/* Most Traded on MTF*/}
+          {/* Most Traded on MTF */}
           <section>
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-2xl font-bold">Most Traded on MTF</h2>
@@ -297,12 +231,8 @@ export default function Stocks() {
               </a>
             </div>
             <div className="flex space-x-4 overflow-x-auto scrollbar-hide">
-              {isLoading.mostTradedMTF ? (
-                <p>Loading Most Traded on MTF...</p>
-              ) : error.mostTradedMTF ? (
-                <p className="text-red-500">Error: {error.mostTradedMTF}</p>
-              ) : mostTradedMTF.length > 0 ? (
-                mostTradedMTF.map((item, idx) => (
+              {stocksInMTFData.length > 0 ? (
+                stocksInMTFData.map((item, idx) => (
                   <div
                     key={idx}
                     className="w-[150px] h-[150px] border rounded-lg p-2 bg-white shadow-sm text-[11px] relative"
@@ -328,7 +258,7 @@ export default function Stocks() {
                   </div>
                 ))
               ) : (
-                <p>No Most Traded on MTF available.</p>
+                <p>Loading Most Traded on MTF...</p>
               )}
             </div>
           </section>
@@ -345,12 +275,8 @@ export default function Stocks() {
               </a>
             </div>
             <div className="flex space-x-4 overflow-x-auto scrollbar-hide">
-              {isLoading.stocksInNews ? (
-                <p>Loading Stocks in News...</p>
-              ) : error.stocksInNews ? (
-                <p className="text-red-500">Error: {error.stocksInNews}</p>
-              ) : stocksInNews.length > 0 ? (
-                stocksInNews.map((item, idx) => (
+              {stocksInNewsData.length > 0 ? (
+                stocksInNewsData.map((item, idx) => (
                   <div
                     key={idx}
                     className="w-[150px] h-[150px] border rounded-lg p-2 bg-white shadow-sm text-[11px] relative"
@@ -376,7 +302,7 @@ export default function Stocks() {
                   </div>
                 ))
               ) : (
-                <p>No Stocks in News available.</p>
+                <p>Loading Stocks in News...</p>
               )}
             </div>
           </section>
@@ -392,9 +318,7 @@ export default function Stocks() {
                 See More
               </a>
             </div>
-
-            {/* Filter Bar */}
-            <StockFilterSectionLosers></StockFilterSectionLosers>
+            <StockFilterSectionLosers />
           </section>
 
           {/* Top Sectors */}
@@ -408,7 +332,6 @@ export default function Stocks() {
                 See More
               </a>
             </div>
-
             <div className="flex flex-wrap gap-3">
               {[
                 { name: "Energy", count: 99 },
@@ -422,18 +345,15 @@ export default function Stocks() {
                   key={index}
                   className="flex items-center border border-gray-300 rounded-md px-4 py-2 bg-white shadow-sm space-x-2 text-sm"
                 >
-                  <span className="text-gray-800 font-medium">
-                    {sector.name}
-                  </span>
+                  <span className="text-gray-800 font-medium">{sector.name}</span>
                   <span className="text-gray-400 font-light">|</span>
-                  <span className="text-green-500 font-semibold">
-                    {sector.count}
-                  </span>
+                  <span className="text-green-500 font-semibold">{sector.count}</span>
                 </button>
               ))}
             </div>
           </section>
 
+          {/* Top by Market Cap */}
           <section>
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-2xl font-bold">Top by Market Cap</h2>
@@ -444,15 +364,14 @@ export default function Stocks() {
                 See More
               </a>
             </div>
-
             <div className="w-full max-w-4xl mx-auto">
-              <StockTable></StockTable>
+              <StockTable />
             </div>
           </section>
         </div>
 
         {/* Right Sidebar */}
-        <div className="max-w-sm w-full bg-white rounded-xl p-6 text-center  flex flex-col">
+        <div className="max-w-sm w-full bg-white rounded-xl p-6 text-center flex flex-col">
           <div>
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-semibold">Your Investments</h2>
@@ -497,9 +416,7 @@ export default function Stocks() {
                 >
                   <div>
                     <div className="font-semibold">My Watchlist</div>
-                    <div className="text-sm text-gray-500">
-                      {stocks.length} items
-                    </div>
+                    <div className="text-sm text-gray-500">{stocks.length} items</div>
                   </div>
                   <div className="text-xl font-bold">{isOpen ? "▲" : "▼"}</div>
                 </div>
@@ -511,9 +428,7 @@ export default function Stocks() {
                         key={idx}
                         className="flex justify-between items-center border-b pb-2"
                       >
-                        <div className="text-gray-800 font-medium">
-                          {stock.name}
-                        </div>
+                        <div className="text-gray-800 font-medium">{stock.name}</div>
                         <div className="text-right">
                           <div className="font-semibold">{stock.price}</div>
                           <div className={`text-sm ${stock.changeColor}`}>
@@ -524,11 +439,11 @@ export default function Stocks() {
                     ))}
                   </div>
                 )}
-
-                <button className="mt-5 flex items-center text-green-600 font-semibold">
-                  <span className="text-xl mr-2">＋</span> Create new watchlist
-                </button>
               </div>
+
+              <button className="mt-5 flex items-center text-green-600 font-semibold">
+                <span className="text-xl mr-2">＋</span> Create new watchlist
+              </button>
             </div>
           </div>
         </div>
