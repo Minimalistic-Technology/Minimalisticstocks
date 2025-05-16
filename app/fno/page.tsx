@@ -315,14 +315,14 @@ export default function FNOPAGE() {
               ].map((item, idx) => (
                 <div
                   key={idx}
-                  className="w-[150px] h-[150px] border rounded-lg p-2 bg-white shadow-sm text-[11px] relative"
+                  className="min-w-[200px] p-4 border rounded-xl bg-white text-center shadow-md"
                 >
                   <Image
                     src={item.image}
                     alt={item.name}
                     width={24}
                     height={24}
-                    className="absolute top-2 left-2"
+                    className="w-full h-20 flex items-center justify-center mb-2"
                   />
                   <div className="mt-8 font-medium">{item.name}</div>
                   <div className="text-xs mt-1 text-black">{item.price}</div>
