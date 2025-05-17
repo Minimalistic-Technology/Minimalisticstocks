@@ -17,7 +17,6 @@ import {
 import { Chart } from 'react-chartjs-2';
 import 'chartjs-adapter-date-fns';
 
-// Register required ChartJS components
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -55,15 +54,15 @@ const data: ChartData<'line', LineDataPoint[], string> = {
     {
       label: 'Cochin Shipyard - Close Price',
       data: lineDataPoints,
-      borderColor: '#00b386', // Green line
-      backgroundColor: 'rgba(0, 179, 134, 0.3)', // Green background
-      pointBackgroundColor: '#00b386', // Green point fill
-      pointBorderColor: '#00b386', // Green point border
+      borderColor: '#00b386', 
+      backgroundColor: 'rgba(0, 179, 134, 0.3)', 
+      pointBackgroundColor: '#00b386',
+      pointBorderColor: '#00b386', 
       fill: false,
-      tension: 0.3, // Smooth curves
+      tension: 0.2,
       pointRadius: 3,
       pointHoverRadius: 6,
-      borderWidth: 2, // Ensure line visibility
+      borderWidth: 2, 
     },
   ],
 };
@@ -80,17 +79,17 @@ const options: ChartOptions<'line'> = {
         displayFormats: {
           minute: 'HH:mm',
         },
-        // Use type assertion to bypass stepSize type error
-        stepSize: 1, // Tick every minute
+       
+        stepSize: 1, 
       } as any,
       ticks: {
         color: '#333',
         source: 'auto',
-        autoSkip: false, // Show every minute
+        autoSkip: false, 
         maxRotation: 45,
         minRotation: 45,
         font: {
-          size: 10, // Smaller font for dense ticks
+          size: 10, 
         },
       },
       grid: { display: false },

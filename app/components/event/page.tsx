@@ -1,11 +1,11 @@
 import Image from "next/image";
 
 type EventItem = {
-  date: string;         // e.g., "15 May"
-  title: string;        // e.g., "Quarterly & Annual Result"
-  subtitle: string;     // e.g., "Release date", "Ex date"
-  amount?: string;      // optional: "₹3.50"
-  link?: string;        // optional: "Check latest financial"
+  date: string;
+  title: string;       
+  subtitle: string;    
+  amount?: string;     
+  link?: string;        
 };
 
 const events: EventItem[] = [
@@ -64,7 +64,7 @@ export default function EventsSection() {
     <div className="flex items-center gap-3 border border-gray-200 rounded-md p-4">
   <div className="w-10 h-10 relative">
     <Image
-      src="https://img.icons8.com/?size=48&id=ZfQHCnh6ImEM&format=png"
+      src="https://storage.googleapis.com/groww-assets/web-assets/img/stock/calendar_mint_light.svg"
       alt="Events calendar icon"
       fill
       className="object-contain"

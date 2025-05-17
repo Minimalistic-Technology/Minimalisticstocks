@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useState } from "react";
-
+import Link from "next/link";
 const StockFilterSectionLosers = () => {
   const [selectedCategory, setSelectedCategory] = useState("Large");
 
@@ -106,7 +106,7 @@ const StockFilterSectionLosers = () => {
           <div
             key={idx}
             className="w-[150px] h-[150px] border rounded-lg p-2 bg-white shadow-sm text-[11px] relative"
-          >
+          ><Link href={`/buystock`} key={idx}>
             <Image
               src={item.image}
               alt={item.name}
@@ -123,6 +123,7 @@ const StockFilterSectionLosers = () => {
             >
               {item.change}
             </div>
+            </Link>
           </div>
         ))}
       </div>
