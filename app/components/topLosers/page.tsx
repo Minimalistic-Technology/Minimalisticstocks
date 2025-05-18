@@ -1,7 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import Link from "next/link";
+import { useState } from "react";
+import { useEffect } from "react";
 
 const StockFilterSectionLosers = () => {
   const [selectedCategory, setSelectedCategory] = useState<"Large" | "Mid" | "Small">("Large");
@@ -129,43 +131,33 @@ const StockFilterSectionLosers = () => {
         ))}
       </div>
 
-      {/* Responsive container */}
-      <div className="flex space-x-4 overflow-x-auto scrollbar-hide
-                      sm:grid sm:grid-cols-2 sm:gap-4 sm:space-x-0
-                      md:grid md:grid-cols-3
-                      lg:grid lg:grid-cols-4">
-        {loading && selectedCategory === "Small" ? (
-          <p>Loading Small Cap Losers...</p>
-        ) : getData().length > 0 ? (
-          getData().map((item, idx) => (
+      <div className="flex space-x-4 overflow-x-auto scrollbar-hide">
+        {getData().map((item, idx) => (
+          <div
+            key={idx}
+            className="w-[150px] h-[150px] border rounded-lg p-2 bg-white shadow-sm text-[11px] relative"
+          >         <Image
+              src={item.image}
+              alt={item.name}
+              width={24}
+              height={24}
+              className="absolute top-2 left-2"
+            />
+            <div className="mt-8 font-medium">{item.name}</div>
+            <div className="text-xs mt-1 text-black">{item.price}</div>
             <div
-              key={idx}
-              className="w-[150px] sm:w-full h-[150px] border rounded-lg p-2 bg-white shadow-sm text-[11px] relative"
+              className={`text-xs mt-1 ${
+                item.change.startsWith("-") ? "text-red-500" : "text-green-600"
+              }`}
             >
-              <Image
-                src={item.image}
-                alt={item.name}
-                width={24}
-                height={24}
-                className="absolute top-2 left-2"
-              />
-              <div className="mt-8 font-medium">{item.name}</div>
-              <div className="text-xs mt-1 text-black">{item.price}</div>
-              <div
-                className={`text-xs mt-1 ${
-                  item.change.startsWith("-") ? "text-red-500" : "text-green-600"
-                }`}
-              >
-                {item.change}
-              </div>
+              {item.change}
             </div>
-          ))
-        ) : (
-          <p>No data available for {selectedCategory} Cap Losers.</p>
-        )}
+          </div>
+        ))}
       </div>
     </section>
   );
 };
 
 export default StockFilterSectionLosers;
+

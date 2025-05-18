@@ -1,6 +1,6 @@
 "use client";
 
-import FinancialChart from "../financial/page"; // or correct relative path
+import FinancialChart from "../financial/page";
 import CompanyInfoCard from "../about/page";
 import { useState, useEffect } from "react";
 
@@ -26,6 +26,14 @@ const askData: Order[] = [
   { price: 1774.3, qty: 103 },
   { price: 1774.4, qty: 94 },
   { price: 1774.5, qty: 269 },
+];
+
+const stats = [
+  { label: "Market Cap", value: "₹44,708Cr" },
+  { label: "P/E Ratio (TTM)", value: "55.96" },
+  { label: "P/B Ratio", value: "8.47" },
+  { label: "Industry P/E", value: "47.33" },
+  { label: "Debt to Equity", value: "0.10" },
 ];
 
 export default function Overview() {
@@ -260,7 +268,7 @@ export default function Overview() {
             {askData.map((ask, idx) => (
               <div
                 key={idx}
-                className="mb-1 flex justify-between items-center relative"
+                className="mb-3 flex justify-between items-center relative hover:bg-green-50 cursor-pointer px-2 py-1 rounded-lg"
               >
                 <span>{ask.price.toFixed(2)}</span>
                 <span className="relative z-10 w-20 text-end">
@@ -287,20 +295,12 @@ export default function Overview() {
         <div className="grid grid-cols-2 gap-x-6 text-sm">
           {/* Left Column */}
           <div className="flex flex-col gap-3 pr-4">
-            {loadingFundamentals ? (
-              <p>Loading fundamentals...</p>
-            ) : errorFundamentals ? (
-              <p className="text-red-500">{errorFundamentals}</p>
-            ) : fundamentalsData.length > 0 ? (
-              fundamentalsData.map((item, idx) => (
-                <div key={idx} className="flex justify-between">
-                  <span>{item.label}</span>
-                  <span className="font-semibold">{item.value}</span>
-                </div>
-              ))
-            ) : (
-              <p>No fundamentals data available.</p>
-            )}
+            {stats.map((item, index) => (
+              <div className="flex justify-between" key={index}>
+                <span>{item.label}</span>
+                <span className="font-semibold">{item.value}</span>
+              </div>
+            ))}
           </div>
 
           {/* Right Column with Left Dashed Border */}

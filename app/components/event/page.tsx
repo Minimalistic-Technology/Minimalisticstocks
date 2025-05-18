@@ -2,11 +2,11 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 
 type EventItem = {
-  date: string;         // e.g., "15 May"
-  title: string;        // e.g., "Quarterly & Annual Result"
-  subtitle: string;     // e.g., "Release date", "Ex date"
-  amount?: string;      // optional: "₹3.50"
-  link?: string;        // optional: "Check latest financial"
+  date: string;
+  title: string;       
+  subtitle: string;    
+  amount?: string;     
+  link?: string;        
 };
 
 export default function EventsSection() {
@@ -101,22 +101,23 @@ export default function EventsSection() {
 
       {/* View more */}
       <div className="text-green-600 font-semibold hover:underline cursor-pointer">View more</div>
+{/* EVENT*/}
+    <div className="flex items-center gap-3 border border-gray-200 rounded-md p-4">
+  <div className="w-10 h-10 relative">
+    <Image
+      src="https://img.icons8.com/?size=48&id=ZfQHCnh6ImEM&format=png"
+      alt="Events calendar icon"
+      fill
+      className="object-contain"
+    />
+  </div>
+  <div>
+    <p className="text-sm font-semibold text-gray-900">Events calendar</p>
+    <p className="text-sm text-gray-600">View upcoming events in other stocks</p>
+  </div>
+</div>
 
-      {/* EVENT */}
-      <div className="flex flex-col sm:flex-row items-center gap-3 border border-gray-200 rounded-md p-4">
-        <div className="w-10 h-10 relative">
-          <Image
-            src="https://img.icons8.com/?size=48&id=ZfQHCnh6ImEM&format=png"
-            alt="Events calendar icon"
-            fill
-            className="object-contain"
-          />
-        </div>
-        <div className="text-center sm:text-left">
-          <p className="text-sm font-semibold text-gray-900">Events calendar</p>
-          <p className="text-sm text-gray-600">View upcoming events in other stocks</p>
-        </div>
-      </div>
+
     </div>
   );
 }
