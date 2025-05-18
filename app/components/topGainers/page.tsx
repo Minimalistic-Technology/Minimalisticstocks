@@ -2,24 +2,65 @@
 
 import Image from "next/image";
 import { useState, useEffect } from "react";
-
-type Stock = {
-  name: string;
-  price: string;
-  change: string;
-  image: string;
-};
+import { FaImage } from "react-icons/fa";
 
 const StockFilterSectionLosers = () => {
   const [selectedCategory, setSelectedCategory] = useState<"Large" | "Mid" | "Small">("Large");
-  const [losersData, setLosersData] = useState<Stock[]>([]);
+  const [largeCapsData, setLargeCapsData] = useState<
+    { name: string; price: string; change: string; image: string }[]
+  >([]);
+  const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [imageErrors, setImageErrors] = useState<{ [key: string]: boolean }>({});
 
-  // Fetch data from the API
+  const midCaps = [
+    {
+      name: "Coforge",
+      price: "₹5,112.00",
+      change: "+112.50 (2.25%)",
+      image: "https://assets-netstorage.groww.in/stock-assets/logos2/Coforge.png",
+    },
+    {
+      name: "Persistent",
+      price: "₹4,215.30",
+      change: "-78.20 (1.82%)",
+      image: "https://assets-netstorage.groww.in/stock-assets/logos2/Persistent.png",
+    },
+    {
+      name: "Honeywell",
+      price: "₹38,123.00",
+      change: "+210.00 (0.55%)",
+      image: "https://assets-netstorage.groww.in/stock-assets/logos2/Honeywell.png",
+    },
+  ];
+
+  const smallCaps = [
+    {
+      name: "Zee Media",
+      price: "₹14.80",
+      change: "+0.35 (2.42%)",
+      image: "https://assets-netstorage.groww.in/stock-assets/logos2/ZeeMedia.png",
+    },
+    {
+      name: "RattanIndia Power",
+      price: "₹7.40",
+      change: "+0.10 (1.37%)",
+      image: "https://assets-netstorage.groww.in/stock-assets/logos2/RattanIndia.png",
+    },
+    {
+      name: "3i Infotech",
+      price: "₹43.10",
+      change: "-1.00 (2.27%)",
+      image: "https://assets-netstorage.groww.in/stock-assets/logos2/3iInfotech.png",
+    },
+  ];
+
+  // Fetch data for Large Caps (Top Gainers)
   useEffect(() => {
-    const fetchLosers = async () => {
+    const fetchLargeCaps = async () => {
+      setLoading(true);
+      setError(null);
       try {
-        // Uncomment the following fetch logic once the API is fixed
         const response = await fetch("http://localhost:5000/api/stocks/producttools/gettopgainers");
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
@@ -30,7 +71,6 @@ const StockFilterSectionLosers = () => {
         }
         const data = await response.json();
 
-        // Format the data and filter for losers (negative change)
         const formattedData = data.map((item: any) => ({
           name: item.name,
           price: item.price,
@@ -38,53 +78,34 @@ const StockFilterSectionLosers = () => {
           image: item.image,
         }));
 
-        // Filter for stocks with negative change (losers)
-        const losers = formattedData.filter((item: Stock) =>
-          item.change.startsWith("-")
-        );
-
-        setLosersData(losers);
+        setLargeCapsData(formattedData);
       } catch (error) {
-        console.error("Error fetching Top Losers data:", error);
-        setError("Failed to load Top Losers data. Please try again later.");
+        console.error("Error fetching Large Cap Gainers data:", error);
+        setError("Failed to load Large Cap Gainers data. Please try again later.");
+      } finally {
+        setLoading(false);
       }
     };
 
-    fetchLosers();
+    fetchLargeCaps();
   }, []);
 
-  // Categorize stocks based on price
-  const categorizeStocks = (stocks: Stock[]) => {
-    const largeCaps = stocks.filter((stock) => {
-      const price = parseFloat(stock.price.replace("₹", "").replace(",", ""));
-      return price >= 1000;
-    });
-
-    const midCaps = stocks.filter((stock) => {
-      const price = parseFloat(stock.price.replace("₹", "").replace(",", ""));
-      return price >= 500 && price < 1000;
-    });
-
-    const smallCaps = stocks.filter((stock) => {
-      const price = parseFloat(stock.price.replace("₹", "").replace(",", ""));
-      return price < 500;
-    });
-
-    return { largeCaps, midCaps, smallCaps };
-  };
-
-  // Get data based on selected category
   const getData = () => {
-    const { largeCaps, midCaps, smallCaps } = categorizeStocks(losersData);
-    if (selectedCategory === "Large") return largeCaps;
+    if (selectedCategory === "Large") return largeCapsData;
     if (selectedCategory === "Mid") return midCaps;
     return smallCaps;
   };
 
+  const handleImageError = (imageSrc: string) => {
+    setImageErrors((prev) => ({ ...prev, [imageSrc]: true }));
+  };
+
   return (
-    <section>
+    <section className="px-4 sm:px-0">
       {/* Display error message if any */}
-      {error && <p className="text-red-500 mb-4">{error}</p>}
+      {error && selectedCategory === "Large" && (
+        <p className="text-red-500 mb-4">{error}</p>
+      )}
 
       <div className="flex items-center space-x-4 mb-6">
         <div className="w-px h-6 bg-gray-300"></div>
@@ -95,8 +116,8 @@ const StockFilterSectionLosers = () => {
             className={`px-4 py-1 rounded-full text-sm border transition-all duration-200
               ${
                 selectedCategory === cat
-                  ? "bg-lime-100 text-green-700 font-semibold border-lime-300"
-                  : "bg-white text-gray-700 border-gray-300"
+                  ? "bg-lime-100 text-green-700 font-semibold border-green-300"
+                  : "bg-white text-gray-700"
               }`}
           >
             {cat}
@@ -105,19 +126,28 @@ const StockFilterSectionLosers = () => {
       </div>
 
       <div className="flex space-x-4 overflow-x-auto scrollbar-hide">
-        {losersData.length > 0 ? (
+        {loading && selectedCategory === "Large" ? (
+          <p>Loading Large Cap Gainers...</p>
+        ) : getData().length > 0 ? (
           getData().map((item, idx) => (
             <div
               key={idx}
-              className="w-[150px] h-[150px] border rounded-lg p-2 bg-white shadow-sm text-[11px] relative"
+              className="min-w-[120px] sm:min-w-[150px] w-[120px] sm:w-[150px] h-[150px] border rounded-lg p-2 bg-white shadow-sm text-[10px] sm:text-[11px] relative"
             >
-              <Image
-                src={item.image}
-                alt={item.name}
-                width={24}
-                height={24}
-                className="absolute top-2 left-2"
-              />
+              {imageErrors[item.image] ? (
+                <div className="absolute top-2 left-2">
+                  <FaImage size={24} className="text-gray-400" />
+                </div>
+              ) : (
+                <Image
+                  src={item.image}
+                  alt={item.name}
+                  width={24}
+                  height={24}
+                  className="absolute top-2 left-2"
+                  onError={() => handleImageError(item.image)}
+                />
+              )}
               <div className="mt-8 font-medium">{item.name}</div>
               <div className="text-xs mt-1 text-black">{item.price}</div>
               <div
@@ -130,7 +160,7 @@ const StockFilterSectionLosers = () => {
             </div>
           ))
         ) : (
-          <p>Loading Top Losers...</p>
+          <p>No data available for {selectedCategory} Cap Stocks.</p>
         )}
       </div>
     </section>

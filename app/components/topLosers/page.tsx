@@ -1,10 +1,15 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const StockFilterSectionLosers = () => {
-  const [selectedCategory, setSelectedCategory] = useState("Large");
+  const [selectedCategory, setSelectedCategory] = useState<"Large" | "Mid" | "Small">("Large");
+  const [smallCapsData, setSmallCapsData] = useState<
+    { name: string; price: string; change: string; image: string }[]
+  >([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
   const largeCaps = [
     {
@@ -54,41 +59,64 @@ const StockFilterSectionLosers = () => {
     },
   ];
 
-  const smallCaps = [
-    {
-      name: "Zee Media",
-      price: "₹14.80",
-      change: "+0.35 (2.42%)",
-      image: "https://assets-netstorage.groww.in/stock-assets/logos2/ZeeMedia.png",
-    },
-    {
-      name: "RattanIndia Power",
-      price: "₹7.40",
-      change: "+0.10 (1.37%)",
-      image: "https://assets-netstorage.groww.in/stock-assets/logos2/RattanIndia.png",
-    },
-    {
-      name: "3i Infotech",
-      price: "₹43.10",
-      change: "-1.00 (2.27%)",
-      image: "https://assets-netstorage.groww.in/stock-assets/logos2/3iInfotech.png",
-    },
-  ];
+  // Fetch smallCaps data from the API
+  useEffect(() => {
+    const fetchSmallCaps = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await fetch("http://localhost:5000/api/stocks/producttools/toplooserssmallget");
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const contentType = response.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+          throw new Error("Response is not JSON");
+        }
+        const data = await response.json();
+
+        // Format the data to match the expected structure
+        const formattedData = data.map((item: any) => ({
+          name: item.name,
+          price: item.price,
+          change: item.change,
+          image: item.image,
+        }));
+
+        // Filter for stocks with negative change (losers)
+        const losers = formattedData.filter((item: { change: string }) =>
+          item.change.startsWith("-")
+        );
+
+        setSmallCapsData(losers);
+      } catch (error) {
+        console.error("Error fetching Small Cap Losers data:", error);
+        setError("Failed to load Small Cap Losers data. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSmallCaps();
+  }, []);
 
   const getData = () => {
     if (selectedCategory === "Large") return largeCaps;
     if (selectedCategory === "Mid") return midCaps;
-    return smallCaps;
+    return smallCapsData;
   };
 
   return (
     <section>
+      {/* Display error message if any */}
+      {error && <p className="text-red-500 mb-4">{error}</p>}
+
       <div className="flex items-center space-x-4 mb-6">
         <div className="w-px h-6 bg-gray-300"></div>
         {["Large", "Mid", "Small"].map((cat) => (
           <button
             key={cat}
-            onClick={() => setSelectedCategory(cat)}
+            onClick={() => setSelectedCategory(cat as "Large" | "Mid" | "Small")}
             className={`px-4 py-1 rounded-full text-sm border transition-all duration-200
               ${
                 selectedCategory === cat
@@ -101,30 +129,40 @@ const StockFilterSectionLosers = () => {
         ))}
       </div>
 
-      <div className="flex space-x-4 overflow-x-auto scrollbar-hide">
-        {getData().map((item, idx) => (
-          <div
-            key={idx}
-            className="w-[150px] h-[150px] border rounded-lg p-2 bg-white shadow-sm text-[11px] relative"
-          >
-            <Image
-              src={item.image}
-              alt={item.name}
-              width={24}
-              height={24}
-              className="absolute top-2 left-2"
-            />
-            <div className="mt-8 font-medium">{item.name}</div>
-            <div className="text-xs mt-1 text-black">{item.price}</div>
+      {/* Responsive container */}
+      <div className="flex space-x-4 overflow-x-auto scrollbar-hide
+                      sm:grid sm:grid-cols-2 sm:gap-4 sm:space-x-0
+                      md:grid md:grid-cols-3
+                      lg:grid lg:grid-cols-4">
+        {loading && selectedCategory === "Small" ? (
+          <p>Loading Small Cap Losers...</p>
+        ) : getData().length > 0 ? (
+          getData().map((item, idx) => (
             <div
-              className={`text-xs mt-1 ${
-                item.change.startsWith("-") ? "text-red-500" : "text-green-600"
-              }`}
+              key={idx}
+              className="w-[150px] sm:w-full h-[150px] border rounded-lg p-2 bg-white shadow-sm text-[11px] relative"
             >
-              {item.change}
+              <Image
+                src={item.image}
+                alt={item.name}
+                width={24}
+                height={24}
+                className="absolute top-2 left-2"
+              />
+              <div className="mt-8 font-medium">{item.name}</div>
+              <div className="text-xs mt-1 text-black">{item.price}</div>
+              <div
+                className={`text-xs mt-1 ${
+                  item.change.startsWith("-") ? "text-red-500" : "text-green-600"
+                }`}
+              >
+                {item.change}
+              </div>
             </div>
-          </div>
-        ))}
+          ))
+        ) : (
+          <p>No data available for {selectedCategory} Cap Losers.</p>
+        )}
       </div>
     </section>
   );

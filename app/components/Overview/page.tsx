@@ -2,6 +2,8 @@
 
 import FinancialChart from "../financial/page"; // or correct relative path
 import CompanyInfoCard from "../about/page";
+import { useState, useEffect } from "react";
+
 const getPositionPercent = (low: number, high: number, current: number) => {
   return ((current - low) / (high - low)) * 100;
 };
@@ -40,6 +42,86 @@ export default function Overview() {
 
   const maxBidQty = Math.max(...bidData.map((b) => b.qty));
   const maxAskQty = Math.max(...askData.map((a) => a.qty));
+
+  const [statsData, setStatsData] = useState<{ label: string; value: string }[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const [fundamentalsData, setFundamentalsData] = useState<{ label: string; value: string }[]>([]);
+  const [loadingFundamentals, setLoadingFundamentals] = useState<boolean>(true);
+  const [errorFundamentals, setErrorFundamentals] = useState<string | null>(null);
+
+  // Fetch stats data from the API
+  useEffect(() => {
+    const fetchStatsData = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await fetch("http://localhost:5000/api/buystocks/get");
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const contentType = response.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+          throw new Error("Response is not JSON");
+        }
+        const data = await response.json();
+
+        // Format the data to match the expected structure
+        const formattedData = data.map((item: any) => ({
+          label: item.label,
+          value: item.value,
+        }));
+
+        setStatsData(formattedData);
+      } catch (error) {
+        console.error("Error fetching Stats data:", error);
+        setError("Failed to load stats data. Please try again later.");
+        // Fallback to empty array if API fails
+        setStatsData([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStatsData();
+  }, []);
+
+  // Fetch fundamentals data from the API
+  useEffect(() => {
+    const fetchFundamentalsData = async () => {
+      setLoadingFundamentals(true);
+      setErrorFundamentals(null);
+      try {
+        const response = await fetch("http://localhost:5000/api/buystocks/statsget");
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const contentType = response.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+          throw new Error("Response is not JSON");
+        }
+        const data = await response.json();
+
+        // Format the data to match the expected structure
+        const formattedData = data.map((item: any) => ({
+          label: item.label,
+          value: item.value,
+        }));
+
+        setFundamentalsData(formattedData);
+      } catch (error) {
+        console.error("Error fetching Fundamentals data:", error);
+        setErrorFundamentals("Failed to load fundamentals data. Please try again later.");
+        // Fallback to empty array if API fails
+        setFundamentalsData([]);
+      } finally {
+        setLoadingFundamentals(false);
+      }
+    };
+
+    fetchFundamentalsData();
+  }, []);
 
   return (
     <div className="flex flex-col gap-8">
@@ -105,19 +187,20 @@ export default function Overview() {
 
         {/* --- Stats Row --- */}
         <div className="flex flex-wrap justify-between gap-y-4 text-sm">
-          {[
-            { label: "Open", value: "₹1,726.00" },
-            { label: "Prev. Close", value: "₹1,699.40" },
-            { label: "Volume", value: "1,56,67,071" },
-            { label: "Total Traded Value", value: "₹2,776 Cr" },
-            { label: "Upper Circuit", value: "₹2,039.20" },
-            { label: "Lower Circuit", value: "₹1,359.60" },
-          ].map((item, idx) => (
-            <div key={idx} className="flex flex-col pr-4">
-              <span className="text-gray-500">{item.label}</span>
-              <span className="font-semibold">{item.value}</span>
-            </div>
-          ))}
+          {loading ? (
+            <p>Loading stats...</p>
+          ) : error ? (
+            <p className="text-red-500">{error}</p>
+          ) : statsData.length > 0 ? (
+            statsData.map((item, idx) => (
+              <div key={idx} className="flex flex-col pr-4">
+                <span className="text-gray-500">{item.label}</span>
+                <span className="font-semibold">{item.value}</span>
+              </div>
+            ))
+          ) : (
+            <p>No stats data available.</p>
+          )}
         </div>
       </div>
       <div className="p-8 bg-white rounded-xl shadow-sm">
@@ -204,26 +287,20 @@ export default function Overview() {
         <div className="grid grid-cols-2 gap-x-6 text-sm">
           {/* Left Column */}
           <div className="flex flex-col gap-3 pr-4">
-            <div className="flex justify-between">
-              <span>Market Cap</span>
-              <span className="font-semibold">₹44,708Cr</span>
-            </div>
-            <div className="flex justify-between">
-              <span>P/E Ratio (TTM)</span>
-              <span className="font-semibold">55.96</span>
-            </div>
-            <div className="flex justify-between">
-              <span>P/B Ratio</span>
-              <span className="font-semibold">8.47</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Industry P/E</span>
-              <span className="font-semibold">47.33</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Debt to Equity</span>
-              <span className="font-semibold">0.10</span>
-            </div>
+            {loadingFundamentals ? (
+              <p>Loading fundamentals...</p>
+            ) : errorFundamentals ? (
+              <p className="text-red-500">{errorFundamentals}</p>
+            ) : fundamentalsData.length > 0 ? (
+              fundamentalsData.map((item, idx) => (
+                <div key={idx} className="flex justify-between">
+                  <span>{item.label}</span>
+                  <span className="font-semibold">{item.value}</span>
+                </div>
+              ))
+            ) : (
+              <p>No fundamentals data available.</p>
+            )}
           </div>
 
           {/* Right Column with Left Dashed Border */}

@@ -4,7 +4,6 @@ import { useState } from "react";
 import Image from "next/image";
 import { FaPlus } from "react-icons/fa";
 
-
 type Stock = {
   name: string;
   icon: string;
@@ -81,29 +80,29 @@ export default function StockTable() {
   );
 
   return (
-    <div className="w-full max-w-4xl mx-auto">
+    <div className="w-full max-w-4xl mx-auto px-4 sm:px-6">
       {/* Table Header */}
-      <div className="grid grid-cols-4 font-semibold text-gray-600 mb-2 text-sm">
-        <span>Company</span>
-        <span></span>
-        <span>Market Price</span>
-        <span>Watchlist</span>
+      <div className="grid grid-cols-4 sm:grid-cols-6 font-semibold text-gray-600 mb-2 text-sm sm:text-base">
+        <span className="col-span-1 sm:col-span-2">Company</span>
+        <span className="hidden sm:block"></span>
+        <span className="col-span-1 sm:col-span-2">Market Price</span>
+        <span className="col-span-1 sm:col-span-1">Watchlist</span>
       </div>
 
       {/* Table Rows */}
       {paginatedStocks.map((stock, index) => (
         <div
           key={index}
-          className="grid grid-cols-4 items-start text-sm py-4 border-b"
+          className="grid grid-cols-4 sm:grid-cols-6 items-start text-sm sm:text-base py-4 border-b"
         >
-          <div className="flex items-center space-x-2 col-span-1">
+          <div className="flex items-center space-x-2 col-span-2 sm:col-span-2">
             <Image src={stock.icon} alt={stock.name} width={24} height={24} />
-            <span className="font-medium">{stock.name}</span>
+            <span className="font-medium truncate">{stock.name}</span>
           </div>
 
-          <div></div>
+          <div className="hidden sm:block"></div>
 
-          <div className="flex flex-col">
+          <div className="flex flex-col col-span-1 sm:col-span-2">
             <span className="text-black font-semibold">₹{stock.price}</span>
             <span
               className={`text-xs mt-1 ${
@@ -116,7 +115,7 @@ export default function StockTable() {
             </span>
           </div>
 
-          <div className="flex justify-center">
+          <div className="flex justify-center col-span-1 sm:col-span-1">
             <div className="w-6 h-6 flex items-center justify-center bg-green-100 text-green-600 rounded-full cursor-pointer">
               <FaPlus size={10} />
             </div>
@@ -125,10 +124,11 @@ export default function StockTable() {
       ))}
 
       {/* Pagination */}
-      <div className="flex items-center justify-center space-x-2 mt-6 text-sm font-medium text-gray-700">
+      <div className="flex flex-wrap items-center justify-center space-x-1 sm:space-x-2 mt-6 text-sm sm:text-base font-medium text-gray-700">
         <button
-          className="px-2 py-1 hover:text-green-600"
+          className="px-2 py-1 hover:text-green-600 rounded"
           onClick={() => handlePageChange(currentPage - 1)}
+          aria-label="Previous Page"
         >
           &lt;
         </button>
@@ -141,13 +141,15 @@ export default function StockTable() {
                 ? "bg-green-100 text-green-700 font-semibold"
                 : "hover:bg-green-50"
             }`}
+            aria-current={num === currentPage ? "page" : undefined}
           >
             {num}
           </button>
         ))}
         <button
-          className="px-2 py-1 hover:text-green-600"
+          className="px-2 py-1 hover:text-green-600 rounded"
           onClick={() => handlePageChange(currentPage + 1)}
+          aria-label="Next Page"
         >
           &gt;
         </button>

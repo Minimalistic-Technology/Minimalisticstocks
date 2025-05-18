@@ -103,7 +103,8 @@ const Footer = () => {
   return (
     <footer className="bg-gray-100 text-sm text-gray-800 px-6 py-10">
       <div className="max-w-7xl mx-auto">
-        <div className="grid md:grid-cols-4 gap-8">
+        {/* Responsive grid: 1 col on xs, 2 cols on sm, 4 cols on md+ */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
           <div>
             <h2 className="text-lg font-semibold">Groww</h2>
             <p className="mt-2">Vaishnavi Tech Park, South Tower, 3rd Floor</p>
@@ -111,7 +112,7 @@ const Footer = () => {
             <p>Bengaluru - 560103</p>
             <p>Karnataka</p>
             <a href="#" className="text-blue-600">Contact Us</a>
-            <div className="flex space-x-3 mt-4">
+            <div className="flex space-x-3 mt-4 text-xl">
               <FaFacebookF />
               <FaTwitter />
               <FaYoutube />
@@ -162,13 +163,14 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="flex justify-between flex-wrap items-center border-t mt-10 pt-4 text-sm">
-          <p>
+        {/* Bottom flex - wrap on small screens */}
+        <div className="flex flex-wrap justify-between items-center border-t mt-10 pt-4 text-sm gap-4">
+          <p className="flex-1 min-w-[250px]">
             © 2016-2025 Groww. All rights reserved, Built with <span className="text-red-500">❤</span> in India
           </p>
-          <div className="flex space-x-3">
-            <FaApple className="text-2xl" />
-            <FaGooglePlay className="text-2xl" />
+          <div className="flex space-x-3 text-2xl">
+            <FaApple />
+            <FaGooglePlay />
           </div>
         </div>
 

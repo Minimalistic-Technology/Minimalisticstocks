@@ -19,18 +19,16 @@ const Header = () => {
   return (
     <header className="w-full shadow bg-white">
       {/* Top Row */}
-      <div className="px-4 md:px-8 py-3 flex justify-between items-center">
+      <div className="px-4 md:px-8 py-3 flex flex-wrap md:flex-nowrap justify-between items-center gap-3">
         {/* Logo & Nav */}
-        <div className="flex items-center space-x-6">
-          <div className="flex items-center space-x-2">
+        <div className="flex flex-wrap md:flex-nowrap items-center space-x-4 md:space-x-6 w-full md:w-auto">
+          <div className="flex items-center space-x-2 flex-shrink-0">
             <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-500 to-teal-400"></div>
             <span className="font-bold text-xl text-gray-700">Groww</span>
           </div>
-          <nav className="flex items-center space-x-6 text-gray-500">
+          <nav className="flex flex-wrap items-center space-x-4 md:space-x-6 text-gray-500 w-full md:w-auto">
             <Link href="/explore/stocks">
-              <span className="hover:text-gray-900 cursor-pointer">
-                Explore
-              </span>
+              <span className="hover:text-gray-900 cursor-pointer">Explore</span>
             </Link>
             <Link href="/dashboard">
               <span className="text-green-500 font-medium cursor-pointer">
@@ -41,7 +39,7 @@ const Header = () => {
         </div>
 
         {/* Search */}
-        <div className="hidden lg:block flex-1 mx-6">
+        <div className="hidden lg:block flex-1 min-w-[220px] mx-6">
           <input
             type="text"
             placeholder="Search Groww..."
@@ -50,7 +48,7 @@ const Header = () => {
         </div>
 
         {/* Icons & Profile */}
-        <div className="flex items-center space-x-4 relative">
+        <div className="flex items-center space-x-3 md:space-x-4 relative shrink-0">
           <Bell className="w-5 h-5 text-gray-700 cursor-pointer" />
           <Wallet className="w-5 h-5 text-gray-700 cursor-pointer" />
           <ShoppingCart className="w-5 h-5 text-gray-700 cursor-pointer" />
@@ -84,15 +82,11 @@ const Header = () => {
                   <li className="p-3 hover:bg-gray-100 cursor-pointer">
                     🎧 24 x 7 Customer Support
                   </li>
-                  <li className="p-3 hover:bg-gray-100 cursor-pointer">
-                    📄 Reports
-                  </li>
+                  <li className="p-3 hover:bg-gray-100 cursor-pointer">📄 Reports</li>
                 </ul>
                 <div className="p-3 flex justify-between items-center text-sm text-gray-700 border-t">
                   <span>🌞</span>
-                  <button className="text-red-500 hover:underline">
-                    Log out
-                  </button>
+                  <button className="text-red-500 hover:underline">Log out</button>
                 </div>
               </div>
             )}
@@ -102,8 +96,8 @@ const Header = () => {
       </div>
 
       {/* Tab Navigation (Stocks, F&O, Mutual Funds) */}
-      <div className="px-4 md:px-8 ">
-        <nav className="flex space-x-6 text-md font-medium pt-3">
+      <div className="px-4 md:px-8">
+        <nav className="flex flex-wrap gap-6 text-md font-medium pt-3">
           {tabs.map((tab) => (
             <Link
               key={tab.href}

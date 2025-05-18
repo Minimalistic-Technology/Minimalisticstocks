@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from "react";
 
-
 type IndexAPIResponseItem = {
   _id: string;
   name?: string;
@@ -12,7 +11,6 @@ type IndexAPIResponseItem = {
   oneDayChangePercent?: number;
   __v: number;
 };
-
 
 type FormattedIndexData = {
   name: string;
@@ -53,39 +51,41 @@ const IndicesSection: React.FC = () => {
   }, []);
 
   return (
-    <section>
+    <section className="px-4 sm:px-6 lg:px-8 py-6">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-2xl font-bold">Indices</h2>
+        <h2 className="text-xl sm:text-2xl font-bold">Indices</h2>
         <a
           href="#"
-          className="text-green-600 text-sm font-medium hover:underline"
+          className="text-green-600 text-sm sm:text-base font-medium hover:underline"
         >
           All Indices
         </a>
       </div>
 
-      <div className="overflow-x-auto flex space-x-4 scrollbar-hide">
-       {indicesData.map((fund, i) => (
-  <div
-    key={i}
-    className="min-w-[200px] rounded-lg border border-gray-200 shadow-sm hover:shadow-md p-4 bg-white transition"
-  >
-    <p className="font-medium">{fund.name}</p>
-    <div className="flex justify-between items-center text-sm">
-      <p className="text-black">{fund.lasttraded}</p>
-      <p
-        className={`${
-          fund.daychange.startsWith("-")
-            ? "text-red-500"
-            : "text-green-500"
-        }`}
+      <div
+        className="flex gap-4 overflow-x-auto pb-2"
+        style={{ scrollbarWidth: "thin", scrollbarColor: "#a0aec0 transparent" }}
       >
-        {fund.daychange}
-      </p>
-    </div>
-  </div>
-))}
-
+        {indicesData.map((fund, i) => (
+          <div
+            key={i}
+            className="min-w-[180px] sm:min-w-[220px] rounded-xl border border-gray-200 shadow-sm hover:shadow-md p-4 bg-white transition duration-200 ease-in-out flex-shrink-0"
+          >
+            <p className="font-semibold text-sm sm:text-base truncate">{fund.name}</p>
+            <div className="flex justify-between items-center text-sm mt-2">
+              <p className="text-gray-800 font-medium truncate">{fund.lasttraded}</p>
+              <p
+                className={`font-semibold ${
+                  fund.daychange.startsWith("-")
+                    ? "text-red-500"
+                    : "text-green-500"
+                }`}
+              >
+                {fund.daychange}
+              </p>
+            </div>
+          </div>
+        ))}
       </div>
     </section>
   );
