@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Bell, Wallet, ShoppingCart, ChevronDown } from "lucide-react";
+import { Bell, Wallet, ShoppingCart, ChevronDown, Settings } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -69,11 +69,16 @@ const Header = () => {
             </div>
             {profileOpen && (
               <div className="absolute right-0 mt-2 w-72 bg-white border border-gray-200 rounded-lg shadow-md z-50">
-                <div className="p-4 border-b">
-                  <h3 className="font-semibold text-gray-800">Mahesh Kumar</h3>
-                  <p className="text-sm text-gray-500">
-                    maheshkumar10042005@gmail.com
-                  </p>
+                <div className="p-4 border-b flex justify-between items-center">
+                  <div>
+                    <h3 className="font-semibold text-gray-800">Mahesh Kumar</h3>
+                    <p className="text-sm text-gray-500">
+                      maheshkumar10042005@gmail.com
+                    </p>
+                  </div>
+                  <Link href="/user-profile">
+                    <Settings className="w-5 h-5 text-gray-500 cursor-pointer hover:text-gray-700" />
+                  </Link>
                 </div>
                 <ul className="text-sm text-gray-700 divide-y">
                   <li className="p-3 hover:bg-gray-100 cursor-pointer">

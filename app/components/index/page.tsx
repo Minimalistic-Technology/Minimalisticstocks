@@ -48,8 +48,7 @@ const IndicesSection: React.FC = () => {
           };
         });
 
-        // Limit to first 3 indices
-        setIndicesData(formattedData.slice(0, 3));
+        setIndicesData(formattedData);
       } catch (err) {
         console.error("Failed to fetch indices", err);
       }
@@ -59,9 +58,11 @@ const IndicesSection: React.FC = () => {
   }, []);
 
   return (
-    <section className="">
+    <section className="py-6 pl-0">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl sm:text-2xl font-semibold text-gray-800">Indices</h2>
+        <h2 className="text-xl sm:text-2xl font-semibold text-gray-800">
+          Indices
+        </h2>
         <a
           href="#"
           className="text-green-600 text-sm sm:text-base font-medium hover:underline"
@@ -77,9 +78,13 @@ const IndicesSection: React.FC = () => {
               key={i}
               className="w-[200px] h-[74px] rounded-lg border border-gray-200 p-2 bg-white flex-shrink-0"
             >
-              <p className="font-medium text-[13px] text-gray-800 truncate">{fund.name}</p>
+              <p className="font-medium text-[13px] text-gray-800 truncate">
+                {fund.name}
+              </p>
               <div className="flex justify-between items-center text-[11px] mt-1">
-                <p className="text-gray-800 font-medium truncate">{fund.lasttraded}</p>
+                <p className="text-gray-800 font-medium truncate">
+                  {fund.lasttraded}
+                </p>
                 <div className="flex items-center space-x-1">
                   <p className="text-gray-800 font-medium">{fund.daychange}</p>
                   <p className={`font-medium ${fund.changeColor}`}>

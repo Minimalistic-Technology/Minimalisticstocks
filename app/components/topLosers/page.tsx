@@ -1,9 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
-import { useState } from "react";
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 
 const StockFilterSectionLosers = () => {
   const [selectedCategory, setSelectedCategory] = useState<"Large" | "Mid" | "Small">("Large");
@@ -132,32 +130,38 @@ const StockFilterSectionLosers = () => {
       </div>
 
       <div className="flex space-x-4 overflow-x-auto scrollbar-hide">
-        {getData().map((item, idx) => (
-          <div
-            key={idx}
-            className="w-[150px] h-[150px] border rounded-lg p-2 bg-white shadow-sm text-[11px] relative"
-          >         <Image
-              src={item.image}
-              alt={item.name}
-              width={24}
-              height={24}
-              className="absolute top-2 left-2"
-            />
-            <div className="mt-8 font-medium">{item.name}</div>
-            <div className="text-xs mt-1 text-black">{item.price}</div>
+        {loading && selectedCategory === "Small" ? (
+          <p>Loading Small Cap Losers...</p>
+        ) : getData().length > 0 ? (
+          getData().map((item, idx) => (
             <div
-              className={`text-xs mt-1 ${
-                item.change.startsWith("-") ? "text-red-500" : "text-green-600"
-              }`}
+              key={idx}
+              className="w-[150px] h-[150px] border rounded-lg p-2 bg-white shadow-sm text-[11px] relative"
             >
-              {item.change}
+              <Image
+                src={item.image}
+                alt={item.name}
+                width={24}
+                height={24}
+                className="absolute top-2 left-2"
+              />
+              <div className="mt-8 font-medium">{item.name}</div>
+              <div className="text-xs mt-1 text-black">{item.price}</div>
+              <div
+                className={`text-xs mt-1 ${
+                  item.change.startsWith("-") ? "text-red-500" : "text-green-600"
+                }`}
+              >
+                {item.change}
+              </div>
             </div>
-          </div>
-        ))}
+          ))
+        ) : (
+          <p>No data available for {selectedCategory} Cap Losers.</p>
+        )}
       </div>
     </section>
   );
 };
 
 export default StockFilterSectionLosers;
-
