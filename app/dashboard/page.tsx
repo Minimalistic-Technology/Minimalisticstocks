@@ -1,19 +1,22 @@
 'use client';
 
 import Header from '../components/header/page';
+import Footer from 'app/components/Footer';
 import Image from 'next/image';
 
+
 export default function DashboardPage() {
+  
+
   return (
     <main className="min-h-screen bg-white text-gray-900 transition-colors">
       <Header />
-
       <section className="max-w-7xl mx-auto px-6 py-12 flex flex-col md:flex-row items-center justify-between">
         {/* Image Section */}
         <div className="w-full md:w-1/2 flex justify-center mb-10 md:mb-0">
-          <div className="relative w-[450px] h-[350px]">
+          <div className="relative w-full max-w-[450px] h-[250px] sm:h-[300px] md:h-[350px]">
             <Image
-              src="/images/stocks-cluster.png" // Use your renamed image here
+              src="https://assets-netstorage.groww.in/web-assets/billion_groww_desktop/prod/_next/static/media/intro.981292ef.png" 
               alt="Stocks Logos"
               layout="fill"
               objectFit="contain"
@@ -23,17 +26,19 @@ export default function DashboardPage() {
         </div>
 
         {/* Text Section */}
-        <div className="w-full md:w-1/2 text-center md:text-left">
+        <div className="w-full md:w-1/2 text-center md:text-left px-4 md:px-0">
           <p className="text-sm font-semibold mb-1 text-gray-600">Introducing</p>
-          <h1 className="text-4xl font-bold mb-4 text-gray-900">Stocks</h1>
-          <p className="mb-6 text-lg text-gray-600">
+          <h1 className="text-3xl sm:text-4xl font-bold mb-4 text-gray-900">Stocks</h1>
+          <p className="mb-6 text-base sm:text-lg text-gray-600">
             Investing in stocks will never be the same again
           </p>
           <button className="px-6 py-3 bg-green-500 text-white font-semibold rounded-md hover:bg-green-600 transition">
             TRY IT OUT
           </button>
         </div>
-      </section>
+      </section> 
+      
+      <Footer />
     </main>
   );
 }
