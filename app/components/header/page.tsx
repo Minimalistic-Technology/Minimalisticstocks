@@ -76,7 +76,7 @@ const Header = () => {
                       maheshkumar10042005@gmail.com
                     </p>
                   </div>
-                  <Link href="/user-profile">
+                  <Link href="/user-profile/basic-details">
                     <Settings className="w-5 h-5 text-gray-500 cursor-pointer hover:text-gray-700" />
                   </Link>
                 </div>

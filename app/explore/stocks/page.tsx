@@ -1,6 +1,5 @@
 "use client";
 
-import StockFilterSectionLosers from "app/components/topLosers/page";
 import StockFilterSection from "app/components/topGainers/page";
 import IndicesSection from "app/components/index/page";
 import Header from "app/components/header/page";
@@ -46,78 +45,77 @@ const stocks = [
 export default function Stocks() {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<"Large" | "Mid" | "Small">("Large");
-  const [largeCapsData, setLargeCapsData] = useState<
-    { name: string; price: string; change: string; image: string }[]
-  >([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
 
-  const midCaps = [
-    {
-      name: "Coforge",
-      price: "₹5,112.00",
-      change: "+112.50 (2.25%)",
-      image: "https://assets-netstorage.groww.in/stock-assets/logos2/Coforge.png",
-    },
-    {
-      name: "Persistent",
-      price: "₹4,215.30",
-      change: "-78.20 (1.82%)",
-      image: "https://assets-netstorage.groww.in/stock-assets/logos2/Persistent.png",
-    },
-    {
-      name: "Honeywell",
-      price: "₹38,123.00",
-      change: "+210.00 (0.55%)",
-      image: "https://assets-netstorage.groww.in/stock-assets/logos2/Honeywell.png",
-    },
-  ];
+  // State for Top Gainers (Large, Mid, Small caps)
+  type StockItem = { _id: string; name: string; price: string; change: string; image: string };
+  const [largeCapsData, setLargeCapsData] = useState<StockItem[]>([]);
+  const [midCapsData, setMidCapsData] = useState<StockItem[]>([]);
+  const [smallCapsData, setSmallCapsData] = useState<StockItem[]>([]);
+  const [loadingLargeCaps, setLoadingLargeCaps] = useState<boolean>(true);
+  const [loadingMidCaps, setLoadingMidCaps] = useState<boolean>(true);
+  const [loadingSmallCaps, setLoadingSmallCaps] = useState<boolean>(true);
+  const [errorLargeCaps, setErrorLargeCaps] = useState<string | null>(null);
+  const [errorMidCaps, setErrorMidCaps] = useState<string | null>(null);
+  const [errorSmallCaps, setErrorSmallCaps] = useState<string | null>(null);
 
-  const smallCaps = [
-    {
-      name: "Zee Media",
-      price: "₹14.80",
-      change: "+0.35 (2.42%)",
-      image: "https://assets-netstorage.groww.in/stock-assets/logos2/ZeeMedia.png",
-    },
-    {
-      name: "RattanIndia Power",
-      price: "₹7.40",
-      change: "+0.10 (1.37%)",
-      image: "https://assets-netstorage.groww.in/stock-assets/logos2/RattanIndia.png",
-    },
-    {
-      name: "3i Infotech",
-      price: "₹43.10",
-      change: "-1.00 (2.27%)",
-      image: "https://assets-netstorage.groww.in/stock-assets/logos2/3iInfotech.png",
-    },
-  ];
+  // State for Top Losers (Large, Mid, Small caps)
+  const [largeCapsLosersData, setLargeCapsLosersData] = useState<StockItem[]>([]);
+  const [midCapsLosersData, setMidCapsLosersData] = useState<StockItem[]>([]);
+  const [smallCapsLosersData, setSmallCapsLosersData] = useState<StockItem[]>([]);
+  const [loadingLargeCapsLosers, setLoadingLargeCapsLosers] = useState<boolean>(true);
+  const [loadingMidCapsLosers, setLoadingMidCapsLosers] = useState<boolean>(true);
+  const [loadingSmallCapsLosers, setLoadingSmallCapsLosers] = useState<boolean>(true);
+  const [errorLargeCapsLosers, setErrorLargeCapsLosers] = useState<string | null>(null);
+  const [errorMidCapsLosers, setErrorMidCapsLosers] = useState<string | null>(null);
+  const [errorSmallCapsLosers, setErrorSmallCapsLosers] = useState<string | null>(null);
 
   type ProductTool = { name: string; icon: string };
-  const [productToolsData, setProductToolsData] = useState<ProductTool[]>([]); // State for Product & Tools
-  type StockInNews = { name: string; price: string; change: string; image: string };
-  const [stocksInNewsData, setStocksInNewsData] = useState<StockInNews[]>([]); // State for Stocks in News
-  type StockInMTF = { name: string; price: string; change: string; image: string };
-  const [stocksInMTFData, setStocksInMTFData] = useState<StockInMTF[]>([]); // State for Most Traded on MTF
-  type TopGainer = { name: string; price: string; change: string; image: string };
-  const [topGainersData, setTopGainersData] = useState<TopGainer[]>([]); // State for Top Gainers
-  type MostTraded = { name: string; price: string; change: string; image: string };
-  const [mostTradedData, setMostTradedData] = useState<MostTraded[]>([]); // State for Most Traded on Groww
+  const [productToolsData, setProductToolsData] = useState<ProductTool[]>([]);
+  const [loadingProductTools, setLoadingProductTools] = useState<boolean>(true);
+  const [errorProductTools, setErrorProductTools] = useState<string | null>(null);
+
+  type StockInNews = { _id: string; name: string; price: string; change: string; image: string };
+  const [stocksInNewsData, setStocksInNewsData] = useState<StockInNews[]>([]);
+  const [loadingStocksInNews, setLoadingStocksInNews] = useState<boolean>(true);
+  const [errorStocksInNews, setErrorStocksInNews] = useState<string | null>(null);
+
+  type StockInMTF = { _id: string; name: string; price: string; change: string; image: string };
+  const [stocksInMTFData, setStocksInMTFData] = useState<StockInMTF[]>([]);
+  const [loadingStocksInMTF, setLoadingStocksInMTF] = useState<boolean>(true);
+  const [errorStocksInMTF, setErrorStocksInMTF] = useState<string | null>(null);
+
+  type MostTraded = { _id: string; name: string; price: string; change: string; image: string };
+  const [mostTradedData, setMostTradedData] = useState<MostTraded[]>([]);
+  const [loadingMostTraded, setLoadingMostTraded] = useState<boolean>(true);
+  const [errorMostTraded, setErrorMostTraded] = useState<string | null>(null);
+
   type TopSector = { name: string; count: number };
-  const [topSectorsData, setTopSectorsData] = useState<TopSector[]>([]); // State for Top Sectors
+  const [topSectorsData, setTopSectorsData] = useState<TopSector[]>([]);
   const [loadingTopSectors, setLoadingTopSectors] = useState<boolean>(true);
   const [errorTopSectors, setErrorTopSectors] = useState<string | null>(null);
 
   // Fetch Product & Tools data
   useEffect(() => {
     const fetchProductTools = async () => {
+      setLoadingProductTools(true);
+      setErrorProductTools(null);
       try {
         const response = await fetch("http://localhost:5000/api/stocks/producttools/get");
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const contentType = response.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+          throw new Error("Response is not JSON");
+        }
         const data = await response.json();
         setProductToolsData(data);
       } catch (error) {
         console.error("Error fetching Product & Tools data:", error);
+        setErrorProductTools("Failed to load Product & Tools data. Please try again later.");
+        setProductToolsData([]);
+      } finally {
+        setLoadingProductTools(false);
       }
     };
 
@@ -127,12 +125,32 @@ export default function Stocks() {
   // Fetch Stocks in News data
   useEffect(() => {
     const fetchStocksInNews = async () => {
+      setLoadingStocksInNews(true);
+      setErrorStocksInNews(null);
       try {
-        const response = await fetch("http://localhost:5000/api/stocks/producttools/getnews");
+        const response = await fetch("http://localhost:5000/api/stocks/producttools/stocks-in-news/");
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const contentType = response.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+          throw new Error("Response is not JSON");
+        }
         const data = await response.json();
-        setStocksInNewsData(data);
+        const formattedData = data.map((item: any) => ({
+          _id: item._id,
+          name: item.name,
+          price: item.price,
+          change: item.change,
+          image: item.image,
+        }));
+        setStocksInNewsData(formattedData);
       } catch (error) {
         console.error("Error fetching Stocks in News data:", error);
+        setErrorStocksInNews("Failed to load Stocks in News data. Please try again later.");
+        setStocksInNewsData([]);
+      } finally {
+        setLoadingStocksInNews(false);
       }
     };
 
@@ -142,12 +160,25 @@ export default function Stocks() {
   // Fetch Most Traded on MTF data
   useEffect(() => {
     const fetchStocksInMTF = async () => {
+      setLoadingStocksInMTF(true);
+      setErrorStocksInMTF(null);
       try {
         const response = await fetch("http://localhost:5000/api/stocks/producttools/getmtf");
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const contentType = response.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+          throw new Error("Response is not JSON");
+        }
         const data = await response.json();
         setStocksInMTFData(data);
       } catch (error) {
         console.error("Error fetching Most Traded on MTF data:", error);
+        setErrorStocksInMTF("Failed to load Most Traded on MTF data. Please try again later.");
+        setStocksInMTFData([]);
+      } finally {
+        setLoadingStocksInMTF(false);
       }
     };
 
@@ -157,10 +188,10 @@ export default function Stocks() {
   // Fetch Top Gainers data for Large Caps
   useEffect(() => {
     const fetchLargeCaps = async () => {
-      setLoading(true);
-      setError(null);
+      setLoadingLargeCaps(true);
+      setErrorLargeCaps(null);
       try {
-        const response = await fetch("http://localhost:5000/api/stocks/producttools/gettopgainers");
+        const response = await fetch("http://localhost:5000/api/stocks/producttools/topgainers/large");
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
@@ -169,35 +200,218 @@ export default function Stocks() {
           throw new Error("Response is not JSON");
         }
         const data = await response.json();
-
-        const formattedData = data.map((item: any) => ({
+        const formattedData = data.stocks.map((item: any) => ({
+          _id: item._id,
           name: item.name,
           price: item.price,
           change: item.change,
           image: item.image,
         }));
-
         setLargeCapsData(formattedData);
-        setTopGainersData(formattedData); // Set initial data for Top Gainers
       } catch (error) {
         console.error("Error fetching Large Cap Gainers data:", error);
-        setError("Failed to load Large Cap Gainers data. Please try again later.");
+        setErrorLargeCaps("Failed to load Large Cap Gainers data. Please try again later.");
+        setLargeCapsData([]);
       } finally {
-        setLoading(false);
+        setLoadingLargeCaps(false);
       }
     };
 
     fetchLargeCaps();
   }, []);
 
+  // Fetch Top Gainers data for Mid Caps
+  useEffect(() => {
+    const fetchMidCaps = async () => {
+      setLoadingMidCaps(true);
+      setErrorMidCaps(null);
+      try {
+        const response = await fetch("http://localhost:5000/api/stocks/producttools/topgainers/mid");
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const contentType = response.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+          throw new Error("Response is not JSON");
+        }
+        const data = await response.json();
+        const formattedData = data.stocks.map((item: any) => ({
+          _id: item._id,
+          name: item.name,
+          price: item.price,
+          change: item.change,
+          image: item.image,
+        }));
+        setMidCapsData(formattedData);
+      } catch (error) {
+        console.error("Error fetching Mid Cap Gainers data:", error);
+        setErrorMidCaps("Failed to load Mid Cap Gainers data. Please try again later.");
+        setMidCapsData([]);
+      } finally {
+        setLoadingMidCaps(false);
+      }
+    };
+
+    fetchMidCaps();
+  }, []);
+
+  // Fetch Top Gainers data for Small Caps
+  useEffect(() => {
+    const fetchSmallCaps = async () => {
+      setLoadingSmallCaps(true);
+      setErrorSmallCaps(null);
+      try {
+        const response = await fetch("http://localhost:5000/api/stocks/producttools/topgainers/small");
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const contentType = response.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+          throw new Error("Response is not JSON");
+        }
+        const data = await response.json();
+        const formattedData = data.stocks.map((item: any) => ({
+          _id: item._id,
+          name: item.name,
+          price: item.price,
+          change: item.change,
+          image: item.image,
+        }));
+        setSmallCapsData(formattedData);
+      } catch (error) {
+        console.error("Error fetching Small Cap Gainers data:", error);
+        setErrorSmallCaps("Failed to load Small Cap Gainers data. Please try again later.");
+        setSmallCapsData([]);
+      } finally {
+        setLoadingSmallCaps(false);
+      }
+    };
+
+    fetchSmallCaps();
+  }, []);
+
+  // Fetch Top Losers data for Large Caps
+  useEffect(() => {
+    const fetchLargeCapsLosers = async () => {
+      setLoadingLargeCapsLosers(true);
+      setErrorLargeCapsLosers(null);
+      try {
+        const response = await fetch("http://localhost:5000/api/stocks/producttools/toplosers/large");
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const contentType = response.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+          throw new Error("Response is not JSON");
+        }
+        const data = await response.json();
+        const formattedData = data.stocks.map((item: any) => ({
+          _id: item._id,
+          name: item.name,
+          price: item.price,
+          change: item.change,
+          image: item.image,
+        }));
+        setLargeCapsLosersData(formattedData);
+      } catch (error) {
+        console.error("Error fetching Large Cap Losers data:", error);
+        setErrorLargeCapsLosers("Failed to load Large Cap Losers data. Please try again later.");
+        setLargeCapsLosersData([]);
+      } finally {
+        setLoadingLargeCapsLosers(false);
+      }
+    };
+
+    fetchLargeCapsLosers();
+  }, []);
+
+  // Fetch Top Losers data for Mid Caps
+  useEffect(() => {
+    const fetchMidCapsLosers = async () => {
+      setLoadingMidCapsLosers(true);
+      setErrorMidCapsLosers(null);
+      try {
+        const response = await fetch("http://localhost:5000/api/stocks/producttools/toplosers/mid");
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const contentType = response.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+          throw new Error("Response is not JSON");
+        }
+        const data = await response.json();
+        const formattedData = data.stocks.map((item: any) => ({
+          _id: item._id,
+          name: item.name,
+          price: item.price,
+          change: item.change,
+          image: item.image,
+        }));
+        setMidCapsLosersData(formattedData);
+      } catch (error) {
+        console.error("Error fetching Mid Cap Losers data:", error);
+        setErrorMidCapsLosers("Failed to load Mid Cap Losers data. Please try again later.");
+        setMidCapsLosersData([]);
+      } finally {
+        setLoadingMidCapsLosers(false);
+      }
+    };
+
+    fetchMidCapsLosers();
+  }, []);
+
+  // Fetch Top Losers data for Small Caps
+  useEffect(() => {
+    const fetchSmallCapsLosers = async () => {
+      setLoadingSmallCapsLosers(true);
+      setErrorSmallCapsLosers(null);
+      try {
+        const response = await fetch("http://localhost:5000/api/stocks/producttools/toplosers/small");
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const contentType = response.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+          throw new Error("Response is not JSON");
+        }
+        const data = await response.json();
+        const formattedData = data.stocks.map((item: any) => ({
+          _id: item._id,
+          name: item.name,
+          price: item.price,
+          change: item.change,
+          image: item.image,
+        }));
+        setSmallCapsLosersData(formattedData);
+      } catch (error) {
+        console.error("Error fetching Small Cap Losers data:", error);
+        setErrorSmallCapsLosers("Failed to load Small Cap Losers data. Please try again later.");
+        setSmallCapsLosersData([]);
+      } finally {
+        setLoadingSmallCapsLosers(false);
+      }
+    };
+
+    fetchSmallCapsLosers();
+  }, []);
+
   // Fetch Most Traded on Groww data
   useEffect(() => {
     const fetchMostTraded = async () => {
+      setLoadingMostTraded(true);
+      setErrorMostTraded(null);
       try {
-        const response = await fetch("http://localhost:5000/api/stocks/producttools/getmosttradedongrow");
+        const response = await fetch("http://localhost:5000/api/stocks/producttools/mosttradedongrow/");
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const contentType = response.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+          throw new Error("Response is not JSON");
+        }
         const data = await response.json();
-        // Map the data to match the MostTraded type, excluding _id and __v if present
         const formattedData = data.map((item: any) => ({
+          _id: item._id,
           name: item.name,
           price: item.price,
           change: item.change,
@@ -206,6 +420,10 @@ export default function Stocks() {
         setMostTradedData(formattedData);
       } catch (error) {
         console.error("Error fetching Most Traded on Groww data:", error);
+        setErrorMostTraded("Failed to load Most Traded on Groww data. Please try again later.");
+        setMostTradedData([]);
+      } finally {
+        setLoadingMostTraded(false);
       }
     };
 
@@ -227,18 +445,14 @@ export default function Stocks() {
           throw new Error("Response is not JSON");
         }
         const data = await response.json();
-
-        // Format the data to match the TopSector type
         const formattedData = data.map((item: any) => ({
           name: item.name,
           count: item.count,
         }));
-
         setTopSectorsData(formattedData);
       } catch (error) {
         console.error("Error fetching Top Sectors data:", error);
         setErrorTopSectors("Failed to load Top Sectors data. Please try again later.");
-        // Fallback to empty array if API fails
         setTopSectorsData([]);
       } finally {
         setLoadingTopSectors(false);
@@ -250,8 +464,38 @@ export default function Stocks() {
 
   const getTopGainersData = () => {
     if (selectedCategory === "Large") return largeCapsData;
-    if (selectedCategory === "Mid") return midCaps;
-    return smallCaps;
+    if (selectedCategory === "Mid") return midCapsData;
+    return smallCapsData;
+  };
+
+  const getTopLosersData = () => {
+    if (selectedCategory === "Large") return largeCapsLosersData;
+    if (selectedCategory === "Mid") return midCapsLosersData;
+    return smallCapsLosersData;
+  };
+
+  const isLoadingGainers = () => {
+    if (selectedCategory === "Large") return loadingLargeCaps;
+    if (selectedCategory === "Mid") return loadingMidCaps;
+    return loadingSmallCaps;
+  };
+
+  const isLoadingLosers = () => {
+    if (selectedCategory === "Large") return loadingLargeCapsLosers;
+    if (selectedCategory === "Mid") return loadingMidCapsLosers;
+    return loadingSmallCapsLosers;
+  };
+
+  const getGainersError = () => {
+    if (selectedCategory === "Large") return errorLargeCaps;
+    if (selectedCategory === "Mid") return errorMidCaps;
+    return errorSmallCaps;
+  };
+
+  const getLosersError = () => {
+    if (selectedCategory === "Large") return errorLargeCapsLosers;
+    if (selectedCategory === "Mid") return errorMidCapsLosers;
+    return errorSmallCapsLosers;
   };
 
   return (
@@ -275,9 +519,19 @@ export default function Stocks() {
               </a>
             </div>
             <div className="flex space-x-4 overflow-x-auto scrollbar-hide">
-              {mostTradedData.length > 0 ? (
+              {loadingMostTraded ? (
+                <p>Loading Most Traded on Groww...</p>
+              ) : errorMostTraded ? (
+                <p className="text-red-500">{errorMostTraded}</p>
+              ) : mostTradedData.length > 0 ? (
                 mostTradedData.map((item, idx) => (
-                  <Link href="/buystock" key={idx}>
+                  <Link
+                    href={{
+                      pathname: `/buystock/${encodeURIComponent(item.name)}`,
+                      query: { state: JSON.stringify({ stockId: item._id, name: item.name, price: item.price, change: item.change, image: item.image, source: "mostTraded" }) },
+                    }}
+                    key={idx}
+                  >
                     <div
                       className="w-[150px] h-[150px] border rounded-lg p-2 bg-white shadow-sm text-[11px] relative"
                     >
@@ -303,7 +557,7 @@ export default function Stocks() {
                   </Link>
                 ))
               ) : (
-                <p>Loading Most Traded on Groww...</p>
+                <p>No Most Traded on Groww data available.</p>
               )}
             </div>
           </section>
@@ -312,7 +566,11 @@ export default function Stocks() {
           <div>
             <h2 className="text-2xl font-bold mb-6">Product & Tools</h2>
             <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-6">
-              {productToolsData.length > 0 ? (
+              {loadingProductTools ? (
+                <p>Loading Product & Tools...</p>
+              ) : errorProductTools ? (
+                <p className="text-red-500">{errorProductTools}</p>
+              ) : productToolsData.length > 0 ? (
                 productToolsData.map((item) => (
                   <div
                     key={item.name}
@@ -333,7 +591,7 @@ export default function Stocks() {
                   </div>
                 ))
               ) : (
-                <p>Loading Product & Tools...</p>
+                <p>No Product & Tools data available.</p>
               )}
             </div>
           </div>
@@ -349,9 +607,8 @@ export default function Stocks() {
                 See More
               </a>
             </div>
-            {/* Display error message if any */}
-            {error && selectedCategory === "Large" && (
-              <p className="text-red-500 mb-4">{error}</p>
+            {getGainersError() && (
+              <p className="text-red-500 mb-4">{getGainersError()}</p>
             )}
             <div className="flex items-center space-x-4 mb-6">
               <div className="w-px h-6 bg-gray-300"></div>
@@ -371,11 +628,17 @@ export default function Stocks() {
               ))}
             </div>
             <div className="flex space-x-4 overflow-x-auto scrollbar-hide">
-              {loading && selectedCategory === "Large" ? (
-                <p>Loading Large Cap Gainers...</p>
+              {isLoadingGainers() ? (
+                <p>Loading {selectedCategory} Cap Gainers...</p>
               ) : getTopGainersData().length > 0 ? (
                 getTopGainersData().map((item, idx) => (
-                  <Link href="/buystock" key={idx}>
+                  <Link
+                    href={{
+                      pathname: `/buystock/${encodeURIComponent(item.name)}`,
+                      query: { state: JSON.stringify({ stockId: item._id, name: item.name, price: item.price, change: item.change, image: item.image, source: "topGainers", category: selectedCategory.toLowerCase() }) },
+                    }}
+                    key={idx}
+                  >
                     <div
                       className="w-[150px] h-[150px] border rounded-lg p-2 bg-white shadow-sm text-[11px] relative"
                     >
@@ -406,10 +669,10 @@ export default function Stocks() {
             </div>
           </section>
 
-          {/* Most Traded on MTF */}
+          {/* Top Losers */}
           <section>
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-2xl font-bold">Most Traded on MTF</h2>
+              <h2 className="text-2xl font-bold">Top Losers</h2>
               <a
                 href="#"
                 className="text-green-600 text-sm font-medium hover:underline"
@@ -417,10 +680,38 @@ export default function Stocks() {
                 See More
               </a>
             </div>
+            {getLosersError() && (
+              <p className="text-red-500 mb-4">{getLosersError()}</p>
+            )}
+            <div className="flex items-center space-x-4 mb-6">
+              <div className="w-px h-6 bg-gray-300"></div>
+              {["Large", "Mid", "Small"].map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setSelectedCategory(cat as "Large" | "Mid" | "Small")}
+                  className={`px-4 py-1 rounded-full text-sm border transition-all duration-200
+                    ${
+                      selectedCategory === cat
+                        ? "bg-lime-100 text-green-700 font-semibold border-green-300"
+                        : "bg-white text-gray-700"
+                    }`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
             <div className="flex space-x-4 overflow-x-auto scrollbar-hide">
-              {stocksInMTFData.length > 0 ? (
-                stocksInMTFData.map((item, idx) => (
-                  <Link href="/buystock" key={idx}>
+              {isLoadingLosers() ? (
+                <p>Loading {selectedCategory} Cap Losers...</p>
+              ) : getTopLosersData().length > 0 ? (
+                getTopLosersData().map((item, idx) => (
+                  <Link
+                    href={{
+                      pathname: `/buystock/${encodeURIComponent(item.name)}`,
+                      query: { state: JSON.stringify({ stockId: item._id, name: item.name, price: item.price, change: item.change, image: item.image, source: "topLosers", category: selectedCategory.toLowerCase() }) },
+                    }}
+                    key={idx}
+                  >
                     <div
                       className="w-[150px] h-[150px] border rounded-lg p-2 bg-white shadow-sm text-[11px] relative"
                     >
@@ -446,7 +737,62 @@ export default function Stocks() {
                   </Link>
                 ))
               ) : (
+                <p>No data available for {selectedCategory} Cap Losers.</p>
+              )}
+            </div>
+          </section>
+
+          {/* Most Traded on MTF */}
+          <section>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-2xl font-bold">Most Traded on MTF</h2>
+              <a
+                href="#"
+                className="text-green-600 text-sm font-medium hover:underline"
+              >
+                See More
+              </a>
+            </div>
+            <div className="flex space-x-4 overflow-x-auto scrollbar-hide">
+              {loadingStocksInMTF ? (
                 <p>Loading Most Traded on MTF...</p>
+              ) : errorStocksInMTF ? (
+                <p className="text-red-500">{errorStocksInMTF}</p>
+              ) : stocksInMTFData.length > 0 ? (
+                stocksInMTFData.map((item, idx) => (
+                  <Link
+                    href={{
+                      pathname: `/buystock/${encodeURIComponent(item.name)}`,
+                      query: { state: JSON.stringify({ stockId: item._id, name: item.name, price: item.price, change: item.change, image: item.image, source: "mostTradedMTF" }) },
+                    }}
+                    key={idx}
+                  >
+                    <div
+                      className="w-[150px] h-[150px] border rounded-lg p-2 bg-white shadow-sm text-[11px] relative"
+                    >
+                      <Image
+                        src={item.image}
+                        alt={item.name}
+                        width={24}
+                        height={24}
+                        className="absolute top-2 left-2"
+                      />
+                      <div className="mt-8 font-medium">{item.name}</div>
+                      <div className="text-xs mt-1 text-black">{item.price}</div>
+                      <div
+                        className={`text-xs mt-1 ${
+                          item.change.startsWith("-")
+                            ? "text-red-500"
+                            : "text-green-600"
+                        }`}
+                      >
+                        {item.change}
+                      </div>
+                    </div>
+                  </Link>
+                ))
+              ) : (
+                <p>No Most Traded on MTF data available.</p>
               )}
             </div>
           </section>
@@ -463,9 +809,19 @@ export default function Stocks() {
               </a>
             </div>
             <div className="flex space-x-4 overflow-x-auto scrollbar-hide">
-              {stocksInNewsData.length > 0 ? (
+              {loadingStocksInNews ? (
+                <p>Loading Stocks in News...</p>
+              ) : errorStocksInNews ? (
+                <p className="text-red-500">{errorStocksInNews}</p>
+              ) : stocksInNewsData.length > 0 ? (
                 stocksInNewsData.map((item, idx) => (
-                  <Link href="/buystock" key={idx}>
+                  <Link
+                    href={{
+                      pathname: `/buystock/${encodeURIComponent(item.name)}`,
+                      query: { state: JSON.stringify({ stockId: item._id, name: item.name, price: item.price, change: item.change, image: item.image, source: "stocksInNews" }) },
+                    }}
+                    key={idx}
+                  >
                     <div
                       className="w-[150px] h-[150px] border rounded-lg p-2 bg-white shadow-sm text-[11px] relative"
                     >
@@ -491,23 +847,9 @@ export default function Stocks() {
                   </Link>
                 ))
               ) : (
-                <p>Loading Stocks in News...</p>
+                <p>No Stocks in News data available.</p>
               )}
             </div>
-          </section>
-
-          {/* Top Losers */}
-          <section>
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-2xl font-bold">Top Losers</h2>
-              <a
-                href="#"
-                className="text-green-600 text-sm font-medium hover:underline"
-              >
-                See More
-              </a>
-            </div>
-            <StockFilterSectionLosers />
           </section>
 
           {/* Top Sectors */}
@@ -573,7 +915,6 @@ export default function Stocks() {
               </a>
             </div>
 
-            {/* Investments Box */}
             <div className="p-4 bg-white rounded shadow">
               <div className="flex justify-between items-center">
                 <div>
@@ -587,7 +928,6 @@ export default function Stocks() {
               </div>
             </div>
 
-            {/* Watchlist */}
             <div className="mt-6">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-semibold">All Watchlists</h2>
