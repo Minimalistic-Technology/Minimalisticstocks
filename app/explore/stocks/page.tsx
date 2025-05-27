@@ -163,7 +163,7 @@ export default function Stocks() {
       setLoadingStocksInMTF(true);
       setErrorStocksInMTF(null);
       try {
-        const response = await fetch("http://localhost:5000/api/stocks/producttools/getmtf");
+        const response = await fetch("http://localhost:5000/api/stocks/producttools/mtf/");
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
@@ -172,7 +172,14 @@ export default function Stocks() {
           throw new Error("Response is not JSON");
         }
         const data = await response.json();
-        setStocksInMTFData(data);
+        const formattedData = data.map((item: any) => ({
+          _id: item._id,
+          name: item.name,
+          price: item.price,
+          change: item.change,
+          image: item.image,
+        }));
+        setStocksInMTFData(formattedData);
       } catch (error) {
         console.error("Error fetching Most Traded on MTF data:", error);
         setErrorStocksInMTF("Failed to load Most Traded on MTF data. Please try again later.");

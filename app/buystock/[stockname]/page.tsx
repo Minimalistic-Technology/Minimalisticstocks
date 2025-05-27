@@ -56,7 +56,7 @@ type TabOption = "Overview" | "News" | "Events";
 type Params = { stockname: string };
 type Order = { price: string; quantity: number };
 type LineDataPoint = { date: string; price: number };
-type EventItem = { date?: string; title: string; subtitle: string; amount?: string; link?: string }; // Made date optional
+type EventItem = { date?: string; title: string; subtitle: string; amount?: string; link?: string };
 type NewsItem = { source: string; timestamp: string; headline: string; highlight: boolean };
 type FinancialChartData = { quarter: string; revenue: number; profit: number; netWorth: number };
 type FundamentalsData = {
@@ -186,7 +186,7 @@ function FinancialChart({ financials }: { financials: { quarterly: FinancialChar
       <h2 className="text-xl md:text-2xl font-semibold mb-2 md:mb-4 text-center md:text-left">
         Financials
       </h2>
-      <p className="text-gray-600 text-xs md:text-sm text-right italic Nobody wants to read this line">
+      <p className="text-gray-600 text-xs md:text-sm text-right italic">
         *All values are in Rs Cr.
       </p>
 
@@ -570,12 +570,38 @@ function NewsSection({ news }: { news: NewsItem[] }) {
 }
 
 // StockChart Component
-function StockChart({ stockName, priceHistory }: { stockName: string; priceHistory: LineDataPoint[] }) {
+function StockChart({ stockName, priceHistory }: { stockName: string; priceHistory?: LineDataPoint[] }) {
+  // Defensive check for priceHistory
+  const stablePriceHistory = Array.isArray(priceHistory) ? priceHistory : [];
+
+  // Determine the appropriate time unit based on the data range
+  const getTimeUnit = (data: LineDataPoint[]) => {
+    if (data.length < 2) return 'day'; // Default to day if not enough data
+    const dates = data.map((point) => new Date(point.date).getTime());
+    const minDate = Math.min(...dates);
+    const maxDate = Math.max(...dates);
+    const timeSpan = maxDate - minDate; // in milliseconds
+
+    const oneDay = 24 * 60 * 60 * 1000;
+    const oneWeek = 7 * oneDay;
+    const oneMonth = 30 * oneDay;
+
+    if (timeSpan > oneMonth) {
+      return 'day';
+    } else if (timeSpan > oneWeek) {
+      return 'hour';
+    } else {
+      return 'minute';
+    }
+  };
+
+  const timeUnit = getTimeUnit(stablePriceHistory);
+
   const data: ChartData<'line', { x: Date; y: number }[], string> = {
     datasets: [
       {
         label: `${stockName} - Close Price`,
-        data: priceHistory.map((point) => ({ x: new Date(point.date), y: point.price })),
+        data: stablePriceHistory.map((point) => ({ x: new Date(point.date), y: point.price })),
         borderColor: '#00b386',
         backgroundColor: 'rgba(0, 179, 134, 0.3)',
         pointBackgroundColor: '#00b386',
@@ -596,17 +622,19 @@ function StockChart({ stockName, priceHistory }: { stockName: string; priceHisto
       x: {
         type: 'time',
         time: {
-          unit: 'minute',
-          tooltipFormat: 'HH:mm',
+          unit: timeUnit,
+          tooltipFormat: timeUnit === 'day' ? 'MMM dd, yyyy' : timeUnit === 'hour' ? 'MMM dd, HH:mm' : 'HH:mm',
           displayFormats: {
             minute: 'HH:mm',
+            hour: 'HH:mm',
+            day: 'MMM dd',
           },
-          stepSize: 1,
-        } as any,
+        },
         ticks: {
           color: '#333',
           source: 'auto',
-          autoSkip: false,
+          autoSkip: true,
+          maxTicksLimit: 10,
           maxRotation: 45,
           minRotation: 45,
           font: { size: 10 },
@@ -616,8 +644,8 @@ function StockChart({ stockName, priceHistory }: { stockName: string; priceHisto
       },
       y: {
         beginAtZero: false,
-        suggestedMin: Math.min(...priceHistory.map((p) => p.price)) - 10,
-        suggestedMax: Math.max(...priceHistory.map((p) => p.price)) + 10,
+        suggestedMin: stablePriceHistory.length > 0 ? Math.min(...stablePriceHistory.map((p) => p.price)) - 10 : 0,
+        suggestedMax: stablePriceHistory.length > 0 ? Math.max(...stablePriceHistory.map((p) => p.price)) + 10 : 100,
         ticks: { color: '#333' },
         grid: { display: false },
         title: { display: true, text: 'Price (₹)', color: '#666' },
@@ -639,7 +667,7 @@ function StockChart({ stockName, priceHistory }: { stockName: string; priceHisto
         {stockName} Stock Price
       </h2>
       <div className="relative h-[250px] sm:h-[300px] md:h-[350px] lg:h-[400px] w-full">
-        {priceHistory.length > 0 ? (
+        {stablePriceHistory.length > 0 ? (
           <div className="relative w-full h-full">
             <Chart type="line" data={data} options={options} />
           </div>
@@ -811,6 +839,7 @@ function Footer() {
     },
   ];
 
+  
   return (
     <footer className="bg-gray-100 text-sm text-gray-800 px-6 py-10">
       <div className="max-w-7xl mx-auto">
@@ -946,16 +975,13 @@ export default function BuyStock() {
       setError(null);
       try {
         let apiUrl = "";
-        // Define valid categories and sources
         const validCategories = ["large", "mid", "small"];
         const validSources = ["stocksInNews", "mostTraded", "topGainers", "topLosers", "mostTradedMTF"];
         
-        // Validate source
         if (!validSources.includes(source)) {
           throw new Error("Invalid source provided.");
         }
 
-        // Validate and set category (only relevant for topGainers and topLosers)
         const effectiveCategory = validCategories.includes(category) ? category : "large";
 
         if (source === "stocksInNews") {
@@ -967,7 +993,7 @@ export default function BuyStock() {
         } else if (source === "topLosers") {
           apiUrl = `http://localhost:5000/api/stocks/producttools/toplosers/${effectiveCategory}/${stockId}`;
         } else if (source === "mostTradedMTF") {
-          apiUrl = `http://localhost:5000/api/stocks/producttools/getmtf/${stockId}`;
+          apiUrl = `http://localhost:5000/api/stocks/producttools/mtf/${stockId}`;
         }
 
         const response = await fetch(apiUrl);
@@ -979,7 +1005,68 @@ export default function BuyStock() {
           throw new Error("Response is not JSON");
         }
         const data = await response.json();
-        setSelectedStock(data);
+
+        // Handle the case where the API might return an array for mostTradedMTF
+        let stockData;
+        if (source === "mostTradedMTF" && Array.isArray(data)) {
+          stockData = data.find((item: any) => item._id === stockId || item.stockId === stockId);
+          if (!stockData) {
+            throw new Error(`Stock with ID ${stockId} not found in MTF data.`);
+          }
+        } else {
+          stockData = data;
+        }
+
+        // Normalize the API response to match the StockDetails type
+        const normalizedData: StockDetails = {
+          priceHistory: stockData.priceHistory ?? [], // Fallback to empty array if undefined
+          details: {
+            performance: stockData.details?.performance ?? {
+              todaysLow: stockData.todaysLow ?? "₹0",
+              todaysHigh: stockData.todaysHigh ?? "₹0",
+              todayCurrent: stockData.todayCurrent ?? "₹0",
+              low52Week: stockData.low52Week ?? "₹0",
+              high52Week: stockData.high52Week ?? "₹0",
+              open: stockData.open ?? "₹0",
+              prevClose: stockData.prevClose ?? "₹0",
+              volume: stockData.volume ?? "0",
+              totalTradedValue: stockData.totalTradedValue ?? "₹0",
+              upperCircuit: stockData.upperCircuit ?? "₹0",
+              lowerCircuit: stockData.lowerCircuit ?? "₹0",
+            },
+            events: stockData.details?.events ?? [],
+            news: stockData.details?.news ?? [],
+          },
+          marketDepth: stockData.marketDepth ?? {
+            buyOrderQuantity: stockData.buyOrderQuantity ?? 0,
+            sellOrderQuantity: stockData.sellOrderQuantity ?? 0,
+            buyOrders: stockData.buyOrders ?? [],
+            sellOrders: stockData.sellOrders ?? [],
+            bidTotal: stockData.bidTotal ?? 0,
+            askTotal: stockData.askTotal ?? 0,
+          },
+          fundamentals: stockData.fundamentals ?? {
+            marketCap: stockData.marketCap ?? "₹0",
+            peRatioTTM: stockData.peRatioTTM ?? 0,
+            pbRatio: stockData.pbRatio ?? 0,
+            industryPE: stockData.industryPE ?? 0,
+            debtToEquity: stockData.debtToEquity ?? 0,
+            roe: stockData.roe ?? 0,
+            epsTTM: stockData.epsTTM ?? 0,
+            dividendYield: stockData.dividendYield ?? 0,
+            bookValue: stockData.bookValue ?? 0,
+            faceValue: stockData.faceValue ?? 0,
+          },
+          financials: stockData.financials ?? { quarterly: stockData.quarterly ?? [] },
+          about: stockData.about ?? {
+            description: stockData.description ?? "",
+            parentOrganisation: stockData.parentOrganisation ?? "",
+            nseSymbol: stockData.nseSymbol ?? "",
+            managingDirector: stockData.managingDirector ?? "",
+          },
+        };
+
+        setSelectedStock(normalizedData);
       } catch (error) {
         console.error(`Error fetching details for stock ID ${stockId} from ${source}:`, error);
         setError(`Failed to load details for the selected stock. Please try again later.`);
