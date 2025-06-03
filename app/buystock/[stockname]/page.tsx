@@ -17,9 +17,9 @@ import {
   LineController,
   PointElement,
   LineElement,
-} from 'chart.js';
-import { Chart } from 'react-chartjs-2';
-import 'chartjs-adapter-date-fns';
+} from "chart.js";
+import { Chart } from "react-chartjs-2";
+import "chartjs-adapter-date-fns";
 import {
   FaFacebookF,
   FaTwitter,
@@ -29,7 +29,7 @@ import {
   FaTelegramPlane,
   FaApple,
   FaGooglePlay,
-} from 'react-icons/fa';
+} from "react-icons/fa";
 import {
   BarChart,
   Bar,
@@ -56,9 +56,25 @@ type TabOption = "Overview" | "News" | "Events";
 type Params = { stockname: string };
 type Order = { price: string; quantity: number };
 type LineDataPoint = { date: string; price: number };
-type EventItem = { date?: string; title: string; subtitle: string; amount?: string; link?: string };
-type NewsItem = { source: string; timestamp: string; headline: string; highlight: boolean };
-type FinancialChartData = { quarter: string; revenue: number; profit: number; netWorth: number };
+type EventItem = {
+  date?: string;
+  title: string;
+  subtitle: string;
+  amount?: string;
+  link?: string;
+};
+type NewsItem = {
+  source: string;
+  timestamp: string;
+  headline: string;
+  highlight?: boolean;
+};
+type FinancialChartData = {
+  quarter: string;
+  revenue: number;
+  profit: number;
+  netWorth: number;
+};
 type FundamentalsData = {
   marketCap: string;
   peRatioTTM: number;
@@ -71,7 +87,12 @@ type FundamentalsData = {
   bookValue: number;
   faceValue: number;
 };
-type AboutData = { description: string; parentOrganisation: string; nseSymbol: string; managingDirector: string };
+type AboutData = {
+  description: string;
+  parentOrganisation: string;
+  nseSymbol: string;
+  managingDirector: string;
+};
 type StockDetails = {
   priceHistory: LineDataPoint[];
   details: {
@@ -102,10 +123,19 @@ type StockDetails = {
   fundamentals: FundamentalsData;
   financials: { quarterly: FinancialChartData[] };
   about: AboutData;
+  value?: number;
+  oneDayChange?: number;
+  oneDayChangePercent?: number;
 };
 
 // Tabs Component
-function Tabs({ activeTab, setActiveTab }: { activeTab: TabOption; setActiveTab: (tab: TabOption) => void }) {
+function Tabs({
+  activeTab,
+  setActiveTab,
+}: {
+  activeTab: TabOption;
+  setActiveTab: (tab: TabOption) => void;
+}) {
   const tabs: TabOption[] = ["Overview", "News", "Events"];
 
   return (
@@ -128,7 +158,11 @@ function Tabs({ activeTab, setActiveTab }: { activeTab: TabOption; setActiveTab:
 }
 
 // FinancialChart Component
-function FinancialChart({ financials }: { financials: { quarterly: FinancialChartData[] } }) {
+function FinancialChart({
+  financials,
+}: {
+  financials: { quarterly: FinancialChartData[] };
+}) {
   type Metric = "Revenue" | "Profit" | "Net Worth";
   type Timeframe = "Quarterly" | "Yearly";
 
@@ -169,16 +203,24 @@ function FinancialChart({ financials }: { financials: { quarterly: FinancialChar
     setTimeframe(t);
   };
 
-  let data: { period: string; value: number }[] = financials.quarterly.map((item) => ({
-    period: item.quarter,
-    value: item.revenue,
-  }));
+  let data: { period: string; value: number }[] = financials.quarterly.map(
+    (item) => ({
+      period: item.quarter,
+      value: item.revenue,
+    })
+  );
   if (metric === "Revenue" && timeframe === "Yearly") data = revenueYearly;
   if (metric === "Profit" && timeframe === "Quarterly")
-    data = financials.quarterly.map((item) => ({ period: item.quarter, value: item.profit }));
+    data = financials.quarterly.map((item) => ({
+      period: item.quarter,
+      value: item.profit,
+    }));
   if (metric === "Profit" && timeframe === "Yearly") data = profitYearly;
   if (metric === "Net Worth" && timeframe === "Quarterly")
-    data = financials.quarterly.map((item) => ({ period: item.quarter, value: item.netWorth }));
+    data = financials.quarterly.map((item) => ({
+      period: item.quarter,
+      value: item.netWorth,
+    }));
   if (metric === "Net Worth" && timeframe === "Yearly") data = networthYearly;
 
   return (
@@ -208,7 +250,10 @@ function FinancialChart({ financials }: { financials: { quarterly: FinancialChar
 
       <div className="w-full h-64 sm:h-72 md:h-80">
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={data} margin={{ top: 20, right: 30, left: 0, bottom: 20 }}>
+          <BarChart
+            data={data}
+            margin={{ top: 20, right: 30, left: 0, bottom: 20 }}
+          >
             <XAxis dataKey="period" tick={{ fill: "#666", fontSize: 12 }} />
             <YAxis tick={{ fill: "#666", fontSize: 12 }} />
             <RechartsTooltip />
@@ -261,7 +306,9 @@ function CompanyInfoCard({ about }: { about: AboutData }) {
   return (
     <div className="w-full px-4 sm:px-6 lg:px-0">
       <div className="max-w-3xl mx-auto p-6 bg-white rounded-xl shadow space-y-4">
-        <h2 className="text-2xl font-semibold mb-6">About {about.parentOrganisation}</h2>
+        <h2 className="text-2xl font-semibold mb-6">
+          About {about.parentOrganisation}
+        </h2>
 
         <p className="text-gray-800">
           {visibleText}
@@ -279,11 +326,15 @@ function CompanyInfoCard({ about }: { about: AboutData }) {
           <div className="space-y-6 pr-4">
             <div className="grid grid-cols-[160px_1fr] gap-2">
               <p className="text-gray-700 font-semibold">Parent Organisation</p>
-              <span className="text-black font-medium">{about.parentOrganisation}</span>
+              <span className="text-black font-medium">
+                {about.parentOrganisation}
+              </span>
             </div>
             <div className="grid grid-cols-[160px_1fr] gap-2">
               <p className="text-gray-700 font-semibold">Managing Director</p>
-              <span className="text-black font-medium">{about.managingDirector}</span>
+              <span className="text-black font-medium">
+                {about.managingDirector}
+              </span>
             </div>
           </div>
 
@@ -291,7 +342,9 @@ function CompanyInfoCard({ about }: { about: AboutData }) {
 
           <div className="grid grid-cols-[160px_1fr] gap-2">
             <p className="text-gray-600 font-semibold">NSE Symbol</p>
-            <p className="text-green-600 text-2xl font-bold">{about.nseSymbol}</p>
+            <p className="text-green-600 text-2xl font-bold">
+              {about.nseSymbol}
+            </p>
           </div>
         </div>
       </div>
@@ -300,10 +353,20 @@ function CompanyInfoCard({ about }: { about: AboutData }) {
 }
 
 // Overview Component
-function Overview({ details, marketDepth, fundamentals }: { details: StockDetails["details"]; marketDepth: StockDetails["marketDepth"]; fundamentals: FundamentalsData }) {
+function Overview({
+  details,
+  marketDepth,
+  fundamentals,
+}: {
+  details: StockDetails["details"];
+  marketDepth: StockDetails["marketDepth"];
+  fundamentals: FundamentalsData;
+}) {
   const todayLow = parseFloat(details.performance.todaysLow.replace("₹", ""));
   const todayHigh = parseFloat(details.performance.todaysHigh.replace("₹", ""));
-  const todayCurrent = parseFloat(details.performance.todayCurrent.replace("₹", ""));
+  const todayCurrent = parseFloat(
+    details.performance.todayCurrent.replace("₹", "")
+  );
 
   const low52W = parseFloat(details.performance.low52Week.replace("₹", ""));
   const high52W = parseFloat(details.performance.high52Week.replace("₹", ""));
@@ -333,8 +396,14 @@ function Overview({ details, marketDepth, fundamentals }: { details: StockDetail
   const maxBidQty = Math.max(...marketDepth.buyOrders.map((b) => b.quantity));
   const maxAskQty = Math.max(...marketDepth.sellOrders.map((a) => a.quantity));
 
-  const buyPercentage = (marketDepth.buyOrderQuantity / (marketDepth.buyOrderQuantity + marketDepth.sellOrderQuantity)) * 100;
-  const sellPercentage = (marketDepth.sellOrderQuantity / (marketDepth.buyOrderQuantity + marketDepth.sellOrderQuantity)) * 100;
+  const buyPercentage =
+    (marketDepth.buyOrderQuantity /
+      (marketDepth.buyOrderQuantity + marketDepth.sellOrderQuantity)) *
+    100;
+  const sellPercentage =
+    (marketDepth.sellOrderQuantity /
+      (marketDepth.buyOrderQuantity + marketDepth.sellOrderQuantity)) *
+    100;
 
   return (
     <div className="flex flex-col gap-8">
@@ -450,7 +519,9 @@ function Overview({ details, marketDepth, fundamentals }: { details: StockDetail
                 </span>
               </div>
             ))}
-            <p className="mt-2 font-semibold">Bid Total: {marketDepth.bidTotal.toLocaleString()}</p>
+            <p className="mt-2 font-semibold">
+              Bid Total: {marketDepth.bidTotal.toLocaleString()}
+            </p>
           </div>
 
           <div>
@@ -475,7 +546,9 @@ function Overview({ details, marketDepth, fundamentals }: { details: StockDetail
                 </span>
               </div>
             ))}
-            <p className="mt-2 font-semibold">Ask Total: {marketDepth.askTotal.toLocaleString()}</p>
+            <p className="mt-2 font-semibold">
+              Ask Total: {marketDepth.askTotal.toLocaleString()}
+            </p>
           </div>
         </div>
       </div>
@@ -518,7 +591,9 @@ function Overview({ details, marketDepth, fundamentals }: { details: StockDetail
             </div>
             <div className="flex justify-between">
               <span>Dividend Yield</span>
-              <span className="font-semibold">{fundamentals.dividendYield}%</span>
+              <span className="font-semibold">
+                {fundamentals.dividendYield}%
+              </span>
             </div>
             <div className="flex justify-between">
               <span>Book Value</span>
@@ -556,7 +631,7 @@ function NewsSection({ news }: { news: NewsItem[] }) {
               className="p-4 rounded transition-all duration-300 hover:bg-green-50 cursor-pointer"
             >
               <div className="text-sm text-gray-500 mb-1">
-                <strong>{source}</strong> · {timestamp}
+                <span className="font-semibold">{source}</span> · {timestamp}
               </div>
               <p className="text-sm text-gray-800">{headline}</p>
             </div>
@@ -570,13 +645,19 @@ function NewsSection({ news }: { news: NewsItem[] }) {
 }
 
 // StockChart Component
-function StockChart({ stockName, priceHistory }: { stockName: string; priceHistory?: LineDataPoint[] }) {
+function StockChart({
+  stockName,
+  priceHistory,
+}: {
+  stockName: string;
+  priceHistory?: LineDataPoint[];
+}) {
   // Defensive check for priceHistory
   const stablePriceHistory = Array.isArray(priceHistory) ? priceHistory : [];
 
   // Determine the appropriate time unit based on the data range
   const getTimeUnit = (data: LineDataPoint[]) => {
-    if (data.length < 2) return 'day'; // Default to day if not enough data
+    if (data.length < 2) return "day"; // Default to day if not enough data
     const dates = data.map((point) => new Date(point.date).getTime());
     const minDate = Math.min(...dates);
     const maxDate = Math.max(...dates);
@@ -587,25 +668,28 @@ function StockChart({ stockName, priceHistory }: { stockName: string; priceHisto
     const oneMonth = 30 * oneDay;
 
     if (timeSpan > oneMonth) {
-      return 'day';
+      return "day";
     } else if (timeSpan > oneWeek) {
-      return 'hour';
+      return "hour";
     } else {
-      return 'minute';
+      return "minute";
     }
   };
 
   const timeUnit = getTimeUnit(stablePriceHistory);
 
-  const data: ChartData<'line', { x: Date; y: number }[], string> = {
+  const data: ChartData<"line", { x: Date; y: number }[], string> = {
     datasets: [
       {
         label: `${stockName} - Close Price`,
-        data: stablePriceHistory.map((point) => ({ x: new Date(point.date), y: point.price })),
-        borderColor: '#00b386',
-        backgroundColor: 'rgba(0, 179, 134, 0.3)',
-        pointBackgroundColor: '#00b386',
-        pointBorderColor: '#00b386',
+        data: stablePriceHistory.map((point) => ({
+          x: new Date(point.date),
+          y: point.price,
+        })),
+        borderColor: "#00b386",
+        backgroundColor: "rgba(0, 179, 134, 0.3)",
+        pointBackgroundColor: "#00b386",
+        pointBorderColor: "#00b386",
         fill: false,
         tension: 0.3,
         pointRadius: 3,
@@ -615,24 +699,29 @@ function StockChart({ stockName, priceHistory }: { stockName: string; priceHisto
     ],
   };
 
-  const options: ChartOptions<'line'> = {
+  const options: ChartOptions<"line"> = {
     responsive: true,
     maintainAspectRatio: false,
     scales: {
       x: {
-        type: 'time',
+        type: "time",
         time: {
           unit: timeUnit,
-          tooltipFormat: timeUnit === 'day' ? 'MMM dd, yyyy' : timeUnit === 'hour' ? 'MMM dd, HH:mm' : 'HH:mm',
+          tooltipFormat:
+            timeUnit === "day"
+              ? "MMM dd, yyyy"
+              : timeUnit === "hour"
+              ? "MMM dd, HH:mm"
+              : "HH:mm",
           displayFormats: {
-            minute: 'HH:mm',
-            hour: 'HH:mm',
-            day: 'MMM dd',
+            minute: "HH:mm",
+            hour: "HH:mm",
+            day: "MMM dd",
           },
         },
         ticks: {
-          color: '#333',
-          source: 'auto',
+          color: "#333",
+          source: "auto",
           autoSkip: true,
           maxTicksLimit: 10,
           maxRotation: 45,
@@ -640,21 +729,28 @@ function StockChart({ stockName, priceHistory }: { stockName: string; priceHisto
           font: { size: 10 },
         },
         grid: { display: false },
-        title: { display: true, text: 'Time', color: '#666' },
+        title: { display: true, text: "Time", color: "#666" },
       },
       y: {
         beginAtZero: false,
-        suggestedMin: stablePriceHistory.length > 0 ? Math.min(...stablePriceHistory.map((p) => p.price)) - 10 : 0,
-        suggestedMax: stablePriceHistory.length > 0 ? Math.max(...stablePriceHistory.map((p) => p.price)) + 10 : 100,
-        ticks: { color: '#333' },
+        suggestedMin:
+          stablePriceHistory.length > 0
+            ? Math.min(...stablePriceHistory.map((p) => p.price)) - 10
+            : 0,
+        suggestedMax:
+          stablePriceHistory.length > 0
+            ? Math.max(...stablePriceHistory.map((p) => p.price)) + 10
+            : 100,
+        ticks: { color: "#333" },
         grid: { display: false },
-        title: { display: true, text: 'Price (₹)', color: '#666' },
+        title: { display: true, text: "Price (₹)", color: "#666" },
       },
     },
     plugins: {
       tooltip: {
         callbacks: {
-          label: (context: TooltipItem<'line'>) => `Price: ₹${context.parsed.y}`,
+          label: (context: TooltipItem<"line">) =>
+            `Price: ₹${context.parsed.y}`,
         },
       },
       legend: { display: false },
@@ -664,7 +760,7 @@ function StockChart({ stockName, priceHistory }: { stockName: string; priceHisto
   return (
     <div className="w-full max-w-4xl mx-auto h-auto p-2 sm:p-4 bg-white rounded shadow">
       <h2 className="text-lg sm:text-xl md:text-2xl font-semibold mb-4 text-center sm:text-left">
-        {stockName} Stock Price
+        {stockName} Value
       </h2>
       <div className="relative h-[250px] sm:h-[300px] md:h-[350px] lg:h-[400px] w-full">
         {stablePriceHistory.length > 0 ? (
@@ -672,7 +768,7 @@ function StockChart({ stockName, priceHistory }: { stockName: string; priceHisto
             <Chart type="line" data={data} options={options} />
           </div>
         ) : (
-          <p className="text-center text-gray-500">No stock price data available.</p>
+          <p className="text-center text-gray-500">No value data available.</p>
         )}
       </div>
     </div>
@@ -689,59 +785,76 @@ function EventsSection({ events }: { events: EventItem[] }) {
       <h2 className="text-lg font-bold text-gray-900">2025</h2>
 
       {stableEvents.length > 0 ? (
-        stableEvents.map((event, idx) => {
-          // Skip rendering if date is undefined or not a string
-          if (!event.date || typeof event.date !== 'string') {
-            return null;
-          }
+        stableEvents
+          .map((event, idx) => {
+            // Skip rendering if date is undefined or not a string
+            if (!event.date || typeof event.date !== "string") {
+              return null;
+            }
 
-          const [day, month] = event.date.split(" ");
-          return (
-            <div
-              key={`${event.title}-${event.date}-${idx}`}
-              className="flex flex-col sm:flex-row sm:justify-between sm:items-center bg-white border border-gray-200 rounded-md p-4 hover:shadow-sm space-y-4 sm:space-y-0"
-            >
-              <div className="flex items-center space-x-4">
-                <div className="text-center w-12 h-12 border rounded-md border-gray-300 flex flex-col justify-center">
-                  <span className="text-lg font-semibold">{day || 'N/A'}</span>
-                  <span className="text-xs text-gray-500">{month || 'N/A'}</span>
+            const [day, month] = event.date.split(" ");
+            return (
+              <div
+                key={`${event.title}-${event.date}-${idx}`}
+                className="flex flex-col sm:flex-row sm:justify-between sm:items-center bg-white border border-gray-200 rounded-md p-4 hover:shadow-sm space-y-4 sm:space-y-0"
+              >
+                <div className="flex items-center space-x-4">
+                  <div className="text-center w-12 h-12 border rounded-md border-gray-300 flex flex-col justify-center">
+                    <span className="text-lg font-semibold">
+                      {day || "N/A"}
+                    </span>
+                    <span className="text-xs text-gray-500">
+                      {month || "N/A"}
+                    </span>
+                  </div>
+                  <div className="text-left">
+                    <p className="text-gray-900 font-medium">{event.title}</p>
+                    <p className="text-sm text-gray-500">{event.subtitle}</p>
+                  </div>
                 </div>
-                <div className="text-left">
-                  <p className="text-gray-900 font-medium">{event.title}</p>
-                  <p className="text-sm text-gray-500">{event.subtitle}</p>
-                </div>
+
+                {event.amount && (
+                  <div className="text-right">
+                    <p className="text-gray-900 font-semibold">
+                      {event.amount}
+                    </p>
+                    <p className="text-xs text-gray-500">per share</p>
+                  </div>
+                )}
+                {event.link && (
+                  <a
+                    href="#"
+                    className="text-sm text-gray-600 font-semibold underline underline-offset-2 hover:text-black"
+                  >
+                    {event.link} →
+                  </a>
+                )}
               </div>
-
-              {event.amount && (
-                <div className="text-right">
-                  <p className="text-gray-900 font-semibold">{event.amount}</p>
-                  <p className="text-xs text-gray-500">per share</p>
-                </div>
-              )}
-              {event.link && (
-                <a
-                  href="#"
-                  className="text-sm text-gray-600 font-semibold underline underline-offset-2 hover:text-black"
-                >
-                  {event.link} →
-                </a>
-              )}
-            </div>
-          );
-        }).filter(Boolean) // Remove null entries
+            );
+          })
+          .filter(Boolean) // Remove null entries
       ) : (
         <p>No events data available.</p>
       )}
 
-      <div className="text-green-600 font-semibold hover:underline cursor-pointer">View more</div>
+      <div className="text-green-600 font-semibold hover:underline cursor-pointer">
+        View more
+      </div>
 
       <div className="flex items-center gap-3 border border-gray-200 rounded-md p-4">
         <div className="w-10 h-10 relative">
-          <Image src="https://img.icons8.com/?size=48&id=ZfQHCnh6ImEM&format=png" alt="Events calendar icon" fill className="object-contain" />
+          <Image
+            src="https://img.icons8.com/?size=48&id=ZfQHCnh6ImEM&format=png"
+            alt="Events calendar icon"
+            fill
+            className="object-contain"
+          />
         </div>
         <div>
           <p className="text-sm font-semibold text-gray-900">Events calendar</p>
-          <p className="text-sm text-gray-600">View upcoming events in other stocks</p>
+          <p className="text-sm text-gray-600">
+            View upcoming events in other indices
+          </p>
         </div>
       </div>
     </div>
@@ -752,94 +865,101 @@ function EventsSection({ events }: { events: EventItem[] }) {
 function Footer() {
   const linksGroup = [
     {
-      title: 'STOCK MARKET INDICES',
-      items: ['S&P BSE SENSEX', 'S&P BSE 100', 'NIFTY 100', 'NIFTY 50', 'NIFTY MIDCAP 100', 'NIFTY BANK', 'NIFTY NEXT 50'],
-    },
-    {
-      title: 'POPULAR MUTUAL FUNDS',
+      title: "STOCK MARKET INDICES",
       items: [
-        'QUANT SMALL CAP FUND',
-        'ICICI PRUDENTIAL COMMODITIES FUND',
-        'NIPPON INDIA SMALL CAP FUND',
-        'PARAG PARIKH FLEXI CAP FUND',
-        'GROWW NIFTY TOTAL MARKET INDEX FUND',
-        'SBI SMALL MIDCAP FUND',
-        'TATA DIGITAL INDIA FUND',
-        'AXIS SMALL CAP FUND',
-        'ICICI PRUDENTIAL TECHNOLOGY FUND',
-        'HDFC INDEX FUND SENSEX PLAN',
-        'HDFC SMALL CAP FUND',
-        'AXIS EQUITY FUND',
-        'CANARA ROBECO SMALL CAP FUND',
-        'TATA SMALL CAP FUND',
-        'UTI NIFTY FUND',
+        "S&P BSE SENSEX",
+        "S&P BSE 100",
+        "NIFTY 100",
+        "NIFTY 50",
+        "NIFTY MIDCAP 100",
+        "NIFTY BANK",
+        "NIFTY NEXT 50",
       ],
     },
     {
-      title: 'MUTUAL FUNDS COMPANIES',
+      title: "POPULAR MUTUAL FUNDS",
       items: [
-        'GROWWMF',
-        'SBI',
-        'AXIS',
-        'HDFC',
-        'UTI',
-        'NIPPON INDIA',
-        'ICICI PRUDENTIAL',
-        'TATA',
-        'KOTAK',
-        'DSP',
-        'CANARA ROBECO',
-        'SUNDARAM',
-        'MIRAE ASSET',
-        'IDFC',
-        'FRANKLIN TEMPLETON',
-        'PPFAS',
-        'MOTILAL OSWAL',
-        'INVESCO',
-        'EDELWEISS',
-        'ADITYA BIRLA SUN LIFE',
-        'LIC',
-        'HSBC',
-        'NAVI',
-        'QUANTUM',
-        'UNION',
-        'ITI',
-        'MAHINDRA MANULIFE',
-        '360 ONE',
-        'BOI',
-        'TAURUS',
-        'JM FINANCIAL',
-        'PGIM',
-        'SHRIRAM',
-        'BARODA BNP PARIBAS',
-        'QUANT',
-        'WHITEOAK CAPITAL',
-        'TRUST',
-        'SAMCO',
-        'NJ',
+        "QUANT SMALL CAP FUND",
+        "ICICI PRUDENTIAL COMMODITIES FUND",
+        "NIPPON INDIA SMALL CAP FUND",
+        "PARAG PARIKH FLEXI CAP FUND",
+        "GROWW NIFTY TOTAL MARKET INDEX FUND",
+        "SBI SMALL MIDCAP FUND",
+        "TATA DIGITAL INDIA FUND",
+        "AXIS SMALL CAP FUND",
+        "ICICI PRUDENTIAL TECHNOLOGY FUND",
+        "HDFC INDEX FUND SENSEX PLAN",
+        "HDFC SMALL CAP FUND",
+        "AXIS EQUITY FUND",
+        "CANARA ROBECO SMALL CAP FUND",
+        "TATA SMALL CAP FUND",
+        "UTI NIFTY FUND",
       ],
     },
     {
-      title: 'TOOLS',
+      title: "MUTUAL FUNDS COMPANIES",
       items: [
-        'BROKERAGE CALCULATOR',
-        'MARGIN CALCULATOR',
-        'SIP CALCULATOR',
-        'SWP CALCULATOR',
-        'SUKANYA SAMRIDDHI YOJANA CALCULATOR',
-        'MUTUAL FUND RETURNS CALCULATOR',
-        'FD CALCULATOR',
-        'RD CALCULATOR',
-        'EMI CALCULATOR',
-        'PPF CALCULATOR',
-        'EPF CALCULATOR',
-        'NPS CALCULATOR',
-        'GRATUITY CALCULATOR',
+        "GROWWMF",
+        "SBI",
+        "AXIS",
+        "HDFC",
+        "UTI",
+        "NIPPON INDIA",
+        "ICICI PRUDENTIAL",
+        "TATA",
+        "KOTAK",
+        "DSP",
+        "CANARA ROBECO",
+        "SUNDARAM",
+        "MIRAE ASSET",
+        "IDFC",
+        "FRANKLIN TEMPLETON",
+        "PPFAS",
+        "MOTILAL OSWAL",
+        "INVESCO",
+        "EDELWEISS",
+        "ADITYA BIRLA SUN LIFE",
+        "LIC",
+        "HSBC",
+        "NAVI",
+        "QUANTUM",
+        "UNION",
+        "ITI",
+        "MAHINDRA MANULIFE",
+        "360 ONE",
+        "BOI",
+        "TAURUS",
+        "JM FINANCIAL",
+        "PGIM",
+        "SHRIRAM",
+        "BARODA BNP PARIBAS",
+        "QUANT",
+        "WHITEOAK CAPITAL",
+        "TRUST",
+        "SAMCO",
+        "NJ",
+      ],
+    },
+    {
+      title: "TOOLS",
+      items: [
+        "BROKERAGE CALCULATOR",
+        "MARGIN CALCULATOR",
+        "SIP CALCULATOR",
+        "SWP CALCULATOR",
+        "SUKANYA SAMRIDDHI YOJANA CALCULATOR",
+        "MUTUAL FUND RETURNS CALCULATOR",
+        "FD CALCULATOR",
+        "RD CALCULATOR",
+        "EMI CALCULATOR",
+        "PPF CALCULATOR",
+        "EPF CALCULATOR",
+        "NPS CALCULATOR",
+        "GRATUITY CALCULATOR",
       ],
     },
   ];
 
-  
   return (
     <footer className="bg-gray-100 text-sm text-gray-800 px-6 py-10">
       <div className="max-w-7xl mx-auto">
@@ -850,7 +970,9 @@ function Footer() {
             <p>Sarjapur Main Road, Bellandur</p>
             <p>Bengaluru - 560103</p>
             <p>Karnataka</p>
-            <a href="#" className="text-blue-600">Contact Us</a>
+            <a href="#" className="text-blue-600">
+              Contact Us
+            </a>
             <div className="flex space-x-3 mt-4 text-xl">
               <FaFacebookF />
               <FaTwitter />
@@ -904,7 +1026,8 @@ function Footer() {
 
         <div className="flex flex-wrap justify-between items-center border-t mt-10 pt-4 text-sm gap-4">
           <p className="flex-1 min-w-[250px]">
-            © 2016-2025 Groww. All rights reserved, Built with <span className="text-red-500">❤</span> in India
+            © 2016-2025 Groww. All rights reserved, Built with{" "}
+            <span className="text-red-500">❤</span> in India
           </p>
           <div className="flex space-x-3 text-2xl">
             <FaApple />
@@ -918,7 +1041,10 @@ function Footer() {
               <p className="font-semibold mb-1">{group.title}</p>
               <div className="flex flex-wrap gap-2">
                 {group.items.map((item, i) => (
-                  <span key={i} className="text-green-600 hover:underline cursor-pointer">
+                  <span
+                    key={i}
+                    className="text-green-600 hover:underline cursor-pointer"
+                  >
                     {item}
                   </span>
                 ))}
@@ -928,17 +1054,12 @@ function Footer() {
 
           <div className="border-t pt-4 text-gray-500 flex flex-wrap gap-2">
             <span className="font-semibold">OTHERS:</span>
-            <span>NSE</span>|
-            <span>BSE</span>|
-            <span>Terms and Conditions</span>|
+            <span>NSE</span>|<span>BSE</span>|<span>Terms and Conditions</span>|
             <span>Policies and Procedures</span>|
-            <span>Regulatory & Other Info</span>|
-            <span>Privacy Policy</span>|
-            <span>Disclosure</span>|
-            <span>Bug Bounty</span>|
+            <span>Regulatory & Other Info</span>|<span>Privacy Policy</span>|
+            <span>Disclosure</span>|<span>Bug Bounty</span>|
             <span>Download Forms</span>|
-            <span>Investor Charter and Grievance</span>|
-            <span>SMART ODR</span>
+            <span>Investor Charter and Grievance</span>|<span>SMART ODR</span>
           </div>
         </div>
       </div>
@@ -955,13 +1076,31 @@ export default function BuyStock() {
   const router = useRouter();
 
   const state = searchParams.get("state");
-  const { stockId, name, price, change, image, source, category } = state 
-    ? JSON.parse(state) 
-    : { stockId: null, name: stockName, price: "", change: "", image: "", source: "", category: "" };
+  const {
+    stockId,
+    name,
+    price: statePrice,
+    change: stateChange,
+    image,
+    source,
+    category,
+  } = state
+    ? JSON.parse(state)
+    : {
+        stockId: null,
+        name: stockName,
+        price: "",
+        change: "",
+        image: "",
+        source: "",
+        category: "",
+      };
 
   const [selectedStock, setSelectedStock] = useState<StockDetails | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [displayPrice, setDisplayPrice] = useState<string>(statePrice || "");
+  const [displayChange, setDisplayChange] = useState<string>(stateChange || "");
 
   useEffect(() => {
     if (!stockId || !source) {
@@ -976,13 +1115,30 @@ export default function BuyStock() {
       try {
         let apiUrl = "";
         const validCategories = ["large", "mid", "small"];
-        const validSources = ["stocksInNews", "mostTraded", "topGainers", "topLosers", "mostTradedMTF"];
-        
+        const validSources = [
+          "stocksInNews",
+          "mostTraded",
+          "topGainers",
+          "topLosers",
+          "mostTradedMTF",
+          "topMarket",
+          "index",
+          "topIndexFutures",
+          "topStockFutures",
+          "popularfunds",
+          "growfund", // Added new source
+          "fno",
+          "fnoloosers",
+          "toptraded",
+        ];
+
         if (!validSources.includes(source)) {
           throw new Error("Invalid source provided.");
         }
 
-        const effectiveCategory = validCategories.includes(category) ? category : "large";
+        const effectiveCategory = validCategories.includes(category)
+          ? category
+          : "large";
 
         if (source === "stocksInNews") {
           apiUrl = `http://localhost:5000/api/stocks/producttools/stocks-in-news/${stockId}`;
@@ -994,6 +1150,24 @@ export default function BuyStock() {
           apiUrl = `http://localhost:5000/api/stocks/producttools/toplosers/${effectiveCategory}/${stockId}`;
         } else if (source === "mostTradedMTF") {
           apiUrl = `http://localhost:5000/api/stocks/producttools/mtf/${stockId}`;
+        } else if (source === "topMarket") {
+          apiUrl = `http://localhost:5000/api/stocks/producttools/topmarket/${stockId}`;
+        } else if (source === "index") {
+          apiUrl = `http://localhost:5000/api/topstocks/index/${stockId}`;
+        } else if (source === "topIndexFutures") {
+          apiUrl = `http://localhost:5000/api/topstocks/topindex/${stockId}`;
+        } else if (source === "topStockFutures") {
+          apiUrl = `http://localhost:5000/api/topstocks/top-stocks/${stockId}`;
+        } else if (source === "popularfunds") {
+          apiUrl = `http://localhost:5000/api/topstocks/popularfunds/${stockId}`;
+        } else if (source === "growfund") {
+          apiUrl = `http://localhost:5000/api/topstocks/growfund/${stockId}`;
+        } else if (source === "fno") {
+          apiUrl = `http://localhost:5000/api/topstocks/fno/${stockId}`;
+        } else if (source === "fnoloosers") {
+          apiUrl = `http://localhost:5000/api/topstocks/fnoloosers/${stockId}`;
+        }else if (source === "toptraded") {
+          apiUrl = `http://localhost:5000/api/topstocks/toptraded/${stockId}`;
         }
 
         const response = await fetch(apiUrl);
@@ -1006,70 +1180,232 @@ export default function BuyStock() {
         }
         const data = await response.json();
 
-        // Handle the case where the API might return an array for mostTradedMTF
+        // Handle both array and object responses
         let stockData;
-        if (source === "mostTradedMTF" && Array.isArray(data)) {
-          stockData = data.find((item: any) => item._id === stockId || item.stockId === stockId);
+        if (Array.isArray(data)) {
+          stockData = data.find(
+            (item: any) => item._id === stockId || item.stockId === stockId
+          );
           if (!stockData) {
-            throw new Error(`Stock with ID ${stockId} not found in MTF data.`);
+            throw new Error(
+              `Stock with ID ${stockId} not found in ${source} data.`
+            );
           }
         } else {
           stockData = data;
+          if (stockData._id !== stockId && stockData.stockId !== stockId) {
+            throw new Error(
+              `Stock ID ${stockId} does not match API data ID ${
+                stockData._id || stockData.stockId
+              }.`
+            );
+          }
         }
+
+        // Transform events if they are in a simple string array format
+        const normalizeEvents = (events: any[]): EventItem[] => {
+          if (!Array.isArray(events)) return [];
+          return events.map((event, idx) => {
+            if (typeof event === "string") {
+              return {
+                date: "02 Jun", // Using today's date: June 02, 2025
+                title: event,
+                subtitle: "No additional details available",
+              };
+            }
+            return {
+              date: event.date || "02 Jun",
+              title: event.title || "Untitled Event",
+              subtitle: event.subtitle || "No additional details available",
+              amount: event.amount,
+              link: event.link,
+            };
+          });
+        };
+
+        // Normalize price and change fields
+        const normalizePrice = (price: string | number | undefined): string => {
+          if (!price) return "₹0";
+          const priceStr = price.toString();
+          return priceStr.startsWith("₹") ? priceStr : `₹${priceStr}`;
+        };
+
+        const normalizeChange = (change: string | undefined): string => {
+          if (!change) return "+0.00 (+0.00%)";
+          const changeRegex = /^[+-]?\d+\.\d+\s*\([-+]?\d+\.\d+%\)$/;
+          if (changeRegex.test(change)) return change;
+          return `${change} (+0.00%)`;
+        };
 
         // Normalize the API response to match the StockDetails type
         const normalizedData: StockDetails = {
-          priceHistory: stockData.priceHistory ?? [], // Fallback to empty array if undefined
+          priceHistory: stockData.priceHistory ?? [],
           details: {
-            performance: stockData.details?.performance ?? {
-              todaysLow: stockData.todaysLow ?? "₹0",
-              todaysHigh: stockData.todaysHigh ?? "₹0",
-              todayCurrent: stockData.todayCurrent ?? "₹0",
-              low52Week: stockData.low52Week ?? "₹0",
-              high52Week: stockData.high52Week ?? "₹0",
-              open: stockData.open ?? "₹0",
-              prevClose: stockData.prevClose ?? "₹0",
-              volume: stockData.volume ?? "0",
-              totalTradedValue: stockData.totalTradedValue ?? "₹0",
-              upperCircuit: stockData.upperCircuit ?? "₹0",
-              lowerCircuit: stockData.lowerCircuit ?? "₹0",
+            performance: {
+              todaysLow: normalizePrice(
+                stockData.todaysLow ??
+                  stockData.details?.performance?.todaysLow ??
+                  "0"
+              ),
+              todaysHigh: normalizePrice(
+                stockData.todaysHigh ??
+                  stockData.details?.performance?.todaysHigh ??
+                  "0"
+              ),
+              todayCurrent: normalizePrice(
+                stockData.todayCurrent ??
+                  stockData.details?.performance?.todayCurrent ??
+                  (source === "index"
+                    ? stockData.value
+                    : stockData.price ?? "0")
+              ),
+              low52Week: normalizePrice(
+                stockData.low52Week ??
+                  stockData.details?.performance?.low52Week ??
+                  "0"
+              ),
+              high52Week: normalizePrice(
+                stockData.high52Week ??
+                  stockData.details?.performance?.high52Week ??
+                  "0"
+              ),
+              open: normalizePrice(
+                stockData.open ?? stockData.details?.performance?.open ?? "0"
+              ),
+              prevClose: normalizePrice(
+                stockData.prevClose ??
+                  stockData.details?.performance?.prevClose ??
+                  "0"
+              ),
+              volume:
+                stockData.volume ??
+                stockData.details?.performance?.volume ??
+                "0",
+              totalTradedValue: normalizePrice(
+                stockData.totalTradedValue ??
+                  stockData.details?.performance?.totalTradedValue ??
+                  "0"
+              ),
+              upperCircuit: normalizePrice(
+                stockData.upperCircuit ??
+                  stockData.details?.performance?.upperCircuit ??
+                  "0"
+              ),
+              lowerCircuit: normalizePrice(
+                stockData.lowerCircuit ??
+                  stockData.details?.performance?.lowerCircuit ??
+                  "0"
+              ),
             },
-            events: stockData.details?.events ?? [],
+            events: normalizeEvents(stockData.details?.events ?? []),
             news: stockData.details?.news ?? [],
           },
-          marketDepth: stockData.marketDepth ?? {
-            buyOrderQuantity: stockData.buyOrderQuantity ?? 0,
-            sellOrderQuantity: stockData.sellOrderQuantity ?? 0,
-            buyOrders: stockData.buyOrders ?? [],
-            sellOrders: stockData.sellOrders ?? [],
-            bidTotal: stockData.bidTotal ?? 0,
-            askTotal: stockData.askTotal ?? 0,
+          marketDepth: {
+            buyOrderQuantity:
+              stockData.buyOrderQuantity ??
+              stockData.marketDepth?.buyOrderQuantity ??
+              0,
+            sellOrderQuantity:
+              stockData.sellOrderQuantity ??
+              stockData.marketDepth?.sellOrderQuantity ??
+              0,
+            buyOrders:
+              stockData.buyOrders ?? stockData.marketDepth?.buyOrders ?? [],
+            sellOrders:
+              stockData.sellOrders ?? stockData.marketDepth?.sellOrders ?? [],
+            bidTotal:
+              stockData.bidTotal ?? stockData.marketDepth?.bidTotal ?? 0,
+            askTotal:
+              stockData.askTotal ?? stockData.marketDepth?.askTotal ?? 0,
           },
-          fundamentals: stockData.fundamentals ?? {
-            marketCap: stockData.marketCap ?? "₹0",
-            peRatioTTM: stockData.peRatioTTM ?? 0,
-            pbRatio: stockData.pbRatio ?? 0,
-            industryPE: stockData.industryPE ?? 0,
-            debtToEquity: stockData.debtToEquity ?? 0,
-            roe: stockData.roe ?? 0,
-            epsTTM: stockData.epsTTM ?? 0,
-            dividendYield: stockData.dividendYield ?? 0,
-            bookValue: stockData.bookValue ?? 0,
-            faceValue: stockData.faceValue ?? 0,
+          fundamentals: {
+            marketCap:
+              stockData.marketCap ?? stockData.fundamentals?.marketCap ?? "₹0",
+            peRatioTTM:
+              stockData.peRatioTTM ?? stockData.fundamentals?.peRatioTTM ?? 0,
+            pbRatio: stockData.pbRatio ?? stockData.fundamentals?.pbRatio ?? 0,
+            industryPE:
+              stockData.industryPE ?? stockData.fundamentals?.industryPE ?? 0,
+            debtToEquity:
+              stockData.debtToEquity ??
+              stockData.fundamentals?.debtToEquity ??
+              0,
+            roe: stockData.roe ?? stockData.fundamentals?.roe ?? 0,
+            epsTTM: stockData.epsTTM ?? stockData.fundamentals?.epsTTM ?? 0,
+            dividendYield:
+              stockData.dividendYield ??
+              stockData.fundamentals?.dividendYield ??
+              0,
+            bookValue:
+              stockData.bookValue ?? stockData.fundamentals?.bookValue ?? 0,
+            faceValue:
+              stockData.faceValue ?? stockData.fundamentals?.faceValue ?? 0,
           },
-          financials: stockData.financials ?? { quarterly: stockData.quarterly ?? [] },
-          about: stockData.about ?? {
-            description: stockData.description ?? "",
-            parentOrganisation: stockData.parentOrganisation ?? "",
-            nseSymbol: stockData.nseSymbol ?? "",
-            managingDirector: stockData.managingDirector ?? "",
+          financials: {
+            quarterly:
+              stockData.financials?.quarterly ?? stockData.quarterly ?? [],
           },
+          about: {
+            description:
+              stockData.description ??
+              stockData.about?.description ??
+              "No description available.",
+            parentOrganisation:
+              stockData.parentOrganisation ??
+              stockData.about?.parentOrganisation ??
+              stockData.name ??
+              "Unknown",
+            nseSymbol:
+              stockData.nseSymbol ??
+              stockData.about?.nseSymbol ??
+              stockData.name ??
+              "N/A",
+            managingDirector:
+              stockData.managingDirector ??
+              stockData.about?.managingDirector ??
+              "Unknown",
+          },
+          value: stockData.value,
+          oneDayChange: stockData.oneDayChange,
+          oneDayChangePercent: stockData.oneDayChangePercent,
         };
 
+        // Update displayPrice and displayChange only if state values are not provided
+        if (!statePrice) {
+          const price =
+            source === "index" && stockData.value !== undefined
+              ? stockData.value
+              : stockData.price ?? "0";
+          setDisplayPrice(normalizePrice(price));
+        }
+        if (!stateChange) {
+          if (
+            source === "index" &&
+            stockData.oneDayChange !== undefined &&
+            stockData.oneDayChangePercent !== undefined
+          ) {
+            setDisplayChange(
+              `${stockData.oneDayChange} (${stockData.oneDayChangePercent}%)`
+            );
+          } else if (
+            (source === "popularfunds" || source === "growfund") &&
+            stockData.return
+          ) {
+            setDisplayChange(normalizeChange(stockData.return));
+          } else {
+            setDisplayChange(normalizeChange(stockData.change));
+          }
+        }
+
         setSelectedStock(normalizedData);
-      } catch (error) {
-        console.error(`Error fetching details for stock ID ${stockId} from ${source}:`, error);
-        setError(`Failed to load details for the selected stock. Please try again later.`);
+      } catch (error: any) {
+        console.error(
+          `Error fetching details for stock ID ${stockId} from ${source}:`,
+          error.message
+        );
+        setError(
+          `Failed to load details for the selected stock/fund: ${error.message}. Please try again later.`
+        );
         setSelectedStock(null);
       } finally {
         setLoading(false);
@@ -1077,11 +1413,15 @@ export default function BuyStock() {
     };
 
     fetchStockDetails();
-  }, [stockId, source, category]);
+  }, [stockId, source, category, statePrice, stateChange]);
 
   if (loading) return <div className="text-center py-10">Loading...</div>;
-  if (error) return <div className="text-center py-10 text-red-500">{error}</div>;
-  if (!selectedStock) return <div className="text-center py-10">No stock data available.</div>;
+  if (error)
+    return <div className="text-center py-10 text-red-500">{error}</div>;
+  if (!selectedStock)
+    return (
+      <div className="text-center py-10">No stock/fund data available.</div>
+    );
 
   return (
     <main className="min-h-screen bg-white text-gray-900 transition-colors">
@@ -1091,18 +1431,33 @@ export default function BuyStock() {
         <div className="w-full lg:w-4/5 space-y-12">
           <div className="bg-white p-6 rounded-lg shadow-sm">
             <div className="flex items-center space-x-4 mb-6">
-              <Image src={image} alt={name} width={40} height={40} className="rounded-full" />
+              <Image
+                src={image}
+                alt={name}
+                width={40}
+                height={40}
+                className="rounded-full"
+              />
               <div>
                 <h1 className="text-2xl font-semibold">{name}</h1>
                 <div className="flex items-center space-x-2">
-                  <p className="text-lg font-medium">{price}</p>
-                  <p className={`text-sm ${change.startsWith("-") ? "text-red-500" : "text-green-600"}`}>
-                    {change}
+                  <p className="text-lg font-medium">{displayPrice}</p>
+                  <p
+                    className={`text-sm ${
+                      displayChange.startsWith("-")
+                        ? "text-red-500"
+                        : "text-green-600"
+                    }`}
+                  >
+                    {displayChange}
                   </p>
                 </div>
               </div>
             </div>
-            <StockChart stockName={name} priceHistory={selectedStock.priceHistory} />
+            <StockChart
+              stockName={name}
+              priceHistory={selectedStock.priceHistory}
+            />
           </div>
           <div className="p-6 rounded-lg shadow-sm bg-white">
             <Tabs activeTab={activeTab} setActiveTab={setActiveTab} />
@@ -1113,8 +1468,12 @@ export default function BuyStock() {
                 fundamentals={selectedStock.fundamentals}
               />
             )}
-            {activeTab === "News" && <NewsSection news={selectedStock.details.news} />}
-            {activeTab === "Events" && <EventsSection events={selectedStock.details.events} />}
+            {activeTab === "News" && (
+              <NewsSection news={selectedStock.details.news} />
+            )}
+            {activeTab === "Events" && (
+              <EventsSection events={selectedStock.details.events} />
+            )}
           </div>
           <FinancialChart financials={selectedStock.financials} />
           <CompanyInfoCard about={selectedStock.about} />
@@ -1133,14 +1492,21 @@ export default function BuyStock() {
           </div>
 
           <h2 className="text-lg font-semibold text-gray-800 mb-1">
-            Looking to invest in Stocks?
+            Looking to invest in{" "}
+            {source === "popularfunds" || source === "growfund"
+              ? "Funds"
+              : "Stocks"}
+            ?
           </h2>
           <p className="text-sm text-gray-500 mb-6">
-            Create your dmat account in 2 minutes.
+            Create your dmat account in seconds.
           </p>
 
           <button className="bg-green-500 hover:bg-green-600 text-white text-sm font-medium px-6 py-3 rounded-lg transition-all">
-            UNLOCK STOCKS
+            UNLOCK{" "}
+            {source === "popularfunds" || source === "growfund"
+              ? "FUNDS"
+              : "STOCKS"}
           </button>
         </div>
       </div>

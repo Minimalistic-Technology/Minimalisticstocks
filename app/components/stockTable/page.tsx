@@ -1,72 +1,28 @@
+// ```typescript
 "use client";
 
 import { useState } from "react";
 import Image from "next/image";
 import { FaPlus } from "react-icons/fa";
+import Link from "next/link";
 
-type Stock = {
+type StockItem = {
+  _id: string;
   name: string;
-  icon: string;
   price: string;
   change: string;
+  image: string;
 };
 
-const stockData: Stock[] = [
-  {
-    name: "Reliance Industries",
-    icon: "/reliance.svg",
-    price: "1,415.70",
-    change: "-20.80 (1.45%)",
-  },
-  {
-    name: "Infosys Ltd.",
-    icon: "/infosys.svg",
-    price: "1,325.40",
-    change: "+15.20 (1.16%)",
-  },
-  {
-    name: "TCS",
-    icon: "/tcs.svg",
-    price: "3,400.00",
-    change: "-12.30 (0.36%)",
-  },
-  {
-    name: "HDFC Bank",
-    icon: "/hdfc.svg",
-    price: "1,200.55",
-    change: "+10.50 (0.89%)",
-  },
-  {
-    name: "ICICI Bank",
-    icon: "/icici.svg",
-    price: "1,050.25",
-    change: "-8.40 (0.79%)",
-  },
-  {
-    name: "Wipro",
-    icon: "/wipro.svg",
-    price: "580.20",
-    change: "+5.15 (0.89%)",
-  },
-  {
-    name: "L&T",
-    icon: "/lt.svg",
-    price: "2,005.65",
-    change: "-14.20 (0.71%)",
-  },
-  {
-    name: "Adani Enterprises",
-    icon: "/adani.svg",
-    price: "2,950.75",
-    change: "+20.00 (0.68%)",
-  },
-];
+interface StockTableProps {
+  stocks: StockItem[];
+}
 
-export default function StockTable() {
+export default function StockTable({ stocks }: StockTableProps) {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const itemsPerPage = 4;
 
-  const totalPages = Math.ceil(stockData.length / itemsPerPage);
+  const totalPages = Math.ceil(stocks.length / itemsPerPage);
 
   const handlePageChange = (page: number) => {
     if (page >= 1 && page <= totalPages) {
@@ -74,7 +30,7 @@ export default function StockTable() {
     }
   };
 
-  const paginatedStocks = stockData.slice(
+  const paginatedStocks = stocks.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
@@ -91,36 +47,55 @@ export default function StockTable() {
 
       {/* Table Rows */}
       {paginatedStocks.map((stock, index) => (
-        <div
+        <Link
           key={index}
-          className="grid grid-cols-4 sm:grid-cols-6 items-start text-sm sm:text-base py-4 border-b"
+          href={{
+            pathname: `/buystock/${encodeURIComponent(stock.name)}`,
+            query: {
+              state: JSON.stringify({
+                stockId: stock._id,
+                name: stock.name,
+                price: stock.price,
+                change: stock.change,
+                image: stock.image,
+                source: "topMarket",
+              }),
+            },
+          }}
         >
-          <div className="flex items-center space-x-2 col-span-2 sm:col-span-2">
-            <Image src={stock.icon} alt={stock.name} width={24} height={24} />
-            <span className="font-medium truncate">{stock.name}</span>
-          </div>
+          <div className="grid grid-cols-4 sm:grid-cols-6 items-start text-sm sm:text-base py-4 border-b hover:bg-gray-50 cursor-pointer">
+            <div className="flex items-center space-x-2 col-span-2 sm:col-span-2">
+              <Image
+                src={stock.image}
+                alt={stock.name}
+                width={24}
+                height={24}
+              />
+              <span className="font-medium truncate">{stock.name}</span>
+            </div>
 
-          <div className="hidden sm:block"></div>
+            <div className="hidden sm:block"></div>
 
-          <div className="flex flex-col col-span-1 sm:col-span-2">
-            <span className="text-black font-semibold">₹{stock.price}</span>
-            <span
-              className={`text-xs mt-1 ${
-                stock.change.startsWith("-")
-                  ? "text-red-500"
-                  : "text-green-600"
-              }`}
-            >
-              {stock.change}
-            </span>
-          </div>
+            <div className="flex flex-col col-span-1 sm:col-span-2">
+              <span className="text-black font-semibold">₹{stock.price}</span>
+              <span
+                className={`text-xs mt-1 ${
+                  stock.change.startsWith("-")
+                    ? "text-red-500"
+                    : "text-green-600"
+                }`}
+              >
+                {stock.change}
+              </span>
+            </div>
 
-          <div className="flex justify-center col-span-1 sm:col-span-1">
-            <div className="w-6 h-6 flex items-center justify-center bg-green-100 text-green-600 rounded-full cursor-pointer">
-              <FaPlus size={10} />
+            <div className="flex justify-center col-span-1 sm:col-span-1">
+              <div className="w-6 h-6 flex items-center justify-center bg-green-100 text-green-600 rounded-full cursor-pointer">
+                <FaPlus size={10} />
+              </div>
             </div>
           </div>
-        </div>
+        </Link>
       ))}
 
       {/* Pagination */}
@@ -128,6 +103,7 @@ export default function StockTable() {
         <button
           className="px-2 py-1 hover:text-green-600 rounded"
           onClick={() => handlePageChange(currentPage - 1)}
+          disabled={currentPage === 1}
           aria-label="Previous Page"
         >
           &lt;
@@ -149,6 +125,7 @@ export default function StockTable() {
         <button
           className="px-2 py-1 hover:text-green-600 rounded"
           onClick={() => handlePageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
           aria-label="Next Page"
         >
           &gt;
@@ -157,3 +134,4 @@ export default function StockTable() {
     </div>
   );
 }
+// ```

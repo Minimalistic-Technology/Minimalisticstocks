@@ -1,3 +1,4 @@
+// ```typescript
 "use client";
 
 import StockFilterSection from "app/components/topGainers/page";
@@ -6,48 +7,58 @@ import Header from "app/components/header/page";
 import Footer from "app/components/Footer";
 import Image from "next/image";
 import { useState, useEffect } from "react";
-import StockTable from "app/components/stockTable/page";
+import StockTableComponent from "app/components/stockTable/page";
 import Link from "next/link";
 
-const stocks = [
-  {
-    name: "Tata Motors",
-    price: "₹699.00",
-    change: "-8.70 (-1.23%)",
-    changeColor: "text-red-500",
-  },
-  {
-    name: "Samvardhana Motherson",
-    price: "₹143.80",
-    change: "+1.35 (+0.95%)",
-    changeColor: "text-green-600",
-  },
-  {
-    name: "Eternal (Zomato)",
-    price: "₹235.25",
-    change: "+3.60 (+1.55%)",
-    changeColor: "text-green-600",
-  },
-  {
-    name: "PNB",
-    price: "₹98.10",
-    change: "+0.42 (+0.43%)",
-    changeColor: "text-green-600",
-  },
-  {
-    name: "Canara Bank",
-    price: "₹106.07",
-    change: "+1.29 (+1.23%)",
-    changeColor: "text-green-600",
-  },
-];
+type SidebarStock = {
+  name: string;
+  price: string;
+  change: string;
+};
 
-export default function Stocks() {
+// const stocks: SidebarStock[] = [
+//   {
+//     name: "Tata Motors",
+//     price: "₹699.00",
+//     change: "-8.70 (-1.23%)",
+//   },
+//   {
+//     name: "Samvardhana Motherson",
+//     price: "₹143.80",
+//     change: "+1.35 (+0.95%)",
+//   },
+//   {
+//     name: "Eternal (Zomato)",
+//     price: "₹235.25",
+//     change: "+3.60 (+1.55%)",
+//   },
+//   {
+//     name: "PNB",
+//     price: "₹98.10",
+//     change: "+0.42 (+0.43%)",
+//   },
+//   {
+//     name: "Canara Bank",
+//     price: "₹106.07",
+//     change: "+1.29 (+1.23%)",
+//   },
+// ];
+
+type StockItem = {
+  _id: string;
+  name: string;
+  price: string;
+  change: string;
+  image: string;
+};
+
+export default function StockTable() {
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<"Large" | "Mid" | "Small">("Large");
+  const [selectedCategory, setSelectedCategory] = useState<
+    "Large" | "Mid" | "Small"
+  >("Large");
 
   // State for Top Gainers (Large, Mid, Small caps)
-  type StockItem = { _id: string; name: string; price: string; change: string; image: string };
   const [largeCapsData, setLargeCapsData] = useState<StockItem[]>([]);
   const [midCapsData, setMidCapsData] = useState<StockItem[]>([]);
   const [smallCapsData, setSmallCapsData] = useState<StockItem[]>([]);
@@ -74,17 +85,35 @@ export default function Stocks() {
   const [loadingProductTools, setLoadingProductTools] = useState<boolean>(true);
   const [errorProductTools, setErrorProductTools] = useState<string | null>(null);
 
-  type StockInNews = { _id: string; name: string; price: string; change: string; image: string };
+  type StockInNews = {
+    _id: string;
+    name: string;
+    price: string;
+    change: string;
+    image: string;
+  };
   const [stocksInNewsData, setStocksInNewsData] = useState<StockInNews[]>([]);
   const [loadingStocksInNews, setLoadingStocksInNews] = useState<boolean>(true);
   const [errorStocksInNews, setErrorStocksInNews] = useState<string | null>(null);
 
-  type StockInMTF = { _id: string; name: string; price: string; change: string; image: string };
+  type StockInMTF = {
+    _id: string;
+    name: string;
+    price: string;
+    change: string;
+    image: string;
+  };
   const [stocksInMTFData, setStocksInMTFData] = useState<StockInMTF[]>([]);
   const [loadingStocksInMTF, setLoadingStocksInMTF] = useState<boolean>(true);
   const [errorStocksInMTF, setErrorStocksInMTF] = useState<string | null>(null);
 
-  type MostTraded = { _id: string; name: string; price: string; change: string; image: string };
+  type MostTraded = {
+    _id: string;
+    name: string;
+    price: string;
+    change: string;
+    image: string;
+  };
   const [mostTradedData, setMostTradedData] = useState<MostTraded[]>([]);
   const [loadingMostTraded, setLoadingMostTraded] = useState<boolean>(true);
   const [errorMostTraded, setErrorMostTraded] = useState<string | null>(null);
@@ -94,13 +123,20 @@ export default function Stocks() {
   const [loadingTopSectors, setLoadingTopSectors] = useState<boolean>(true);
   const [errorTopSectors, setErrorTopSectors] = useState<string | null>(null);
 
+  // State for Top by Market Cap
+  const [topMarketData, setTopMarketData] = useState<StockItem[]>([]);
+  const [loadingTopMarket, setLoadingTopMarket] = useState<boolean>(true);
+  const [errorTopMarket, setErrorTopMarket] = useState<string | null>(null);
+
   // Fetch Product & Tools data
   useEffect(() => {
     const fetchProductTools = async () => {
       setLoadingProductTools(true);
       setErrorProductTools(null);
       try {
-        const response = await fetch("http://localhost:5000/api/stocks/producttools/get");
+        const response = await fetch(
+          "http://localhost:5000/api/stocks/producttools/get"
+        );
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
@@ -112,7 +148,9 @@ export default function Stocks() {
         setProductToolsData(data);
       } catch (error) {
         console.error("Error fetching Product & Tools data:", error);
-        setErrorProductTools("Failed to load Product & Tools data. Please try again later.");
+        setErrorProductTools(
+          "Failed to load Product & Tools data. Please try again later."
+        );
         setProductToolsData([]);
       } finally {
         setLoadingProductTools(false);
@@ -128,7 +166,9 @@ export default function Stocks() {
       setLoadingStocksInNews(true);
       setErrorStocksInNews(null);
       try {
-        const response = await fetch("http://localhost:5000/api/stocks/producttools/stocks-in-news/");
+        const response = await fetch(
+          "http://localhost:5000/api/stocks/producttools/stocks-in-news/"
+        );
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
@@ -137,7 +177,7 @@ export default function Stocks() {
           throw new Error("Response is not JSON");
         }
         const data = await response.json();
-        const formattedData = data.map((item: any) => ({
+        const formattedData: StockInNews[] = data.map((item: any) => ({
           _id: item._id,
           name: item.name,
           price: item.price,
@@ -147,7 +187,9 @@ export default function Stocks() {
         setStocksInNewsData(formattedData);
       } catch (error) {
         console.error("Error fetching Stocks in News data:", error);
-        setErrorStocksInNews("Failed to load Stocks in News data. Please try again later.");
+        setErrorStocksInNews(
+          "Failed to load Stocks in News data. Please try again later."
+        );
         setStocksInNewsData([]);
       } finally {
         setLoadingStocksInNews(false);
@@ -163,7 +205,9 @@ export default function Stocks() {
       setLoadingStocksInMTF(true);
       setErrorStocksInMTF(null);
       try {
-        const response = await fetch("http://localhost:5000/api/stocks/producttools/mtf/");
+        const response = await fetch(
+          "http://localhost:5000/api/stocks/producttools/mtf/"
+        );
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
@@ -172,7 +216,7 @@ export default function Stocks() {
           throw new Error("Response is not JSON");
         }
         const data = await response.json();
-        const formattedData = data.map((item: any) => ({
+        const formattedData: StockInMTF[] = data.map((item: any) => ({
           _id: item._id,
           name: item.name,
           price: item.price,
@@ -182,7 +226,9 @@ export default function Stocks() {
         setStocksInMTFData(formattedData);
       } catch (error) {
         console.error("Error fetching Most Traded on MTF data:", error);
-        setErrorStocksInMTF("Failed to load Most Traded on MTF data. Please try again later.");
+        setErrorStocksInMTF(
+          "Failed to load Most Traded on MTF data. Please try again later."
+        );
         setStocksInMTFData([]);
       } finally {
         setLoadingStocksInMTF(false);
@@ -198,7 +244,9 @@ export default function Stocks() {
       setLoadingLargeCaps(true);
       setErrorLargeCaps(null);
       try {
-        const response = await fetch("http://localhost:5000/api/stocks/producttools/topgainers/large");
+        const response = await fetch(
+          "http://localhost:5000/api/stocks/producttools/topgainers/large"
+        );
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
@@ -207,7 +255,7 @@ export default function Stocks() {
           throw new Error("Response is not JSON");
         }
         const data = await response.json();
-        const formattedData = data.stocks.map((item: any) => ({
+        const formattedData: StockItem[] = data.stocks.map((item: any) => ({
           _id: item._id,
           name: item.name,
           price: item.price,
@@ -217,7 +265,9 @@ export default function Stocks() {
         setLargeCapsData(formattedData);
       } catch (error) {
         console.error("Error fetching Large Cap Gainers data:", error);
-        setErrorLargeCaps("Failed to load Large Cap Gainers data. Please try again later.");
+        setErrorLargeCaps(
+          "Failed to load Large Cap Gainers data. Please try again later."
+        );
         setLargeCapsData([]);
       } finally {
         setLoadingLargeCaps(false);
@@ -233,7 +283,9 @@ export default function Stocks() {
       setLoadingMidCaps(true);
       setErrorMidCaps(null);
       try {
-        const response = await fetch("http://localhost:5000/api/stocks/producttools/topgainers/mid");
+        const response = await fetch(
+          "http://localhost:5000/api/stocks/producttools/topgainers/mid"
+        );
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
@@ -242,7 +294,7 @@ export default function Stocks() {
           throw new Error("Response is not JSON");
         }
         const data = await response.json();
-        const formattedData = data.stocks.map((item: any) => ({
+        const formattedData: StockItem[] = data.stocks.map((item: any) => ({
           _id: item._id,
           name: item.name,
           price: item.price,
@@ -252,7 +304,9 @@ export default function Stocks() {
         setMidCapsData(formattedData);
       } catch (error) {
         console.error("Error fetching Mid Cap Gainers data:", error);
-        setErrorMidCaps("Failed to load Mid Cap Gainers data. Please try again later.");
+        setErrorMidCaps(
+          "Failed to load Mid Cap Gainers data. Please try again later."
+        );
         setMidCapsData([]);
       } finally {
         setLoadingMidCaps(false);
@@ -268,7 +322,9 @@ export default function Stocks() {
       setLoadingSmallCaps(true);
       setErrorSmallCaps(null);
       try {
-        const response = await fetch("http://localhost:5000/api/stocks/producttools/topgainers/small");
+        const response = await fetch(
+          "http://localhost:5000/api/stocks/producttools/topgainers/small"
+        );
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
@@ -277,7 +333,7 @@ export default function Stocks() {
           throw new Error("Response is not JSON");
         }
         const data = await response.json();
-        const formattedData = data.stocks.map((item: any) => ({
+        const formattedData: StockItem[] = data.stocks.map((item: any) => ({
           _id: item._id,
           name: item.name,
           price: item.price,
@@ -287,7 +343,9 @@ export default function Stocks() {
         setSmallCapsData(formattedData);
       } catch (error) {
         console.error("Error fetching Small Cap Gainers data:", error);
-        setErrorSmallCaps("Failed to load Small Cap Gainers data. Please try again later.");
+        setErrorSmallCaps(
+          "Failed to load Small Cap Gainers data. Please try again later."
+        );
         setSmallCapsData([]);
       } finally {
         setLoadingSmallCaps(false);
@@ -303,7 +361,9 @@ export default function Stocks() {
       setLoadingLargeCapsLosers(true);
       setErrorLargeCapsLosers(null);
       try {
-        const response = await fetch("http://localhost:5000/api/stocks/producttools/toplosers/large");
+        const response = await fetch(
+          "http://localhost:5000/api/stocks/producttools/toplosers/large"
+        );
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
@@ -312,7 +372,7 @@ export default function Stocks() {
           throw new Error("Response is not JSON");
         }
         const data = await response.json();
-        const formattedData = data.stocks.map((item: any) => ({
+        const formattedData: StockItem[] = data.stocks.map((item: any) => ({
           _id: item._id,
           name: item.name,
           price: item.price,
@@ -322,7 +382,9 @@ export default function Stocks() {
         setLargeCapsLosersData(formattedData);
       } catch (error) {
         console.error("Error fetching Large Cap Losers data:", error);
-        setErrorLargeCapsLosers("Failed to load Large Cap Losers data. Please try again later.");
+        setErrorLargeCapsLosers(
+          "Failed to load Large Cap Losers data. Please try again later."
+        );
         setLargeCapsLosersData([]);
       } finally {
         setLoadingLargeCapsLosers(false);
@@ -338,7 +400,9 @@ export default function Stocks() {
       setLoadingMidCapsLosers(true);
       setErrorMidCapsLosers(null);
       try {
-        const response = await fetch("http://localhost:5000/api/stocks/producttools/toplosers/mid");
+        const response = await fetch(
+          "http://localhost:5000/api/stocks/producttools/toplosers/mid"
+        );
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
@@ -347,7 +411,7 @@ export default function Stocks() {
           throw new Error("Response is not JSON");
         }
         const data = await response.json();
-        const formattedData = data.stocks.map((item: any) => ({
+        const formattedData: StockItem[] = data.stocks.map((item: any) => ({
           _id: item._id,
           name: item.name,
           price: item.price,
@@ -357,7 +421,9 @@ export default function Stocks() {
         setMidCapsLosersData(formattedData);
       } catch (error) {
         console.error("Error fetching Mid Cap Losers data:", error);
-        setErrorMidCapsLosers("Failed to load Mid Cap Losers data. Please try again later.");
+        setErrorMidCapsLosers(
+          "Failed to load Mid Cap Losers data. Please try again later."
+        );
         setMidCapsLosersData([]);
       } finally {
         setLoadingMidCapsLosers(false);
@@ -373,7 +439,9 @@ export default function Stocks() {
       setLoadingSmallCapsLosers(true);
       setErrorSmallCapsLosers(null);
       try {
-        const response = await fetch("http://localhost:5000/api/stocks/producttools/toplosers/small");
+        const response = await fetch(
+          "http://localhost:5000/api/stocks/producttools/toplosers/small"
+        );
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
@@ -382,7 +450,7 @@ export default function Stocks() {
           throw new Error("Response is not JSON");
         }
         const data = await response.json();
-        const formattedData = data.stocks.map((item: any) => ({
+        const formattedData: StockItem[] = data.stocks.map((item: any) => ({
           _id: item._id,
           name: item.name,
           price: item.price,
@@ -392,7 +460,9 @@ export default function Stocks() {
         setSmallCapsLosersData(formattedData);
       } catch (error) {
         console.error("Error fetching Small Cap Losers data:", error);
-        setErrorSmallCapsLosers("Failed to load Small Cap Losers data. Please try again later.");
+        setErrorSmallCapsLosers(
+          "Failed to load Small Cap Losers data. Please try again later."
+        );
         setSmallCapsLosersData([]);
       } finally {
         setLoadingSmallCapsLosers(false);
@@ -408,7 +478,9 @@ export default function Stocks() {
       setLoadingMostTraded(true);
       setErrorMostTraded(null);
       try {
-        const response = await fetch("http://localhost:5000/api/stocks/producttools/mosttradedongrow/");
+        const response = await fetch(
+          "http://localhost:5000/api/stocks/producttools/mosttradedongrow/"
+        );
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
@@ -417,7 +489,7 @@ export default function Stocks() {
           throw new Error("Response is not JSON");
         }
         const data = await response.json();
-        const formattedData = data.map((item: any) => ({
+        const formattedData: MostTraded[] = data.map((item: any) => ({
           _id: item._id,
           name: item.name,
           price: item.price,
@@ -427,7 +499,9 @@ export default function Stocks() {
         setMostTradedData(formattedData);
       } catch (error) {
         console.error("Error fetching Most Traded on Groww data:", error);
-        setErrorMostTraded("Failed to load Most Traded on Groww data. Please try again later.");
+        setErrorMostTraded(
+          "Failed to load Most Traded on Groww data. Please try again later."
+        );
         setMostTradedData([]);
       } finally {
         setLoadingMostTraded(false);
@@ -437,13 +511,15 @@ export default function Stocks() {
     fetchMostTraded();
   }, []);
 
-  // Fetch Top Sectors data
+  // Fetch Top by Market Cap data
   useEffect(() => {
-    const fetchTopSectors = async () => {
-      setLoadingTopSectors(true);
-      setErrorTopSectors(null);
+    const fetchTopMarket = async () => {
+      setLoadingTopMarket(true);
+      setErrorTopMarket(null);
       try {
-        const response = await fetch("http://localhost:5000/api/stocks/producttools/gettopsectors");
+        const response = await fetch(
+          "http://localhost:5000/api/stocks/producttools/topmarket/"
+        );
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
@@ -452,14 +528,55 @@ export default function Stocks() {
           throw new Error("Response is not JSON");
         }
         const data = await response.json();
-        const formattedData = data.map((item: any) => ({
+        const formattedData: StockItem[] = data.map((item: any) => ({
+          _id: item._id,
+          name: item.name,
+          price: item.price,
+          change: item.change,
+          image: item.image,
+        }));
+        setTopMarketData(formattedData);
+      } catch (error) {
+        console.error("Error fetching Top by Market Cap data:", error);
+        setErrorTopMarket(
+          "Failed to load Top by Market Cap data. Please try again later."
+        );
+        setTopMarketData([]);
+      } finally {
+        setLoadingTopMarket(false);
+      }
+    };
+
+    fetchTopMarket();
+  }, []);
+
+  // Fetch Top Sectors data
+  useEffect(() => {
+    const fetchTopSectors = async () => {
+      setLoadingTopSectors(true);
+      setErrorTopSectors(null);
+      try {
+        const response = await fetch(
+          "http://localhost:5000/api/stocks/producttools/gettopsectors"
+        );
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const contentType = response.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+          throw new Error("Response is not JSON");
+        }
+        const data = await response.json();
+        const formattedData: TopSector[] = data.map((item: any) => ({
           name: item.name,
           count: item.count,
         }));
         setTopSectorsData(formattedData);
       } catch (error) {
         console.error("Error fetching Top Sectors data:", error);
-        setErrorTopSectors("Failed to load Top Sectors data. Please try again later.");
+        setErrorTopSectors(
+          "Failed to load Top Sectors data. Please try again later."
+        );
         setTopSectorsData([]);
       } finally {
         setLoadingTopSectors(false);
@@ -505,6 +622,9 @@ export default function Stocks() {
     return errorSmallCapsLosers;
   };
 
+  // Temporary placeholder for watchlist stocks to avoid compile error
+  const stocks: SidebarStock[] = [];
+  
   return (
     <main className="min-h-screen bg-white text-gray-900 transition-colors">
       <Header />
@@ -535,13 +655,20 @@ export default function Stocks() {
                   <Link
                     href={{
                       pathname: `/buystock/${encodeURIComponent(item.name)}`,
-                      query: { state: JSON.stringify({ stockId: item._id, name: item.name, price: item.price, change: item.change, image: item.image, source: "mostTraded" }) },
+                      query: {
+                        state: JSON.stringify({
+                          stockId: item._id,
+                          name: item.name,
+                          price: item.price,
+                          change: item.change,
+                          image: item.image,
+                          source: "mostTraded",
+                        }),
+                      },
                     }}
                     key={idx}
                   >
-                    <div
-                      className="w-[150px] h-[150px] border rounded-lg p-2 bg-white shadow-sm text-[11px] relative"
-                    >
+                    <div className="w-[150px] h-[150px] border rounded-lg p-2 bg-white shadow-sm text-[11px] relative">
                       <Image
                         src={item.image}
                         alt={item.name}
@@ -550,7 +677,9 @@ export default function Stocks() {
                         className="absolute top-2 left-2"
                       />
                       <div className="mt-8 font-medium">{item.name}</div>
-                      <div className="text-xs mt-1 text-black">{item.price}</div>
+                      <div className="text-xs mt-1 text-black">
+                        {item.price}
+                      </div>
                       <div
                         className={`text-xs mt-1 ${
                           item.change.startsWith("-")
@@ -622,7 +751,9 @@ export default function Stocks() {
               {["Large", "Mid", "Small"].map((cat) => (
                 <button
                   key={cat}
-                  onClick={() => setSelectedCategory(cat as "Large" | "Mid" | "Small")}
+                  onClick={() =>
+                    setSelectedCategory(cat as "Large" | "Mid" | "Small")
+                  }
                   className={`px-4 py-1 rounded-full text-sm border transition-all duration-200
                     ${
                       selectedCategory === cat
@@ -642,13 +773,21 @@ export default function Stocks() {
                   <Link
                     href={{
                       pathname: `/buystock/${encodeURIComponent(item.name)}`,
-                      query: { state: JSON.stringify({ stockId: item._id, name: item.name, price: item.price, change: item.change, image: item.image, source: "topGainers", category: selectedCategory.toLowerCase() }) },
+                      query: {
+                        state: JSON.stringify({
+                          stockId: item._id,
+                          name: item.name,
+                          price: item.price,
+                          change: item.change,
+                          image: item.image,
+                          source: "topGainers",
+                          category: selectedCategory.toLowerCase(),
+                        }),
+                      },
                     }}
                     key={idx}
                   >
-                    <div
-                      className="w-[150px] h-[150px] border rounded-lg p-2 bg-white shadow-sm text-[11px] relative"
-                    >
+                    <div className="w-[150px] h-[150px] border rounded-lg p-2 bg-white shadow-sm text-[11px] relative">
                       <Image
                         src={item.image}
                         alt={item.name}
@@ -657,7 +796,9 @@ export default function Stocks() {
                         className="absolute top-2 left-2"
                       />
                       <div className="mt-8 font-medium">{item.name}</div>
-                      <div className="text-xs mt-1 text-black">{item.price}</div>
+                      <div className="text-xs mt-1 text-black">
+                        {item.price}
+                      </div>
                       <div
                         className={`text-xs mt-1 ${
                           item.change.startsWith("-")
@@ -695,7 +836,9 @@ export default function Stocks() {
               {["Large", "Mid", "Small"].map((cat) => (
                 <button
                   key={cat}
-                  onClick={() => setSelectedCategory(cat as "Large" | "Mid" | "Small")}
+                  onClick={() =>
+                    setSelectedCategory(cat as "Large" | "Mid" | "Small")
+                  }
                   className={`px-4 py-1 rounded-full text-sm border transition-all duration-200
                     ${
                       selectedCategory === cat
@@ -715,13 +858,21 @@ export default function Stocks() {
                   <Link
                     href={{
                       pathname: `/buystock/${encodeURIComponent(item.name)}`,
-                      query: { state: JSON.stringify({ stockId: item._id, name: item.name, price: item.price, change: item.change, image: item.image, source: "topLosers", category: selectedCategory.toLowerCase() }) },
+                      query: {
+                        state: JSON.stringify({
+                          stockId: item._id,
+                          name: item.name,
+                          price: item.price,
+                          change: item.change,
+                          image: item.image,
+                          source: "topLosers",
+                          category: selectedCategory.toLowerCase(),
+                        }),
+                      },
                     }}
                     key={idx}
                   >
-                    <div
-                      className="w-[150px] h-[150px] border rounded-lg p-2 bg-white shadow-sm text-[11px] relative"
-                    >
+                    <div className="w-[150px] h-[150px] border rounded-lg p-2 bg-white shadow-sm text-[11px] relative">
                       <Image
                         src={item.image}
                         alt={item.name}
@@ -730,7 +881,9 @@ export default function Stocks() {
                         className="absolute top-2 left-2"
                       />
                       <div className="mt-8 font-medium">{item.name}</div>
-                      <div className="text-xs mt-1 text-black">{item.price}</div>
+                      <div className="text-xs mt-1 text-black">
+                        {item.price}
+                      </div>
                       <div
                         className={`text-xs mt-1 ${
                           item.change.startsWith("-")
@@ -770,13 +923,20 @@ export default function Stocks() {
                   <Link
                     href={{
                       pathname: `/buystock/${encodeURIComponent(item.name)}`,
-                      query: { state: JSON.stringify({ stockId: item._id, name: item.name, price: item.price, change: item.change, image: item.image, source: "mostTradedMTF" }) },
+                      query: {
+                        state: JSON.stringify({
+                          stockId: item._id,
+                          name: item.name,
+                          price: item.price,
+                          change: item.change,
+                          image: item.image,
+                          source: "mostTradedMTF",
+                        }),
+                      },
                     }}
                     key={idx}
                   >
-                    <div
-                      className="w-[150px] h-[150px] border rounded-lg p-2 bg-white shadow-sm text-[11px] relative"
-                    >
+                    <div className="w-[150px] h-[150px] border rounded-lg p-2 bg-white shadow-sm text-[11px] relative">
                       <Image
                         src={item.image}
                         alt={item.name}
@@ -785,7 +945,9 @@ export default function Stocks() {
                         className="absolute top-2 left-2"
                       />
                       <div className="mt-8 font-medium">{item.name}</div>
-                      <div className="text-xs mt-1 text-black">{item.price}</div>
+                      <div className="text-xs mt-1 text-black">
+                        {item.price}
+                      </div>
                       <div
                         className={`text-xs mt-1 ${
                           item.change.startsWith("-")
@@ -825,13 +987,20 @@ export default function Stocks() {
                   <Link
                     href={{
                       pathname: `/buystock/${encodeURIComponent(item.name)}`,
-                      query: { state: JSON.stringify({ stockId: item._id, name: item.name, price: item.price, change: item.change, image: item.image, source: "stocksInNews" }) },
+                      query: {
+                        state: JSON.stringify({
+                          stockId: item._id,
+                          name: item.name,
+                          price: item.price,
+                          change: item.change,
+                          image: item.image,
+                          source: "stocksInNews",
+                        }),
+                      },
                     }}
                     key={idx}
                   >
-                    <div
-                      className="w-[150px] h-[150px] border rounded-lg p-2 bg-white shadow-sm text-[11px] relative"
-                    >
+                    <div className="w-[150px] h-[150px] border rounded-lg p-2 bg-white shadow-sm text-[11px] relative">
                       <Image
                         src={item.image}
                         alt={item.name}
@@ -840,7 +1009,9 @@ export default function Stocks() {
                         className="absolute top-2 left-2"
                       />
                       <div className="mt-8 font-medium">{item.name}</div>
-                      <div className="text-xs mt-1 text-black">{item.price}</div>
+                      <div className="text-xs mt-1 text-black">
+                        {item.price}
+                      </div>
                       <div
                         className={`text-xs mt-1 ${
                           item.change.startsWith("-")
@@ -862,7 +1033,7 @@ export default function Stocks() {
           {/* Top Sectors */}
           <section>
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-2xl font-bold">Top Sectors</h2>
+              <h2 className="text-2xl font-semibold">Top Sectors</h2>
               <a
                 href="#"
                 className="text-green-600 text-sm font-medium hover:underline"
@@ -877,14 +1048,23 @@ export default function Stocks() {
                 <p className="text-red-500">{errorTopSectors}</p>
               ) : topSectorsData.length > 0 ? (
                 topSectorsData.map((sector, index) => (
-                  <button
+                  <Link
                     key={index}
-                    className="flex items-center border border-gray-300 rounded-md px-4 py-2 bg-white shadow-sm space-x-2 text-sm"
+                    href={{
+                      pathname: "/all-stocks",
+                      query: { sector: sector.name },
+                    }}
                   >
-                    <span className="text-gray-800 font-medium">{sector.name}</span>
-                    <span className="text-gray-400 font-light">|</span>
-                    <span className="text-green-500 font-semibold">{sector.count}</span>
-                  </button>
+                    <button className="flex items-center justify-between border border-gray-300 rounded-md px-4 py-2 bg-white shadow-sm space-x-2 text-sm hover:bg-gray-100 transition-colors">
+                      <span className="text-gray-800 font-medium">
+                        {sector.name}
+                      </span>
+                      <span className="text-gray-400 font-light">|</span>
+                      <span className="text-green-500 font-semibold">
+                        {sector.count}
+                      </span>
+                    </button>
+                  </Link>
                 ))
               ) : (
                 <p>No Top Sectors data available.</p>
@@ -904,7 +1084,15 @@ export default function Stocks() {
               </a>
             </div>
             <div className="w-full max-w-4xl mx-auto">
-              <StockTable />
+              {loadingTopMarket ? (
+                <p>Loading Top by Market Cap...</p>
+              ) : errorTopMarket ? (
+                <p className="text-red-500">{errorTopMarket}</p>
+              ) : topMarketData.length > 0 ? (
+                <StockTableComponent stocks={topMarketData} />
+              ) : (
+                <p>No Top by Market Cap data available.</p>
+              )}
             </div>
           </section>
         </div>
@@ -953,7 +1141,9 @@ export default function Stocks() {
                 >
                   <div>
                     <div className="font-semibold">My Watchlist</div>
-                    <div className="text-sm text-gray-500">{stocks.length} items</div>
+                    <div className="text-sm text-gray-500">
+                      {stocks.length} items
+                    </div>
                   </div>
                   <div className="text-xl font-bold">{isOpen ? "▲" : "▼"}</div>
                 </div>
@@ -965,10 +1155,18 @@ export default function Stocks() {
                         key={idx}
                         className="flex justify-between items-center border-b pb-2"
                       >
-                        <div className="text-gray-800 font-medium">{stock.name}</div>
+                        <div className="text-gray-800 font-medium">
+                          {stock.name}
+                        </div>
                         <div className="text-right">
                           <div className="font-semibold">{stock.price}</div>
-                          <div className={`text-sm ${stock.changeColor}`}>
+                          <div
+                            className={`text-sm ${
+                              stock.change.startsWith("-")
+                                ? "text-red-500"
+                                : "text-green-600"
+                            }`}
+                          >
                             {stock.change}
                           </div>
                         </div>
@@ -976,11 +1174,10 @@ export default function Stocks() {
                     ))}
                   </div>
                 )}
+                <button className="mt-5 flex items-center text-green-600 font-semibold">
+                  <span className="text-xl mr-2">＋</span> Create new watchlist
+                </button>
               </div>
-
-              <button className="mt-5 flex items-center text-green-600 font-semibold">
-                <span className="text-xl mr-2">＋</span> Create new watchlist
-              </button>
             </div>
           </div>
         </div>
@@ -990,3 +1187,4 @@ export default function Stocks() {
     </main>
   );
 }
+// ```
