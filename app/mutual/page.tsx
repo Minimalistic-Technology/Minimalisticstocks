@@ -1,0 +1,269 @@
+"use client";
+
+import Header from "../components/header/page";
+import Footer from "app/components/Footer";
+import Image from "next/image";
+import { useState, useEffect } from "react";
+
+export default function MutualPage() {
+  interface GrowwFund {
+    name: string;
+    badge?: string;
+    return?: string;
+    date?: string;
+    age?: string;
+    tag?: string;
+  }
+
+  interface Collection {
+    name: string;
+    icon: string;
+  }
+
+  interface PopularFund {
+    name: string;
+    img: string;
+    return: string;
+  }
+
+  const [growwFunds, setGrowwFunds] = useState<GrowwFund[]>([]);
+  const [collections, setCollections] = useState<Collection[]>([]);
+  const [popularFunds, setPopularFunds] = useState<PopularFund[]>([]);
+
+  // Fetch Funds by Groww data
+  useEffect(() => {
+    const fetchGrowwFunds = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/api/growwfunds/get");
+        const data = await response.json();
+        setGrowwFunds(data);
+      } catch (error) {
+        console.error("Error fetching Groww funds:", error);
+      }
+    };
+
+    fetchGrowwFunds();
+  }, []);
+
+  // Fetch Collections data
+  useEffect(() => {
+    const fetchCollections = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/api/collections/get");
+        const data = await response.json();
+        setCollections(data);
+      } catch (error) {
+        console.error("Error fetching Collections:", error);
+      }
+    };
+
+    fetchCollections();
+  }, []);
+
+  // Fetch Popular Funds data
+  useEffect(() => {
+    const fetchPopularFunds = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/api/popular-funds/get");
+        const data = await response.json();
+        setPopularFunds(data);
+      } catch (error) {
+        console.error("Error fetching Popular Funds:", error);
+      }
+    };
+
+    fetchPopularFunds();
+  }, []);
+
+  return (
+    <main className="min-h-screen bg-white text-gray-900 transition-colors">
+      <Header />
+
+      {/* Container */}
+      <div className="max-w-6xl mx-auto px-4 py-10 space-y-14">
+        {/* Popular Funds */}
+        <section>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-2xl font-bold">Popular Funds</h2>
+            <a
+              href="#"
+              className="text-green-600 text-sm font-medium hover:underline"
+            >
+              All Mutual Funds
+            </a>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+            {popularFunds.length > 0 ? (
+              popularFunds.map((fund, i) => (
+                <div
+                  key={i}
+                  className="rounded-lg border border-gray-200 shadow-sm hover:shadow-md p-4 bg-white transition"
+                >
+                  <Image
+                    src={fund.img}
+                    alt={fund.name}
+                    width={32}
+                    height={32}
+                    className="mb-2"
+                  />
+                  <h3 className="font-medium text-gray-800">{fund.name}</h3>
+                  <p className="mt-2 text-lg font-semibold">
+                    {fund.return}{" "}
+                    <span className="text-gray-500 text-sm">(3Y)</span>
+                  </p>
+                </div>
+              ))
+            ) : (
+              <p>Loading Popular Funds...</p>
+            )}
+          </div>
+        </section>
+
+        {/* Collections */}
+        <div>
+          <h2 className="text-2xl font-bold mb-6">Collections</h2>
+          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4">
+            {collections.length > 0 ? (
+              collections.map((item) => (
+                <div
+                  key={item.name}
+                  className="flex flex-col items-center text-center"
+                >
+                  <div className="w-16 h-16 mb-2">
+                    <Image
+                      src={item.icon}
+                      alt={item.name}
+                      width={64}
+                      height={64}
+                    />
+                  </div>
+                  <span className="text-sm font-medium">{item.name}</span>
+                </div>
+              ))
+            ) : (
+              <p>Loading Collections...</p>
+            )}
+          </div>
+        </div>
+
+        {/* Funds by Groww */}
+        <section>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-2xl font-bold">Funds by Groww</h2>
+            <a
+              href="#"
+              className="text-green-600 text-sm font-medium hover:underline"
+            >
+              View all
+            </a>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+            {growwFunds.length > 0 ? (
+              growwFunds.map((fund, i) => (
+                <div
+                  key={i}
+                  className="relative rounded-lg border border-gray-200 shadow-sm hover:shadow-md p-4 bg-white transition"
+                >
+                  <Image
+                    src="https://assets-netstorage.groww.in/mf-assets/logos/indiabulls_groww.png"
+                    alt="Groww Logo"
+                    width={32}
+                    height={32}
+                    className="mb-2"
+                  />
+                  <h3 className="font-medium text-gray-800">{fund.name}</h3>
+                  {fund.badge && (
+                    <div className="absolute top-2 right-2 bg-blue-100 text-blue-600 text-xs font-semibold px-2 py-0.5 rounded">
+                      {fund.tag}
+                    </div>
+                  )}
+                  {fund.return && (
+                    <p className="mt-2 text-sm font-semibold text-gray-700">
+                      {fund.return} <span className="text-gray-500">3Y</span>
+                    </p>
+                  )}
+                  {fund.date && (
+                    <p className="mt-2 text-sm text-gray-600">
+                      {fund.date}{" "}
+                      <span className="text-gray-400">Ends in 8 days</span>
+                    </p>
+                  )}
+                  {fund.age && (
+                    <p className="mt-2 text-sm text-gray-500">{fund.age}</p>
+                  )}
+                </div>
+              ))
+            ) : (
+              <p>Loading Funds by Groww...</p>
+            )}
+          </div>
+        </section>
+
+        {/* Quick Access */}
+        <section>
+          <h2 className="text-2xl font-bold mb-6">Quick Access</h2>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            {/* Card 1 */}
+            <div className="relative flex flex-col items-center p-4 rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition bg-white">
+              <div className="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full"></div>
+              <Image
+                src="https://storage.googleapis.com/groww-assets/mf-assets/web/quick_access/light/nfo.svg"
+                alt="New Fund"
+                width={32}
+                height={32}
+                className="mb-2"
+              />
+              <span className="text-sm font-medium text-gray-700 text-center">
+                New Fund Offerings
+              </span>
+            </div>
+
+            {/* Card 2 */}
+            <div className="flex flex-col items-center p-4 rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition bg-white">
+              <Image
+                src="https://storage.googleapis.com/groww-assets/mf-assets/web/quick_access/light/import_funds.svg"
+                alt="Import funds"
+                width={32}
+                height={32}
+                className="mb-2"
+              />
+              <span className="text-sm font-medium text-gray-600 text-center">
+                Import funds
+              </span>
+            </div>
+
+            {/* Card 3 */}
+            <div className="flex flex-col items-center p-4 rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition bg-white">
+              <Image
+                src="https://storage.googleapis.com/groww-assets/mf-assets/web/quick_access/light/compare_funds.svg"
+                alt="Compare funds"
+                width={32}
+                height={32}
+                className="mb-2"
+              />
+              <span className="text-sm font-medium text-gray-700 text-center">
+                Compare funds
+              </span>
+            </div>
+
+            {/* Card 4 */}
+            <div className="flex flex-col items-center p-4 rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition bg-white">
+              <Image
+                src="https://storage.googleapis.com/groww-assets/mf-assets/web/quick_access/light/calculator.svg"
+                alt="SIP Calculator"
+                width={32}
+                height={32}
+                className="mb-2"
+              />
+              <span className="text-sm font-medium text-gray-700 text-center">
+                SIP Calculator
+              </span>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <Footer />
+    </main>
+  );
+}
