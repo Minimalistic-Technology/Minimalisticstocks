@@ -16,34 +16,6 @@ type SidebarStock = {
   change: string;
 };
 
-// const stocks: SidebarStock[] = [
-//   {
-//     name: "Tata Motors",
-//     price: "₹699.00",
-//     change: "-8.70 (-1.23%)",
-//   },
-//   {
-//     name: "Samvardhana Motherson",
-//     price: "₹143.80",
-//     change: "+1.35 (+0.95%)",
-//   },
-//   {
-//     name: "Eternal (Zomato)",
-//     price: "₹235.25",
-//     change: "+3.60 (+1.55%)",
-//   },
-//   {
-//     name: "PNB",
-//     price: "₹98.10",
-//     change: "+0.42 (+0.43%)",
-//   },
-//   {
-//     name: "Canara Bank",
-//     price: "₹106.07",
-//     change: "+1.29 (+1.23%)",
-//   },
-// ];
-
 type StockItem = {
   _id: string;
   name: string;
@@ -70,20 +42,35 @@ export default function StockTable() {
   const [errorSmallCaps, setErrorSmallCaps] = useState<string | null>(null);
 
   // State for Top Losers (Large, Mid, Small caps)
-  const [largeCapsLosersData, setLargeCapsLosersData] = useState<StockItem[]>([]);
+  const [largeCapsLosersData, setLargeCapsLosersData] = useState<StockItem[]>(
+    []
+  );
   const [midCapsLosersData, setMidCapsLosersData] = useState<StockItem[]>([]);
-  const [smallCapsLosersData, setSmallCapsLosersData] = useState<StockItem[]>([]);
-  const [loadingLargeCapsLosers, setLoadingLargeCapsLosers] = useState<boolean>(true);
-  const [loadingMidCapsLosers, setLoadingMidCapsLosers] = useState<boolean>(true);
-  const [loadingSmallCapsLosers, setLoadingSmallCapsLosers] = useState<boolean>(true);
-  const [errorLargeCapsLosers, setErrorLargeCapsLosers] = useState<string | null>(null);
-  const [errorMidCapsLosers, setErrorMidCapsLosers] = useState<string | null>(null);
-  const [errorSmallCapsLosers, setErrorSmallCapsLosers] = useState<string | null>(null);
+  const [smallCapsLosersData, setSmallCapsLosersData] = useState<StockItem[]>(
+    []
+  );
+  const [loadingLargeCapsLosers, setLoadingLargeCapsLosers] =
+    useState<boolean>(true);
+  const [loadingMidCapsLosers, setLoadingMidCapsLosers] =
+    useState<boolean>(true);
+  const [loadingSmallCapsLosers, setLoadingSmallCapsLosers] =
+    useState<boolean>(true);
+  const [errorLargeCapsLosers, setErrorLargeCapsLosers] = useState<
+    string | null
+  >(null);
+  const [errorMidCapsLosers, setErrorMidCapsLosers] = useState<string | null>(
+    null
+  );
+  const [errorSmallCapsLosers, setErrorSmallCapsLosers] = useState<
+    string | null
+  >(null);
 
   type ProductTool = { name: string; icon: string };
   const [productToolsData, setProductToolsData] = useState<ProductTool[]>([]);
   const [loadingProductTools, setLoadingProductTools] = useState<boolean>(true);
-  const [errorProductTools, setErrorProductTools] = useState<string | null>(null);
+  const [errorProductTools, setErrorProductTools] = useState<string | null>(
+    null
+  );
 
   type StockInNews = {
     _id: string;
@@ -94,7 +81,9 @@ export default function StockTable() {
   };
   const [stocksInNewsData, setStocksInNewsData] = useState<StockInNews[]>([]);
   const [loadingStocksInNews, setLoadingStocksInNews] = useState<boolean>(true);
-  const [errorStocksInNews, setErrorStocksInNews] = useState<string | null>(null);
+  const [errorStocksInNews, setErrorStocksInNews] = useState<string | null>(
+    null
+  );
 
   type StockInMTF = {
     _id: string;
@@ -557,7 +546,7 @@ export default function StockTable() {
       setErrorTopSectors(null);
       try {
         const response = await fetch(
-          "http://localhost:5000/api/stocks/producttools/gettopsectors"
+          "http://localhost:5000/api/topstocks/stocks"
         );
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
@@ -624,7 +613,7 @@ export default function StockTable() {
 
   // Temporary placeholder for watchlist stocks to avoid compile error
   const stocks: SidebarStock[] = [];
-  
+
   return (
     <main className="min-h-screen bg-white text-gray-900 transition-colors">
       <Header />
@@ -1052,7 +1041,7 @@ export default function StockTable() {
                     key={index}
                     href={{
                       pathname: "/all-stocks",
-                      query: { sector: sector.name },
+                      query: { sector: sector.name }, // Ensure sector.name is "Banking"
                     }}
                   >
                     <button className="flex items-center justify-between border border-gray-300 rounded-md px-4 py-2 bg-white shadow-sm space-x-2 text-sm hover:bg-gray-100 transition-colors">

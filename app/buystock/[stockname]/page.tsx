@@ -1102,318 +1102,332 @@ export default function BuyStock() {
   const [displayPrice, setDisplayPrice] = useState<string>(statePrice || "");
   const [displayChange, setDisplayChange] = useState<string>(stateChange || "");
 
-  useEffect(() => {
-    if (!stockId || !source) {
-      setError("No stock ID or source provided.");
-      setLoading(false);
-      return;
-    }
+useEffect(() => {
+  if (!stockId || !source) {
+    setError("No stock ID or source provided.");
+    setLoading(false);
+    return;
+  }
 
-    const fetchStockDetails = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        let apiUrl = "";
-        const validCategories = ["large", "mid", "small"];
-        const validSources = [
-          "stocksInNews",
-          "mostTraded",
-          "topGainers",
-          "topLosers",
-          "mostTradedMTF",
-          "topMarket",
-          "index",
-          "topIndexFutures",
-          "topStockFutures",
-          "popularfunds",
-          "growfund", // Added new source
-          "fno",
-          "fnoloosers",
-          "toptraded",
-        ];
+  const fetchStockDetails = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      let apiUrl = "";
+      const validCategories = [
+        "large",
+        "mid",
+        "small",
+        "energy",
+        "agricultural",
+        "financial",
+        "Banking", // Ensure Banking is included
+        // Add other sectors as needed
+      ];
+      const validSources = [
+        "stocksInNews",
+        "mostTraded",
+        "topGainers",
+        "topLosers",
+        "mostTradedMTF",
+        "topMarket",
+        "index",
+        "topIndexFutures",
+        "topStockFutures",
+        "popularfunds",
+        "growfund",
+        "fno",
+        "fnoloosers",
+        "toptraded",
+        "stocksByCategory",
+      ];
 
-        if (!validSources.includes(source)) {
-          throw new Error("Invalid source provided.");
-        }
-
-        const effectiveCategory = validCategories.includes(category)
-          ? category
-          : "large";
-
-        if (source === "stocksInNews") {
-          apiUrl = `http://localhost:5000/api/stocks/producttools/stocks-in-news/${stockId}`;
-        } else if (source === "mostTraded") {
-          apiUrl = `http://localhost:5000/api/stocks/producttools/mosttradedongrow/${stockId}`;
-        } else if (source === "topGainers") {
-          apiUrl = `http://localhost:5000/api/stocks/producttools/topgainers/${effectiveCategory}/${stockId}`;
-        } else if (source === "topLosers") {
-          apiUrl = `http://localhost:5000/api/stocks/producttools/toplosers/${effectiveCategory}/${stockId}`;
-        } else if (source === "mostTradedMTF") {
-          apiUrl = `http://localhost:5000/api/stocks/producttools/mtf/${stockId}`;
-        } else if (source === "topMarket") {
-          apiUrl = `http://localhost:5000/api/stocks/producttools/topmarket/${stockId}`;
-        } else if (source === "index") {
-          apiUrl = `http://localhost:5000/api/topstocks/index/${stockId}`;
-        } else if (source === "topIndexFutures") {
-          apiUrl = `http://localhost:5000/api/topstocks/topindex/${stockId}`;
-        } else if (source === "topStockFutures") {
-          apiUrl = `http://localhost:5000/api/topstocks/top-stocks/${stockId}`;
-        } else if (source === "popularfunds") {
-          apiUrl = `http://localhost:5000/api/topstocks/popularfunds/${stockId}`;
-        } else if (source === "growfund") {
-          apiUrl = `http://localhost:5000/api/topstocks/growfund/${stockId}`;
-        } else if (source === "fno") {
-          apiUrl = `http://localhost:5000/api/topstocks/fno/${stockId}`;
-        } else if (source === "fnoloosers") {
-          apiUrl = `http://localhost:5000/api/topstocks/fnoloosers/${stockId}`;
-        }else if (source === "toptraded") {
-          apiUrl = `http://localhost:5000/api/topstocks/toptraded/${stockId}`;
-        }
-
-        const response = await fetch(apiUrl);
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        const contentType = response.headers.get("content-type");
-        if (!contentType || !contentType.includes("application/json")) {
-          throw new Error("Response is not JSON");
-        }
-        const data = await response.json();
-
-        // Handle both array and object responses
-        let stockData;
-        if (Array.isArray(data)) {
-          stockData = data.find(
-            (item: any) => item._id === stockId || item.stockId === stockId
-          );
-          if (!stockData) {
-            throw new Error(
-              `Stock with ID ${stockId} not found in ${source} data.`
-            );
-          }
-        } else {
-          stockData = data;
-          if (stockData._id !== stockId && stockData.stockId !== stockId) {
-            throw new Error(
-              `Stock ID ${stockId} does not match API data ID ${
-                stockData._id || stockData.stockId
-              }.`
-            );
-          }
-        }
-
-        // Transform events if they are in a simple string array format
-        const normalizeEvents = (events: any[]): EventItem[] => {
-          if (!Array.isArray(events)) return [];
-          return events.map((event, idx) => {
-            if (typeof event === "string") {
-              return {
-                date: "02 Jun", // Using today's date: June 02, 2025
-                title: event,
-                subtitle: "No additional details available",
-              };
-            }
-            return {
-              date: event.date || "02 Jun",
-              title: event.title || "Untitled Event",
-              subtitle: event.subtitle || "No additional details available",
-              amount: event.amount,
-              link: event.link,
-            };
-          });
-        };
-
-        // Normalize price and change fields
-        const normalizePrice = (price: string | number | undefined): string => {
-          if (!price) return "₹0";
-          const priceStr = price.toString();
-          return priceStr.startsWith("₹") ? priceStr : `₹${priceStr}`;
-        };
-
-        const normalizeChange = (change: string | undefined): string => {
-          if (!change) return "+0.00 (+0.00%)";
-          const changeRegex = /^[+-]?\d+\.\d+\s*\([-+]?\d+\.\d+%\)$/;
-          if (changeRegex.test(change)) return change;
-          return `${change} (+0.00%)`;
-        };
-
-        // Normalize the API response to match the StockDetails type
-        const normalizedData: StockDetails = {
-          priceHistory: stockData.priceHistory ?? [],
-          details: {
-            performance: {
-              todaysLow: normalizePrice(
-                stockData.todaysLow ??
-                  stockData.details?.performance?.todaysLow ??
-                  "0"
-              ),
-              todaysHigh: normalizePrice(
-                stockData.todaysHigh ??
-                  stockData.details?.performance?.todaysHigh ??
-                  "0"
-              ),
-              todayCurrent: normalizePrice(
-                stockData.todayCurrent ??
-                  stockData.details?.performance?.todayCurrent ??
-                  (source === "index"
-                    ? stockData.value
-                    : stockData.price ?? "0")
-              ),
-              low52Week: normalizePrice(
-                stockData.low52Week ??
-                  stockData.details?.performance?.low52Week ??
-                  "0"
-              ),
-              high52Week: normalizePrice(
-                stockData.high52Week ??
-                  stockData.details?.performance?.high52Week ??
-                  "0"
-              ),
-              open: normalizePrice(
-                stockData.open ?? stockData.details?.performance?.open ?? "0"
-              ),
-              prevClose: normalizePrice(
-                stockData.prevClose ??
-                  stockData.details?.performance?.prevClose ??
-                  "0"
-              ),
-              volume:
-                stockData.volume ??
-                stockData.details?.performance?.volume ??
-                "0",
-              totalTradedValue: normalizePrice(
-                stockData.totalTradedValue ??
-                  stockData.details?.performance?.totalTradedValue ??
-                  "0"
-              ),
-              upperCircuit: normalizePrice(
-                stockData.upperCircuit ??
-                  stockData.details?.performance?.upperCircuit ??
-                  "0"
-              ),
-              lowerCircuit: normalizePrice(
-                stockData.lowerCircuit ??
-                  stockData.details?.performance?.lowerCircuit ??
-                  "0"
-              ),
-            },
-            events: normalizeEvents(stockData.details?.events ?? []),
-            news: stockData.details?.news ?? [],
-          },
-          marketDepth: {
-            buyOrderQuantity:
-              stockData.buyOrderQuantity ??
-              stockData.marketDepth?.buyOrderQuantity ??
-              0,
-            sellOrderQuantity:
-              stockData.sellOrderQuantity ??
-              stockData.marketDepth?.sellOrderQuantity ??
-              0,
-            buyOrders:
-              stockData.buyOrders ?? stockData.marketDepth?.buyOrders ?? [],
-            sellOrders:
-              stockData.sellOrders ?? stockData.marketDepth?.sellOrders ?? [],
-            bidTotal:
-              stockData.bidTotal ?? stockData.marketDepth?.bidTotal ?? 0,
-            askTotal:
-              stockData.askTotal ?? stockData.marketDepth?.askTotal ?? 0,
-          },
-          fundamentals: {
-            marketCap:
-              stockData.marketCap ?? stockData.fundamentals?.marketCap ?? "₹0",
-            peRatioTTM:
-              stockData.peRatioTTM ?? stockData.fundamentals?.peRatioTTM ?? 0,
-            pbRatio: stockData.pbRatio ?? stockData.fundamentals?.pbRatio ?? 0,
-            industryPE:
-              stockData.industryPE ?? stockData.fundamentals?.industryPE ?? 0,
-            debtToEquity:
-              stockData.debtToEquity ??
-              stockData.fundamentals?.debtToEquity ??
-              0,
-            roe: stockData.roe ?? stockData.fundamentals?.roe ?? 0,
-            epsTTM: stockData.epsTTM ?? stockData.fundamentals?.epsTTM ?? 0,
-            dividendYield:
-              stockData.dividendYield ??
-              stockData.fundamentals?.dividendYield ??
-              0,
-            bookValue:
-              stockData.bookValue ?? stockData.fundamentals?.bookValue ?? 0,
-            faceValue:
-              stockData.faceValue ?? stockData.fundamentals?.faceValue ?? 0,
-          },
-          financials: {
-            quarterly:
-              stockData.financials?.quarterly ?? stockData.quarterly ?? [],
-          },
-          about: {
-            description:
-              stockData.description ??
-              stockData.about?.description ??
-              "No description available.",
-            parentOrganisation:
-              stockData.parentOrganisation ??
-              stockData.about?.parentOrganisation ??
-              stockData.name ??
-              "Unknown",
-            nseSymbol:
-              stockData.nseSymbol ??
-              stockData.about?.nseSymbol ??
-              stockData.name ??
-              "N/A",
-            managingDirector:
-              stockData.managingDirector ??
-              stockData.about?.managingDirector ??
-              "Unknown",
-          },
-          value: stockData.value,
-          oneDayChange: stockData.oneDayChange,
-          oneDayChangePercent: stockData.oneDayChangePercent,
-        };
-
-        // Update displayPrice and displayChange only if state values are not provided
-        if (!statePrice) {
-          const price =
-            source === "index" && stockData.value !== undefined
-              ? stockData.value
-              : stockData.price ?? "0";
-          setDisplayPrice(normalizePrice(price));
-        }
-        if (!stateChange) {
-          if (
-            source === "index" &&
-            stockData.oneDayChange !== undefined &&
-            stockData.oneDayChangePercent !== undefined
-          ) {
-            setDisplayChange(
-              `${stockData.oneDayChange} (${stockData.oneDayChangePercent}%)`
-            );
-          } else if (
-            (source === "popularfunds" || source === "growfund") &&
-            stockData.return
-          ) {
-            setDisplayChange(normalizeChange(stockData.return));
-          } else {
-            setDisplayChange(normalizeChange(stockData.change));
-          }
-        }
-
-        setSelectedStock(normalizedData);
-      } catch (error: any) {
-        console.error(
-          `Error fetching details for stock ID ${stockId} from ${source}:`,
-          error.message
-        );
-        setError(
-          `Failed to load details for the selected stock/fund: ${error.message}. Please try again later.`
-        );
-        setSelectedStock(null);
-      } finally {
-        setLoading(false);
+      if (!validSources.includes(source)) {
+        throw new Error("Invalid source provided.");
       }
-    };
 
-    fetchStockDetails();
-  }, [stockId, source, category, statePrice, stateChange]);
+      // Normalize category to match API's expected case
+      const normalizedCategory = category.charAt(0).toUpperCase() + category.slice(1); // e.g., "banking" -> "Banking"
+      const effectiveCategory = validCategories.includes(normalizedCategory)
+        ? normalizedCategory
+        : "Banking"; // Default to "Banking" if invalid
+
+      if (source === "stocksInNews") {
+        apiUrl = `http://localhost:5000/api/stocks/producttools/stocks-in-news/${stockId}`;
+      } else if (source === "mostTraded") {
+        apiUrl = `http://localhost:5000/api/stocks/producttools/mosttradedongrow/${stockId}`;
+      } else if (source === "topGainers") {
+        apiUrl = `http://localhost:5000/api/stocks/producttools/topgainers/${effectiveCategory.toLowerCase()}/${stockId}`;
+      } else if (source === "topLosers") {
+        apiUrl = `http://localhost:5000/api/stocks/producttools/toplosers/${effectiveCategory.toLowerCase()}/${stockId}`;
+      } else if (source === "mostTradedMTF") {
+        apiUrl = `http://localhost:5000/api/stocks/producttools/mtf/${stockId}`;
+      } else if (source === "topMarket") {
+        apiUrl = `http://localhost:5000/api/stocks/producttools/topmarket/${stockId}`;
+      } else if (source === "index") {
+        apiUrl = `http://localhost:5000/api/topstocks/index/${stockId}`;
+      } else if (source === "topIndexFutures") {
+        apiUrl = `http://localhost:5000/api/topstocks/topindex/${stockId}`;
+      } else if (source === "topStockFutures") {
+        apiUrl = `http://localhost:5000/api/topstocks/top-stocks/${stockId}`;
+      } else if (source === "popularfunds") {
+        apiUrl = `http://localhost:5000/api/topstocks/popularfunds/${stockId}`;
+      } else if (source === "growfund") {
+        apiUrl = `http://localhost:5000/api/topstocks/growfund/${stockId}`;
+      } else if (source === "fno") {
+        apiUrl = `http://localhost:5000/api/topstocks/fno/${stockId}`;
+      } else if (source === "fnoloosers") {
+        apiUrl = `http://localhost:5000/api/topstocks/fnoloosers/${stockId}`;
+      } else if (source === "toptraded") {
+        apiUrl = `http://localhost:5000/api/topstocks/toptraded/${stockId}`;
+      } else if (source === "stocksByCategory") {
+        apiUrl = `http://localhost:5000/api/topstocks/stocks/${encodeURIComponent(effectiveCategory)}/${stockId}`;
+      }
+
+      console.log(`Fetching stock details from: ${apiUrl}`); // Debugging
+
+      const response = await fetch(apiUrl);
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      const contentType = response.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        throw new Error("Response is not JSON");
+      }
+      const data = await response.json();
+
+      // Handle both array and object responses
+      let stockData;
+      if (Array.isArray(data)) {
+        stockData = data.find(
+          (item: any) => item._id === stockId || item.stockId === stockId
+        );
+        if (!stockData) {
+          throw new Error(
+            `Stock with ID ${stockId} not found in ${source} data.`
+          );
+        }
+      } else {
+        stockData = data;
+        if (stockData._id !== stockId && stockData.stockId !== stockId) {
+          throw new Error(
+            `Stock ID ${stockId} does not match API data ID ${
+              stockData._id || stockData.stockId
+            }.`
+          );
+        }
+      }
+
+      // Transform events if they are in a simple string array format
+      const normalizeEvents = (events: any[]): EventItem[] => {
+        if (!Array.isArray(events)) return [];
+        return events.map((event, idx) => {
+          if (typeof event === "string") {
+            return {
+              date: "04 Jun", // Current date: June 04, 2025
+              title: event,
+              subtitle: "No additional details available",
+            };
+          }
+          return {
+            date: event.date || "04 Jun",
+            title: event.title || "Untitled Event",
+            subtitle: event.subtitle || "No additional details available",
+            amount: event.amount,
+            link: event.link,
+          };
+        });
+      };
+
+      // Normalize price and change fields
+      const normalizePrice = (price: string | number | undefined): string => {
+        if (!price) return "₹0";
+        const priceStr = price.toString();
+        return priceStr.startsWith("₹") ? priceStr : `₹${priceStr}`;
+      };
+
+      const normalizeChange = (change: string | undefined): string => {
+        if (!change) return "+0.00 (+0.00%)";
+        const changeRegex = /^[+-]?\d+\.\d+\s*\([-+]?\d+\.\d+%\)$/;
+        if (changeRegex.test(change)) return change;
+        return `${change} (+0.00%)`;
+      };
+
+      // Normalize the API response to match the StockDetails type
+      const normalizedData: StockDetails = {
+        priceHistory: stockData.priceHistory ?? [],
+        details: {
+          performance: {
+            todaysLow: normalizePrice(
+              stockData.todaysLow ??
+                stockData.details?.performance?.todaysLow ??
+                "0"
+            ),
+            todaysHigh: normalizePrice(
+              stockData.todaysHigh ??
+                stockData.details?.performance?.todaysHigh ??
+                "0"
+            ),
+            todayCurrent: normalizePrice(
+              stockData.todayCurrent ??
+                stockData.details?.performance?.todayCurrent ??
+                (source === "index"
+                  ? stockData.value
+                  : stockData.price ?? "0")
+            ),
+            low52Week: normalizePrice(
+              stockData.low52Week ??
+                stockData.details?.performance?.low52Week ??
+                "0"
+            ),
+            high52Week: normalizePrice(
+              stockData.high52Week ??
+                stockData.details?.performance?.high52Week ??
+                "0"
+            ),
+            open: normalizePrice(
+              stockData.open ?? stockData.details?.performance?.open ?? "0"
+            ),
+            prevClose: normalizePrice(
+              stockData.prevClose ??
+                stockData.details?.performance?.prevClose ??
+                "0"
+            ),
+            volume:
+              stockData.volume ??
+              stockData.details?.performance?.volume ??
+              "0",
+            totalTradedValue: normalizePrice(
+              stockData.totalTradedValue ??
+                stockData.details?.performance?.totalTradedValue ??
+                "0"
+            ),
+            upperCircuit: normalizePrice(
+              stockData.upperCircuit ??
+                stockData.details?.performance?.upperCircuit ??
+                "0"
+            ),
+            lowerCircuit: normalizePrice(
+              stockData.lowerCircuit ??
+                stockData.details?.performance?.lowerCircuit ??
+                "0"
+            ),
+          },
+          events: normalizeEvents(stockData.details?.events ?? []),
+          news: stockData.details?.news ?? [],
+        },
+        marketDepth: {
+          buyOrderQuantity:
+            stockData.buyOrderQuantity ??
+            stockData.marketDepth?.buyOrderQuantity ??
+            0,
+          sellOrderQuantity:
+            stockData.sellOrderQuantity ??
+            stockData.marketDepth?.sellOrderQuantity ??
+            0,
+          buyOrders:
+            stockData.buyOrders ?? stockData.marketDepth?.buyOrders ?? [],
+          sellOrders:
+            stockData.sellOrders ?? stockData.marketDepth?.sellOrders ?? [],
+          bidTotal:
+            stockData.bidTotal ?? stockData.marketDepth?.bidTotal ?? 0,
+          askTotal:
+            stockData.askTotal ?? stockData.marketDepth?.askTotal ?? 0,
+        },
+        fundamentals: {
+          marketCap:
+            stockData.marketCap ?? stockData.fundamentals?.marketCap ?? "₹0",
+          peRatioTTM:
+            stockData.peRatioTTM ?? stockData.fundamentals?.peRatioTTM ?? 0,
+          pbRatio: stockData.pbRatio ?? stockData.fundamentals?.pbRatio ?? 0,
+          industryPE:
+            stockData.industryPE ?? stockData.fundamentals?.industryPE ?? 0,
+          debtToEquity:
+            stockData.debtToEquity ??
+            stockData.fundamentals?.debtToEquity ??
+            0,
+          roe: stockData.roe ?? stockData.fundamentals?.roe ?? 0,
+          epsTTM: stockData.epsTTM ?? stockData.fundamentals?.epsTTM ?? 0,
+          dividendYield:
+            stockData.dividendYield ??
+            stockData.fundamentals?.dividendYield ?? 0,
+          bookValue:
+            stockData.bookValue ?? stockData.fundamentals?.bookValue ?? 0,
+          faceValue:
+            stockData.faceValue ?? stockData.fundamentals?.faceValue ?? 0,
+        },
+        financials: {
+          quarterly:
+            stockData.financials?.quarterly ?? stockData.quarterly ?? [],
+        },
+        about: {
+          description:
+            stockData.description ??
+            stockData.details?.description ??
+            "No description available.",
+          parentOrganisation:
+            stockData.parentOrganisation ??
+            stockData.details?.parentOrganisation ??
+            stockData.name ??
+            "Unknown",
+          nseSymbol:
+            stockData.nseSymbol ??
+            stockData.details?.stock ?? // Use stockData.name if stock is not available
+            stockData.name ??
+            "N/A",
+          managingDirector:
+            stockData.managingDirector ??
+            stockData.details?.managingDirector ??
+            "Unknown",
+        },
+        value: stockData.value,
+        oneDayChange: stockData.oneDayChange,
+        oneDayChangePercent: stockData.oneDayChangePercent,
+      };
+
+      if (!statePrice) {
+        const price =
+          source === "index" && stockData.value !== undefined
+            ? stockData.value
+            : stockData.price ?? "0";
+        setDisplayPrice(normalizePrice(price));
+      }
+      if (!stateChange) {
+        if (
+          source === "index" &&
+          stockData.oneDayChange !== undefined &&
+          stockData.oneDayChangePercent !== undefined
+        ) {
+          setDisplayChange(
+            `${stockData.oneDayChange} (${stockData.oneDayChangePercent}%)`
+          );
+        } else if (
+          (source === "popularfunds" || source === "growfund") &&
+          stockData.return
+        ) {
+          setDisplayChange(normalizeChange(stockData.return));
+        } else {
+          setDisplayChange(normalizeChange(stockData.change));
+        }
+      }
+
+      setSelectedStock(normalizedData);
+    } catch (error: any) {
+      console.error(
+        `Error fetching details for stock ID ${stockId} from ${source}:`,
+        error.message
+      );
+      setError(
+        `Failed to load details for the selected stock/fund: ${error.message}. Please try again later.`
+      );
+      setSelectedStock(null);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchStockDetails();
+}, [stockId, source, category, statePrice, stateChange]);
 
   if (loading) return <div className="text-center py-10">Loading...</div>;
   if (error)
