@@ -480,7 +480,7 @@ const StocksDashboard: React.FC = () => {
               0
             </Typography>
             <Typography sx={{ fontSize: "0.75rem", color: "black" }}>
-              3,00,000
+              4,00,000
             </Typography>
           </Box>
           <Box className="flex justify-between mt-1">
@@ -523,7 +523,7 @@ const StocksDashboard: React.FC = () => {
               0
             </Typography>
             <Typography sx={{ fontSize: "0.75rem", color: "black" }}>
-              30,000
+              4,00,000
             </Typography>
           </Box>
           <Box className="flex justify-between mt-1">
