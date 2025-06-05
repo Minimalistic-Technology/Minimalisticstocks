@@ -1041,7 +1041,7 @@ export default function StockTable() {
                     key={index}
                     href={{
                       pathname: "/all-stocks",
-                      query: { sector: sector.name }, // Ensure sector.name is "Banking"
+                      query: { sector: sector.name },
                     }}
                   >
                     <button className="flex items-center justify-between border border-gray-300 rounded-md px-4 py-2 bg-white shadow-sm space-x-2 text-sm hover:bg-gray-100 transition-colors">

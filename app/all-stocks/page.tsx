@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useState, useEffect } from "react";
 import {
   Box,
@@ -14,6 +15,7 @@ import {
   TableRow,
   Paper,
   Pagination,
+  Skeleton,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import Link from "next/link";
@@ -35,27 +37,26 @@ interface Sector {
   subSectors: string[];
 }
 
-// Updated sectors data (fetched from API)
 const sectors: Sector[] = [
-  { name: "Agricultural", subSectors: [] },
-  { name: "Apparel & Accessories", subSectors: [] },
-  { name: "Automobile & Ancillaries", subSectors: [] },
+  { name: "Agriculture", subSectors: [] },
+  { name: "apparel-&-accessories", subSectors: [] },
+  { name: "Automobiles", subSectors: [] },
   { name: "Banking", subSectors: [] },
-  { name: "Consumer Durables", subSectors: [] },
-  { name: "Consumer Goods", subSectors: [] },
-  { name: "Derived Materials", subSectors: [] },
+  { name: "consumer-durables", subSectors: [] },
+  { name: "consumer-goods", subSectors: [] },
+  { name: "derived-materials", subSectors: [] },
   { name: "Energy", subSectors: [] },
-  { name: "Financial", subSectors: [] },
+  { name: "financial", subSectors: [] },
   { name: "Healthcare", subSectors: [] },
   { name: "Hospitality & Travel", subSectors: [] },
   { name: "Industrial Products", subSectors: [] },
   { name: "Industries", subSectors: [] },
   { name: "IT Industry", subSectors: [] },
   { name: "Logistics & Freight", subSectors: [] },
-  { name: "Media & Entertainment", subSectors: [] },
+  { name: "media-&-entertainment", subSectors: [] },
   { name: "Others", subSectors: [] },
   { name: "Raw Material", subSectors: [] },
-  { name: "Tele-Communication", subSectors: [] },
+  { name: "Telecommunication", subSectors: [] },
   { name: "Textile Industry", subSectors: [] },
 ];
 
@@ -107,51 +108,155 @@ const StocksDashboard: React.FC = () => {
     page * stocksPerPage
   );
 
-  // Fetch stocks based on selected sector
+  // Fetch stocks based on selected sectors or all stocks
   useEffect(() => {
     const fetchStocks = async () => {
-      if (!validSector) {
-        setStocks([]);
-        setFilteredStocks([]);
-        setLoading(false);
-        return;
-      }
-
       setLoading(true);
       setError(null);
+      let allStocks: Stock[] = [];
+
       try {
-        const response = await fetch(
-          `http://localhost:5000/api/topstocks/stocks/${encodeURIComponent(
-            validSector
-          )}`
-        );
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
+        if (selectedSectors.length === 0 && !validSector) {
+          // Fetch all stocks for all sectors
+          for (const sector of sectors) {
+            try {
+              const response = await fetch(
+                `http://localhost:5000/api/topstocks/stocks/${encodeURIComponent(
+                  sector.name
+                )}`
+              );
+              if (!response.ok) {
+                console.warn(
+                  `No data for sector ${sector.name}: ${response.status}`
+                );
+                continue;
+              }
+              const contentType = response.headers.get("content-type");
+              if (!contentType || !contentType.includes("application/json")) {
+                console.warn(`Invalid response for sector ${sector.name}`);
+                continue;
+              }
+              const data = await response.json();
+
+              // Fetch marketCap for each stock
+              const formattedDataPromises = data.map(async (item: any) => {
+                let marketCap = "₹0";
+                try {
+                  const stockResponse = await fetch(
+                    `http://localhost:5000/api/topstocks/stocks/${encodeURIComponent(
+                      sector.name
+                    )}/${item._id}`
+                  );
+                  if (stockResponse.ok) {
+                    const stockData = await stockResponse.json();
+                    marketCap = stockData.fundamentals?.marketCap || "₹0";
+                  } else {
+                    console.warn(
+                      `No marketCap for stock ${item._id} in sector ${sector.name}: ${stockResponse.status}`
+                    );
+                  }
+                } catch (err) {
+                  console.warn(
+                    `Error fetching marketCap for stock ${item._id} in sector ${sector.name}:`,
+                    err
+                  );
+                }
+
+                return {
+                  _id: item._id,
+                  company: item.name,
+                  marketPrice: item.price,
+                  change: item.change,
+                  closePrice: item.closePrice || item.price,
+                  marketCap,
+                  sector: sector.name,
+                  image: item.image,
+                };
+              });
+
+              const formattedData = await Promise.all(formattedDataPromises);
+              allStocks = [...allStocks, ...formattedData];
+            } catch (err) {
+              console.warn(`Error fetching stocks for ${sector.name}:`, err);
+            }
+          }
+        } else {
+          // Fetch stocks for selected sectors or query parameter sector
+          const sectorsToFetch = validSector
+            ? [validSector]
+            : selectedSectors.length > 0
+            ? selectedSectors
+            : sectors.map((s) => s.name);
+
+          for (const sector of sectorsToFetch) {
+            try {
+              const response = await fetch(
+                `http://localhost:5000/api/topstocks/stocks/${encodeURIComponent(
+                  sector
+                )}`
+              );
+              if (!response.ok) {
+                console.warn(
+                  `No data for sector ${sector}: ${response.status}`
+                );
+                continue;
+              }
+              const contentType = response.headers.get("content-type");
+              if (!contentType || !contentType.includes("application/json")) {
+                console.warn(`Invalid response for sector ${sector}`);
+                continue;
+              }
+              const data = await response.json();
+
+              // Fetch marketCap for each stock
+              const formattedDataPromises = data.map(async (item: any) => {
+                let marketCap = "₹0";
+                try {
+                  const stockResponse = await fetch(
+                    `http://localhost:5000/api/topstocks/stocks/${encodeURIComponent(
+                      sector
+                    )}/${item._id}`
+                  );
+                  if (stockResponse.ok) {
+                    const stockData = await stockResponse.json();
+                    marketCap = stockData.fundamentals?.marketCap || "₹0";
+                  } else {
+                    console.warn(
+                      `No marketCap for stock ${item._id} in sector ${sector}: ${stockResponse.status}`
+                    );
+                  }
+                } catch (err) {
+                  console.warn(
+                    `Error fetching marketCap for stock ${item._id} in sector ${sector}:`,
+                    err
+                  );
+                }
+
+                return {
+                  _id: item._id,
+                  company: item.name,
+                  marketPrice: item.price,
+                  change: item.change,
+                  closePrice: item.closePrice || item.price,
+                  marketCap,
+                  sector: sector,
+                  image: item.image,
+                };
+              });
+
+              const formattedData = await Promise.all(formattedDataPromises);
+              allStocks = [...allStocks, ...formattedData];
+            } catch (err) {
+              console.warn(`Error fetching stocks for ${sector}:`, err);
+            }
+          }
         }
-        const contentType = response.headers.get("content-type");
-        if (!contentType || !contentType.includes("application/json")) {
-          throw new Error("Response is not JSON");
-        }
-        const data = await response.json();
-        const formattedData: Stock[] = data.map((item: any) => ({
-          _id: item._id,
-          company: item.name,
-          marketPrice: item.price,
-          change: item.change,
-          closePrice: item.closePrice || item.price,
-          marketCap: item.marketCap || "₹0",
-          sector: validSector,
-        }));
-        setStocks(formattedData);
-        setFilteredStocks(formattedData);
+
+        setStocks(allStocks);
+        setFilteredStocks(allStocks);
       } catch (error) {
-        console.error(
-          `Error fetching stocks for sector ${validSector}:`,
-          error
-        );
-        setError(
-          `Failed to load stocks for ${validSector}. Please try again later.`
-        );
+        console.error("Error fetching stocks:", error);
+        setError("Failed to load stocks. Please try again later.");
         setStocks([]);
         setFilteredStocks([]);
       } finally {
@@ -160,22 +265,15 @@ const StocksDashboard: React.FC = () => {
     };
 
     fetchStocks();
-  }, [validSector]);
+  }, [selectedSectors, validSector]);
 
-  // Filter stocks based on selectedSectors, selectedIndices, marketCap, and closePrice
+  // Filter stocks based on indices, marketCap, and closePrice
   useEffect(() => {
     let filtered = stocks;
 
-    // Apply selectedSectors filter (from checkboxes)
-    if (selectedSectors.length > 0 && !validSector) {
-      filtered = filtered.filter((stock) =>
-        selectedSectors.includes(stock.sector)
-      );
-    }
-
     // Apply selectedIndices filter
     if (selectedIndices.length > 0) {
-      filtered = filtered.filter((stock) => stock.sector === "Financial");
+      filtered = filtered.filter((stock) => stock.sector === "financial");
     }
 
     // Apply marketCap filter
@@ -194,22 +292,20 @@ const StocksDashboard: React.FC = () => {
 
     setFilteredStocks(filtered);
     setPage(1);
-  }, [
-    stocks,
-    selectedSectors,
-    selectedIndices,
-    marketCap,
-    closePrice,
-    validSector,
-  ]);
+  }, [stocks, selectedIndices, marketCap, closePrice]);
 
-  const handleMarketCapChange = (event: Event, newValue: number | number[]) => {
+  const handleMarketCapChange = (
+    event: Event,
+    newValue: number | number[],
+    activeThumb: number
+  ) => {
     setMarketCap(newValue as number[]);
   };
 
   const handleClosePriceChange = (
     event: Event,
-    newValue: number | number[]
+    newValue: number | number[],
+    activeThumb: number
   ) => {
     setClosePrice(newValue as number[]);
   };
@@ -227,6 +323,7 @@ const StocksDashboard: React.FC = () => {
         ? prev.filter((s) => s !== sectorName)
         : [...prev, sectorName]
     );
+    router.push("/all-stocks"); // Clear query param to allow checkbox-based filtering
   };
 
   const handleIndexCheckboxChange = (indexName: string) => {
@@ -426,7 +523,7 @@ const StocksDashboard: React.FC = () => {
               0
             </Typography>
             <Typography sx={{ fontSize: "0.75rem", color: "black" }}>
-              50,00,000
+              30,000
             </Typography>
           </Box>
           <Box className="flex justify-between mt-1">
@@ -455,30 +552,87 @@ const StocksDashboard: React.FC = () => {
         </Box>
 
         {loading ? (
-          <Typography className="text-center">Loading stocks...</Typography>
+          <TableContainer component={Paper}>
+            <Table>
+              <TableHead>
+                <TableRow className="bg-gray-100">
+                  <TableCell className="font-bold text-black">COMPANY</TableCell>
+                  <TableCell className="font-bold text-black">MARKET PRICE</TableCell>
+                  <TableCell className="font-bold text-black">CLOSE PRICE</TableCell>
+                  <TableCell className="font-bold text-black">MARKET CAP (Cr)</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {[...Array(stocksPerPage)].map((_, index) => (
+                  <TableRow key={index}>
+                    <TableCell>
+                      <Box className="flex items-center gap-2">
+                        <Skeleton
+                          variant="text"
+                          width={150}
+                          height={20}
+                          animation="wave"
+                        />
+                        <Skeleton
+                          variant="rectangular"
+                          width={50}
+                          height={20}
+                          animation="wave"
+                        />
+                      </Box>
+                    </TableCell>
+                    <TableCell>
+                      <Box className="flex items-center gap-2">
+                        <Skeleton
+                          variant="text"
+                          width={80}
+                          height={20}
+                          animation="wave"
+                        />
+                        <Skeleton
+                          variant="text"
+                          width={50}
+                          height={20}
+                          animation="wave"
+                        />
+                      </Box>
+                    </TableCell>
+                    <TableCell>
+                      <Skeleton
+                        variant="text"
+                        width={80}
+                        height={20}
+                        animation="wave"
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Skeleton
+                        variant="text"
+                        width={80}
+                        height={20}
+                        animation="wave"
+                      />
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
         ) : error ? (
           <Typography className="text-center text-red-500">{error}</Typography>
         ) : filteredStocks.length === 0 ? (
           <Typography className="text-center">
-            No stocks available for this sector.
+            No stocks available for the selected filters.
           </Typography>
         ) : (
           <TableContainer component={Paper}>
             <Table>
               <TableHead>
                 <TableRow className="bg-gray-100">
-                  <TableCell className="font-bold text-black">
-                    COMPANY
-                  </TableCell>
-                  <TableCell className="font-bold text-black">
-                    MARKET PRICE
-                  </TableCell>
-                  <TableCell className="font-bold text-black">
-                    CLOSE PRICE
-                  </TableCell>
-                  <TableCell className="font-bold text-black">
-                    MARKET CAP (Cr)
-                  </TableCell>
+                  <TableCell className="font-bold text-black">COMPANY</TableCell>
+                  <TableCell className="font-bold text-black">MARKET PRICE</TableCell>
+                  <TableCell className="font-bold text-black">CLOSE PRICE</TableCell>
+                  <TableCell className="font-bold text-black">MARKET CAP (Cr)</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -501,7 +655,7 @@ const StocksDashboard: React.FC = () => {
                                   stock.image ||
                                   "https://via.placeholder.com/24",
                                 source: "stocksByCategory",
-                                category: stock.sector, // Preserve original case, e.g., "Banking"
+                                category: stock.sector,
                               }),
                             },
                           }}

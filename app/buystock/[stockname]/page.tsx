@@ -1123,6 +1123,23 @@ useEffect(() => {
         "financial",
         "Banking", // Ensure Banking is included
         // Add other sectors as needed
+        "Healthcare",
+        "Agriculture",
+        "apparel-&-accessories",
+        "Automobiles",
+        "consumer-durables",
+        "consumer-goods",
+        "derived-materials",
+        "Hospitality & Travel",
+        "Industrial Products",
+        "Industries",
+        "IT Industry",
+        "Logistics & Freight",
+        "media-&-entertainment",
+        "Others",
+        "Raw Material",
+        "Telecommunication",
+        "Textile Industry",
       ];
       const validSources = [
         "stocksInNews",
