@@ -89,8 +89,8 @@ const StocksDashboard: React.FC = () => {
     ? selectedSectorFromQuery
     : null;
 
-  const [marketCap, setMarketCap] = useState<number[]>([0, 3000000]);
-  const [closePrice, setClosePrice] = useState<number[]>([0, 30000]);
+  const [marketCap, setMarketCap] = useState<number[]>([0, 400000]);
+  const [closePrice, setClosePrice] = useState<number[]>([0, 400000]);
   const [page, setPage] = useState(1);
   const [stocks, setStocks] = useState<Stock[]>([]);
   const [filteredStocks, setFilteredStocks] = useState<Stock[]>([]);
@@ -337,8 +337,8 @@ const StocksDashboard: React.FC = () => {
   const handleClearAll = () => {
     setSelectedSectors([]);
     setSelectedIndices([]);
-    setMarketCap([0, 3000000]);
-    setClosePrice([0, 30000]);
+    setMarketCap([0, 400000]);
+    setClosePrice([0, 400000]);
     setPage(1);
     router.push("/all-stocks");
   };
@@ -465,7 +465,7 @@ const StocksDashboard: React.FC = () => {
             onChange={handleMarketCapChange}
             valueLabelDisplay="auto"
             min={0}
-            max={3000000}
+            max={400000}
             sx={{
               color: "#00c4b4",
               "& .MuiSlider-valueLabel": {
@@ -480,7 +480,7 @@ const StocksDashboard: React.FC = () => {
               0
             </Typography>
             <Typography sx={{ fontSize: "0.75rem", color: "black" }}>
-              30,00,000
+              3,00,000
             </Typography>
           </Box>
           <Box className="flex justify-between mt-1">
@@ -508,7 +508,7 @@ const StocksDashboard: React.FC = () => {
             onChange={handleClosePriceChange}
             valueLabelDisplay="auto"
             min={0}
-            max={30000}
+            max={400000}
             sx={{
               color: "#00c4b4",
               "& .MuiSlider-valueLabel": {
